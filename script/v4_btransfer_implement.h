@@ -1,0 +1,34 @@
+namespace gg_core {
+	void stm(GbaInstance& instance) {}
+	void ldml(GbaInstance& instance) {}
+	void stmw(GbaInstance& instance) {}
+	void ldmwl(GbaInstance& instance) {}
+	void stms(GbaInstance& instance) {}
+	void ldmsl(GbaInstance& instance) {}
+	void stmsw(GbaInstance& instance) {}
+	void ldmswl(GbaInstance& instance) {}
+	void stmu(GbaInstance& instance) {}
+	void ldmul(GbaInstance& instance) {}
+	void stmuw(GbaInstance& instance) {}
+	void ldmuwl(GbaInstance& instance) {}
+	void stmus(GbaInstance& instance) {}
+	void ldmusl(GbaInstance& instance) {}
+	void stmusw(GbaInstance& instance) {}
+	void ldmuswl(GbaInstance& instance) {}
+	void stmp(GbaInstance& instance) {}
+	void ldmpl(GbaInstance& instance) {}
+	void stmpw(GbaInstance& instance) {}
+	void ldmpwl(GbaInstance& instance) {}
+	void stmps(GbaInstance& instance) {}
+	void ldmpsl(GbaInstance& instance) {}
+	void stmpsw(GbaInstance& instance) {}
+	void ldmpswl(GbaInstance& instance) {}
+	void stmpu(GbaInstance& instance) {}
+	void ldmpul(GbaInstance& instance) {}
+	void stmpuw(GbaInstance& instance) {}
+	void ldmpuwl(GbaInstance& instance) {}
+	void stmpus(GbaInstance& instance) {}
+	void ldmpusl(GbaInstance& instance) {}
+	void stmpusw(GbaInstance& instance) {}
+	void ldmpuswl(GbaInstance& instance) {}
+} // gg_core
