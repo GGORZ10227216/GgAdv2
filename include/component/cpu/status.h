@@ -24,6 +24,11 @@ namespace gg_core {
                 return fetchedBuffer[pipelineCnt] ;
             } // CurrentInstruction()
 
+            uint32_t CurrentPC_OnExec() {
+                const uint32_t correction = GetCpuMode() == ARM ? 8 : 4 ;
+                return _regs[ pc ] - correction ;
+            }  // CurrentPC_OnExec()
+
             void WriteCPSR(uint32_t newCPSR) {
                 /// todo: test
                 E_OperationMode originalMode = static_cast<E_OperationMode>(_cpsr & 0x1fu);
@@ -59,6 +64,13 @@ namespace gg_core {
             E_CpuMode GetCpuMode() {
                 return _cpsr & 0x20u ? THUMB : ARM;
             } // GetCpuMode()
+
+            void ChangeCpuMode(E_CpuMode mode) {
+                if (mode == THUMB)
+                    _cpsr |= 0x1 << T ;
+                else
+                    _cpsr &= ~(0x1 << T);
+            } // ChangeCpuMode()
 
             bool FIQ_Disable() {
                 return _cpsr & 0x40u;
