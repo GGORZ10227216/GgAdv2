@@ -1,259 +1,2021 @@
-#include <array>
+#include <bit_manipulate.h>
+#include <v4_alu_api.h>
 
 namespace gg_core::gg_cpu {
-	static void undefined(GbaInstance& instance) {}
-	static void and_shtLSL(GbaInstance& instance) {
-	    std::cout << "yee" << std::endl ;
+	static void and_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
 	}
-	static void and_shtRsLSL(GbaInstance& instance) {}
-	static void and_shtLSR(GbaInstance& instance) {}
-	static void and_shtRsLSR(GbaInstance& instance) {}
-	static void and_shtASR(GbaInstance& instance) {}
-	static void and_shtRsASR(GbaInstance& instance) {}
-	static void and_shtROR(GbaInstance& instance) {}
-	static void and_shtRsROR(GbaInstance& instance) {}
-	static void ands_shtLSL(GbaInstance& instance) {}
-	static void ands_shtRsLSL(GbaInstance& instance) {}
-	static void ands_shtLSR(GbaInstance& instance) {}
-	static void ands_shtRsLSR(GbaInstance& instance) {}
-	static void ands_shtASR(GbaInstance& instance) {}
-	static void ands_shtRsASR(GbaInstance& instance) {}
-	static void ands_shtROR(GbaInstance& instance) {}
-	static void ands_shtRsROR(GbaInstance& instance) {}
-	static void eor_shtLSL(GbaInstance& instance) {}
-	static void eor_shtRsLSL(GbaInstance& instance) {}
-	static void eor_shtLSR(GbaInstance& instance) {}
-	static void eor_shtRsLSR(GbaInstance& instance) {}
-	static void eor_shtASR(GbaInstance& instance) {}
-	static void eor_shtRsASR(GbaInstance& instance) {}
-	static void eor_shtROR(GbaInstance& instance) {}
-	static void eor_shtRsROR(GbaInstance& instance) {}
-	static void eors_shtLSL(GbaInstance& instance) {}
-	static void eors_shtRsLSL(GbaInstance& instance) {}
-	static void eors_shtLSR(GbaInstance& instance) {}
-	static void eors_shtRsLSR(GbaInstance& instance) {}
-	static void eors_shtASR(GbaInstance& instance) {}
-	static void eors_shtRsASR(GbaInstance& instance) {}
-	static void eors_shtROR(GbaInstance& instance) {}
-	static void eors_shtRsROR(GbaInstance& instance) {}
-	static void sub_shtLSL(GbaInstance& instance) {}
-	static void sub_shtRsLSL(GbaInstance& instance) {}
-	static void sub_shtLSR(GbaInstance& instance) {}
-	static void sub_shtRsLSR(GbaInstance& instance) {}
-	static void sub_shtASR(GbaInstance& instance) {}
-	static void sub_shtRsASR(GbaInstance& instance) {}
-	static void sub_shtROR(GbaInstance& instance) {}
-	static void sub_shtRsROR(GbaInstance& instance) {}
-	static void subs_shtLSL(GbaInstance& instance) {}
-	static void subs_shtRsLSL(GbaInstance& instance) {}
-	static void subs_shtLSR(GbaInstance& instance) {}
-	static void subs_shtRsLSR(GbaInstance& instance) {}
-	static void subs_shtASR(GbaInstance& instance) {}
-	static void subs_shtRsASR(GbaInstance& instance) {}
-	static void subs_shtROR(GbaInstance& instance) {}
-	static void subs_shtRsROR(GbaInstance& instance) {}
-	static void rsb_shtLSL(GbaInstance& instance) {}
-	static void rsb_shtRsLSL(GbaInstance& instance) {}
-	static void rsb_shtLSR(GbaInstance& instance) {}
-	static void rsb_shtRsLSR(GbaInstance& instance) {}
-	static void rsb_shtASR(GbaInstance& instance) {}
-	static void rsb_shtRsASR(GbaInstance& instance) {}
-	static void rsb_shtROR(GbaInstance& instance) {}
-	static void rsb_shtRsROR(GbaInstance& instance) {}
-	static void rsbs_shtLSL(GbaInstance& instance) {}
-	static void rsbs_shtRsLSL(GbaInstance& instance) {}
-	static void rsbs_shtLSR(GbaInstance& instance) {}
-	static void rsbs_shtRsLSR(GbaInstance& instance) {}
-	static void rsbs_shtASR(GbaInstance& instance) {}
-	static void rsbs_shtRsASR(GbaInstance& instance) {}
-	static void rsbs_shtROR(GbaInstance& instance) {}
-	static void rsbs_shtRsROR(GbaInstance& instance) {}
-	static void add_shtLSL(GbaInstance& instance) {}
-	static void add_shtRsLSL(GbaInstance& instance) {}
-	static void add_shtLSR(GbaInstance& instance) {}
-	static void add_shtRsLSR(GbaInstance& instance) {}
-	static void add_shtASR(GbaInstance& instance) {}
-	static void add_shtRsASR(GbaInstance& instance) {}
-	static void add_shtROR(GbaInstance& instance) {}
-	static void add_shtRsROR(GbaInstance& instance) {}
-	static void adds_shtLSL(GbaInstance& instance) {}
-	static void adds_shtRsLSL(GbaInstance& instance) {}
-	static void adds_shtLSR(GbaInstance& instance) {}
-	static void adds_shtRsLSR(GbaInstance& instance) {}
-	static void adds_shtASR(GbaInstance& instance) {}
-	static void adds_shtRsASR(GbaInstance& instance) {}
-	static void adds_shtROR(GbaInstance& instance) {}
-	static void adds_shtRsROR(GbaInstance& instance) {}
-	static void adc_shtLSL(GbaInstance& instance) {}
-	static void adc_shtRsLSL(GbaInstance& instance) {}
-	static void adc_shtLSR(GbaInstance& instance) {}
-	static void adc_shtRsLSR(GbaInstance& instance) {}
-	static void adc_shtASR(GbaInstance& instance) {}
-	static void adc_shtRsASR(GbaInstance& instance) {}
-	static void adc_shtROR(GbaInstance& instance) {}
-	static void adc_shtRsROR(GbaInstance& instance) {}
-	static void adcs_shtLSL(GbaInstance& instance) {}
-	static void adcs_shtRsLSL(GbaInstance& instance) {}
-	static void adcs_shtLSR(GbaInstance& instance) {}
-	static void adcs_shtRsLSR(GbaInstance& instance) {}
-	static void adcs_shtASR(GbaInstance& instance) {}
-	static void adcs_shtRsASR(GbaInstance& instance) {}
-	static void adcs_shtROR(GbaInstance& instance) {}
-	static void adcs_shtRsROR(GbaInstance& instance) {}
-	static void sbc_shtLSL(GbaInstance& instance) {}
-	static void sbc_shtRsLSL(GbaInstance& instance) {}
-	static void sbc_shtLSR(GbaInstance& instance) {}
-	static void sbc_shtRsLSR(GbaInstance& instance) {}
-	static void sbc_shtASR(GbaInstance& instance) {}
-	static void sbc_shtRsASR(GbaInstance& instance) {}
-	static void sbc_shtROR(GbaInstance& instance) {}
-	static void sbc_shtRsROR(GbaInstance& instance) {}
-	static void sbcs_shtLSL(GbaInstance& instance) {}
-	static void sbcs_shtRsLSL(GbaInstance& instance) {}
-	static void sbcs_shtLSR(GbaInstance& instance) {}
-	static void sbcs_shtRsLSR(GbaInstance& instance) {}
-	static void sbcs_shtASR(GbaInstance& instance) {}
-	static void sbcs_shtRsASR(GbaInstance& instance) {}
-	static void sbcs_shtROR(GbaInstance& instance) {}
-	static void sbcs_shtRsROR(GbaInstance& instance) {}
-	static void rsc_shtLSL(GbaInstance& instance) {}
-	static void rsc_shtRsLSL(GbaInstance& instance) {}
-	static void rsc_shtLSR(GbaInstance& instance) {}
-	static void rsc_shtRsLSR(GbaInstance& instance) {}
-	static void rsc_shtASR(GbaInstance& instance) {}
-	static void rsc_shtRsASR(GbaInstance& instance) {}
-	static void rsc_shtROR(GbaInstance& instance) {}
-	static void rsc_shtRsROR(GbaInstance& instance) {}
-	static void rscs_shtLSL(GbaInstance& instance) {}
-	static void rscs_shtRsLSL(GbaInstance& instance) {}
-	static void rscs_shtLSR(GbaInstance& instance) {}
-	static void rscs_shtRsLSR(GbaInstance& instance) {}
-	static void rscs_shtASR(GbaInstance& instance) {}
-	static void rscs_shtRsASR(GbaInstance& instance) {}
-	static void rscs_shtROR(GbaInstance& instance) {}
-	static void rscs_shtRsROR(GbaInstance& instance) {}
-	static void tsts_shtLSL(GbaInstance& instance) {}
-	static void tsts_shtRsLSL(GbaInstance& instance) {}
-	static void tsts_shtLSR(GbaInstance& instance) {}
-	static void tsts_shtRsLSR(GbaInstance& instance) {}
-	static void tsts_shtASR(GbaInstance& instance) {}
-	static void tsts_shtRsASR(GbaInstance& instance) {}
-	static void tsts_shtROR(GbaInstance& instance) {}
-	static void tsts_shtRsROR(GbaInstance& instance) {}
-	static void teqs_shtLSL(GbaInstance& instance) {}
-	static void teqs_shtRsLSL(GbaInstance& instance) {}
-	static void teqs_shtLSR(GbaInstance& instance) {}
-	static void teqs_shtRsLSR(GbaInstance& instance) {}
-	static void teqs_shtASR(GbaInstance& instance) {}
-	static void teqs_shtRsASR(GbaInstance& instance) {}
-	static void teqs_shtROR(GbaInstance& instance) {}
-	static void teqs_shtRsROR(GbaInstance& instance) {}
-	static void cmps_shtLSL(GbaInstance& instance) {}
-	static void cmps_shtRsLSL(GbaInstance& instance) {}
-	static void cmps_shtLSR(GbaInstance& instance) {}
-	static void cmps_shtRsLSR(GbaInstance& instance) {}
-	static void cmps_shtASR(GbaInstance& instance) {}
-	static void cmps_shtRsASR(GbaInstance& instance) {}
-	static void cmps_shtROR(GbaInstance& instance) {}
-	static void cmps_shtRsROR(GbaInstance& instance) {}
-	static void cmns_shtLSL(GbaInstance& instance) {}
-	static void cmns_shtRsLSL(GbaInstance& instance) {}
-	static void cmns_shtLSR(GbaInstance& instance) {}
-	static void cmns_shtRsLSR(GbaInstance& instance) {}
-	static void cmns_shtASR(GbaInstance& instance) {}
-	static void cmns_shtRsASR(GbaInstance& instance) {}
-	static void cmns_shtROR(GbaInstance& instance) {}
-	static void cmns_shtRsROR(GbaInstance& instance) {}
-	static void orr_shtLSL(GbaInstance& instance) {}
-	static void orr_shtRsLSL(GbaInstance& instance) {}
-	static void orr_shtLSR(GbaInstance& instance) {}
-	static void orr_shtRsLSR(GbaInstance& instance) {}
-	static void orr_shtASR(GbaInstance& instance) {}
-	static void orr_shtRsASR(GbaInstance& instance) {}
-	static void orr_shtROR(GbaInstance& instance) {}
-	static void orr_shtRsROR(GbaInstance& instance) {}
-	static void orrs_shtLSL(GbaInstance& instance) {}
-	static void orrs_shtRsLSL(GbaInstance& instance) {}
-	static void orrs_shtLSR(GbaInstance& instance) {}
-	static void orrs_shtRsLSR(GbaInstance& instance) {}
-	static void orrs_shtASR(GbaInstance& instance) {}
-	static void orrs_shtRsASR(GbaInstance& instance) {}
-	static void orrs_shtROR(GbaInstance& instance) {}
-	static void orrs_shtRsROR(GbaInstance& instance) {}
-	static void mov_shtLSL(GbaInstance& instance) {}
-	static void mov_shtRsLSL(GbaInstance& instance) {}
-	static void mov_shtLSR(GbaInstance& instance) {}
-	static void mov_shtRsLSR(GbaInstance& instance) {}
-	static void mov_shtASR(GbaInstance& instance) {}
-	static void mov_shtRsASR(GbaInstance& instance) {}
-	static void mov_shtROR(GbaInstance& instance) {}
-	static void mov_shtRsROR(GbaInstance& instance) {}
-	static void movs_shtLSL(GbaInstance& instance) {}
-	static void movs_shtRsLSL(GbaInstance& instance) {}
-	static void movs_shtLSR(GbaInstance& instance) {}
-	static void movs_shtRsLSR(GbaInstance& instance) {}
-	static void movs_shtASR(GbaInstance& instance) {}
-	static void movs_shtRsASR(GbaInstance& instance) {}
-	static void movs_shtROR(GbaInstance& instance) {}
-	static void movs_shtRsROR(GbaInstance& instance) {}
-	static void bic_shtLSL(GbaInstance& instance) {}
-	static void bic_shtRsLSL(GbaInstance& instance) {}
-	static void bic_shtLSR(GbaInstance& instance) {}
-	static void bic_shtRsLSR(GbaInstance& instance) {}
-	static void bic_shtASR(GbaInstance& instance) {}
-	static void bic_shtRsASR(GbaInstance& instance) {}
-	static void bic_shtROR(GbaInstance& instance) {}
-	static void bic_shtRsROR(GbaInstance& instance) {}
-	static void bics_shtLSL(GbaInstance& instance) {}
-	static void bics_shtRsLSL(GbaInstance& instance) {}
-	static void bics_shtLSR(GbaInstance& instance) {}
-	static void bics_shtRsLSR(GbaInstance& instance) {}
-	static void bics_shtASR(GbaInstance& instance) {}
-	static void bics_shtRsASR(GbaInstance& instance) {}
-	static void bics_shtROR(GbaInstance& instance) {}
-	static void bics_shtRsROR(GbaInstance& instance) {}
-	static void mvn_shtLSL(GbaInstance& instance) {}
-	static void mvn_shtRsLSL(GbaInstance& instance) {}
-	static void mvn_shtLSR(GbaInstance& instance) {}
-	static void mvn_shtRsLSR(GbaInstance& instance) {}
-	static void mvn_shtASR(GbaInstance& instance) {}
-	static void mvn_shtRsASR(GbaInstance& instance) {}
-	static void mvn_shtROR(GbaInstance& instance) {}
-	static void mvn_shtRsROR(GbaInstance& instance) {}
-	static void mvns_shtLSL(GbaInstance& instance) {}
-	static void mvns_shtRsLSL(GbaInstance& instance) {}
-	static void mvns_shtLSR(GbaInstance& instance) {}
-	static void mvns_shtRsLSR(GbaInstance& instance) {}
-	static void mvns_shtASR(GbaInstance& instance) {}
-	static void mvns_shtRsASR(GbaInstance& instance) {}
-	static void mvns_shtROR(GbaInstance& instance) {}
-	static void mvns_shtRsROR(GbaInstance& instance) {}
-	static void andi(GbaInstance& instance) {}
-	static void andsi(GbaInstance& instance) {}
-	static void eori(GbaInstance& instance) {}
-	static void eorsi(GbaInstance& instance) {}
-	static void subi(GbaInstance& instance) {}
-	static void subsi(GbaInstance& instance) {}
-	static void rsbi(GbaInstance& instance) {}
-	static void rsbsi(GbaInstance& instance) {}
-	static void addi(GbaInstance& instance) {}
-	static void addsi(GbaInstance& instance) {}
-	static void adci(GbaInstance& instance) {}
-	static void adcsi(GbaInstance& instance) {}
-	static void sbci(GbaInstance& instance) {}
-	static void sbcsi(GbaInstance& instance) {}
-	static void rsci(GbaInstance& instance) {}
-	static void rscsi(GbaInstance& instance) {}
-	static void tstsi(GbaInstance& instance) {}
-	static void teqsi(GbaInstance& instance) {}
-	static void cmpsi(GbaInstance& instance) {}
-	static void cmnsi(GbaInstance& instance) {}
-	static void orri(GbaInstance& instance) {}
-	static void orrsi(GbaInstance& instance) {}
-	static void movi(GbaInstance& instance) {}
-	static void movsi(GbaInstance& instance) {}
-	static void bici(GbaInstance& instance) {}
-	static void bicsi(GbaInstance& instance) {}
-	static void mvni(GbaInstance& instance) {}
-	static void mvnsi(GbaInstance& instance) {}
+
+	static void and_RsLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void and_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void and_RsLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void and_ImmASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void and_RsASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void and_ImmROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void and_RsROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void ands_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void ands_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void ands_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void ands_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void ands_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void ands_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void ands_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void ands_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void eor_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eor_RsLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eor_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eor_RsLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eor_ImmASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eor_RsASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eor_ImmROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eor_RsROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eors_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eors_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eors_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eors_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eors_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eors_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eors_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eors_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void sub_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void sub_RsLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void sub_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void sub_RsLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void sub_ImmASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void sub_RsASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void sub_ImmROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void sub_RsROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void subs_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void subs_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void subs_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void subs_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void subs_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void subs_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void subs_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void subs_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void rsb_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsb_RsLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsb_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsb_RsLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsb_ImmASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsb_RsASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsb_ImmROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsb_RsROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsbs_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsbs_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsbs_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsbs_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsbs_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsbs_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsbs_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsbs_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void add_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void add_RsLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void add_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void add_RsLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void add_ImmASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void add_RsASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void add_ImmROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void add_RsROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void adds_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void adds_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void adds_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void adds_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void adds_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void adds_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void adds_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void adds_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void adc_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adc_RsLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adc_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adc_RsLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adc_ImmASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adc_RsASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adc_ImmROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adc_RsROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adcs_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adcs_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adcs_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adcs_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adcs_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adcs_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adcs_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adcs_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void sbc_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbc_RsLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbc_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbc_RsLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbc_ImmASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbc_RsASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbc_ImmROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbc_RsROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbcs_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbcs_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbcs_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbcs_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbcs_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbcs_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbcs_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbcs_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void rsc_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rsc_RsLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rsc_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rsc_RsLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rsc_ImmASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rsc_RsASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rsc_ImmROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rsc_RsROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rscs_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rscs_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rscs_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rscs_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rscs_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rscs_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rscs_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rscs_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void tsts_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void tsts_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void tsts_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void tsts_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void tsts_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void tsts_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void tsts_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void tsts_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void teqs_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void teqs_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void teqs_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void teqs_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void teqs_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void teqs_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void teqs_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void teqs_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void cmps_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void cmps_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void cmps_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void cmps_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void cmps_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void cmps_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void cmps_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void cmps_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void cmns_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void cmns_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void cmns_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void cmns_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void cmns_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void cmns_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void cmns_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void cmns_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void orr_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orr_RsLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orr_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orr_RsLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orr_ImmASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orr_RsASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orr_ImmROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orr_RsROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orrs_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orrs_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orrs_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orrs_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orrs_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orrs_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orrs_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orrs_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void mov_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void mov_RsLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void mov_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void mov_RsLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void mov_ImmASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void mov_RsASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void mov_ImmROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void mov_RsROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void movs_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void movs_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void movs_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void movs_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void movs_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void movs_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void movs_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void movs_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void bic_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bic_RsLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bic_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bic_RsLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bic_ImmASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bic_RsASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bic_ImmROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bic_RsROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bics_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bics_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bics_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bics_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bics_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bics_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bics_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bics_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void mvn_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvn_RsLSL(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvn_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvn_RsLSR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvn_ImmASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvn_RsASR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvn_ImmROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvn_RsROR(GbaInstance& instance) {
+		alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvns_ImmLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvns_RsLSL(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvns_ImmLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvns_RsLSR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvns_ImmASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvns_RsASR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvns_ImmROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvns_RsROR(GbaInstance& instance) {
+		alu_impl<true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void andi(GbaInstance& instance) {
+		alu_impl<false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void andsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void eori(GbaInstance& instance) {
+		alu_impl<false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void eorsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void subi(GbaInstance& instance) {
+		alu_impl<false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void subsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void rsbi(GbaInstance& instance) {
+		alu_impl<false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void rsbsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn ;
+			}
+		);
+	}
+
+	static void addi(GbaInstance& instance) {
+		alu_impl<false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void addsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void adci(GbaInstance& instance) {
+		alu_impl<false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void adcsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 + carry ;
+			}
+		);
+	}
+
+	static void sbci(GbaInstance& instance) {
+		alu_impl<false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void sbcsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;
+			}
+		);
+	}
+
+	static void rsci(GbaInstance& instance) {
+		alu_impl<false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void rscsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) - Rn + carry - 1 ;
+			}
+		);
+	}
+
+	static void tstsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & op2 ;
+			}
+		);
+	}
+
+	static void teqsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) ^ op2 ;
+			}
+		);
+	}
+
+	static void cmpsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) - op2 ;
+			}
+		);
+	}
+
+	static void cmnsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::TEST> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) + op2 ;
+			}
+		);
+	}
+
+	static void orri(GbaInstance& instance) {
+		alu_impl<false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void orrsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) | op2 ;
+			}
+		);
+	}
+
+	static void movi(GbaInstance& instance) {
+		alu_impl<false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void movsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(op2) ;
+			}
+		);
+	}
+
+	static void bici(GbaInstance& instance) {
+		alu_impl<false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void bicsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return static_cast<uint64_t>(Rn) & (~op2) ;
+			}
+		);
+	}
+
+	static void mvni(GbaInstance& instance) {
+		alu_impl<false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
+	static void mvnsi(GbaInstance& instance) {
+		alu_impl<false, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+			[](uint32_t Rn, uint32_t op2, bool carry) {
+				return ~static_cast<uint64_t>(op2);
+			}
+		);
+	}
+
 } // gg_core::gg_cpu

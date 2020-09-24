@@ -1,89 +1,198 @@
+import sys
+
 from capstone import *
+from numba import *
 from script.v4Target import *
 
 import json
 
+@jit
+def ALU(ibin, rec):
+    attr = dict()
+    attr['Flags'] = list()
+    attr['Type'] = 'alu'
 
-def ALU(istr, ibin):
     if ibin & (1 << 20):
-        istr += 's'
+        attr['Flags'].append('s')
 
     if ibin & (1 << 25):
-        istr += 'i'
+        attr['Flags'].append('i')
+        attr['Signature'] = rec['mnemonic'] + ''.join(attr['Flags'])
     else:
-        if ibin & (1 << 4):
-            istr += '_shtRs'
+        attr['Shift'] = {
+            'Amount': {
+                0x00: 'Imm',
+                0x10: 'Rs'
+            }.get(ibin & (1 << 4)),
+            'Type': {
+                0: 'LSL',
+                1: 'LSR',
+                2: 'ASR',
+                3: 'ROR'
+            }.get((ibin & (0b11 << 5)) >> 5)
+        }
+
+        attr['Signature'] = rec['mnemonic'] + ''.join(attr['Flags']) + '_' + ''.join(attr['Shift'].values())
+
+    return attr
+
+@jit
+def Branch(ibin, rec):
+    attr = dict()
+    attr['Flags'] = list()
+    attr['Type'] = 'branch'
+
+    if ibin & (1 << 27) and ibin & (1 << 24):
+        attr['Flags'].append('l')
+
+    attr['Signature'] = rec['mnemonic'] + ''.join(attr['Flags'])
+    return attr
+
+@jit
+def PSR(ibin, rec):
+    attr = dict()
+    attr['Flags'] = list()
+    attr['Type'] = 'psr'
+
+    if ibin & (1 << 22):
+        attr['Flags'].append('p')
+
+    if rec['mnemonic'] == 'msr':
+        if ibin & (1 << 25):
+            attr['OperandType'] = 'Imm'
         else:
-            istr += '_sht'
-        istr += {0: 'LSL',
-                 1: 'LSR',
-                 2: 'ASR',
-                 3: 'ROR'
-                 }.get((ibin & (0b11 << 5)) >> 5)
-
-    return istr
-
-
-def PSR(istr, ibin):
-    if ibin & (1 << 22):
-        istr += '_SPSR'
+            attr['OperandType'] = 'Rm'
+        attr['Signature'] = rec['mnemonic'] + ''.join(attr['Flags']) + '_' + attr['OperandType']
     else:
-        istr += '_CPSR'
+        attr['Signature'] = rec['mnemonic'] + ''.join(attr['Flags'])
 
-    return istr
+    return attr
 
+@jit
+def Mul(ibin, rec):
+    attr = dict()
+    attr['Type'] = 'mul'
+    attr['Flags'] = list()
 
-def Transfer(istr, ibin):
+    if ibin & (1 << 21):
+        attr['Flags'].append('a')
+    if ibin & (1 << 20):
+        attr['Flags'].append('s')
+
+    attr['Signature'] = rec['mnemonic'] + ''.join(attr['Flags'])
+    return attr
+
+@jit
+def Mull(ibin, rec):
+    attr = dict()
+    attr['Type'] = 'mull'
+    attr['Flags'] = list()
+
+    if ibin & (1 << 22):
+        attr['Flags'].append('u')
+    if ibin & (1 << 21):
+        attr['Flags'].append('a')
+    if ibin & (1 << 20):
+        attr['Flags'].append('s')
+
+    attr['Signature'] = rec['mnemonic'] + ''.join(attr['Flags'])
+    return attr
+
+def Transfer(ibin, rec):
+    attr = dict()
+    attr['Type'] = 'transfer'
+    attr['Flags'] = list()
     if ibin & (1 << 25):
-        istr += 'i'
+        attr['Flags'].append('i')
     if ibin & (1 << 24):
-        istr += 'p'
+        attr['Flags'].append('p')
     if ibin & (1 << 23):
-        istr += 'u'
+        attr['Flags'].append('u')
     if ibin & (1 << 22):
-        istr += 'b'
+        attr['Flags'].append('b')
     if ibin & (1 << 21):
-        istr += 'w'
+        attr['Flags'].append('w')
     if ibin & (1 << 20):
-        istr += 'l'
-    return istr
-
-
-def HalfTransfer(istr, ibin):
-    if ibin & (1 << 24):
-        istr += 'p'
-    if ibin & (1 << 23):
-        istr += 'u'
-    if ibin & (1 << 21):
-        istr += 'w'
-    if ibin & (1 << 20):
-        istr += 'l'
-    if ibin & (1 << 6):
-        istr += 's'
-    if ibin & (1 << 5):
-        istr += 'h'
-
-    if ibin & (1 << 22):
-        istr += '_immOffset'
+        attr['Flags'].append('l')
+        attr['Shift'] = {
+            'Amount': 'Imm',
+            'Type': {
+                0: 'LSL',
+                1: 'LSR',
+                2: 'ASR',
+                3: 'ROR'
+            }.get((ibin & (0b11 << 5)) >> 5)
+        }
+        attr['Signature'] = rec['mnemonic'] + ''.join(attr['Flags']) + '_' + ''.join(attr['Shift'].values())
     else:
-        istr += '_RmOffset'
+        attr['Signature'] = rec['mnemonic'] + ''.join(attr['Flags'])
 
-    return istr
+    return attr
 
+def HalfTransfer(ibin, rec):
+    attr = dict()
+    attr['Type'] = 'half_transfer'
+    attr['Flags'] = list()
 
-def TransBlock(istr, ibin):
     if ibin & (1 << 24):
-        istr += 'p'
+        attr['Flags'].append('p')
     if ibin & (1 << 23):
-        istr += 'u'
-    if ibin & (1 << 22):
-        istr += 's'
+        attr['Flags'].append('u')
     if ibin & (1 << 21):
-        istr += 'w'
+        attr['Flags'].append('w')
     if ibin & (1 << 20):
-        istr += 'l'
+        attr['Flags'].append('l')
+    if ibin & (1 << 6):
+        attr['Flags'].append('s')
+    if ibin & (1 << 5):
+        attr['Flags'].append('h')
 
-    return istr
+    if ibin & (1 << 22):
+        attr['OffsetType'] = 'Imm'
+    else:
+        attr['OffsetType'] = 'Rm'
+
+    attr['Signature'] = rec['mnemonic'] + ''.join(attr['Flags']) + '_' + attr['OffsetType']
+    return attr
+
+@jit
+def TransBlock(ibin, rec):
+    attr = dict()
+    attr['Type'] = 'block_transfer'
+    attr['Flags'] = list()
+
+    if ibin & (1 << 24):
+        attr['Flags'].append('p')
+    if ibin & (1 << 23):
+        attr['Flags'].append('u')
+    if ibin & (1 << 22):
+        attr['Flags'].append('s')
+    if ibin & (1 << 21):
+        attr['Flags'].append('w')
+    if ibin & (1 << 20):
+        attr['Flags'].append('l')
+
+    attr['Signature'] = rec['mnemonic'] + ''.join(attr['Flags'])
+    return attr
+
+@jit
+def Interrupt(ibin, rec):
+    attr = dict()
+    attr['Type'] = 'interrupt'
+    attr['Signature'] = rec['mnemonic']
+    return attr
+
+@jit
+def Swap(ibin, rec):
+    attr = dict()
+    attr['Type'] = 'swap'
+    attr['Flags'] = list()
+
+    if ibin & (1 << 22):
+        attr['Flags'].append('b')
+
+    attr['Signature'] = rec['mnemonic'] + ''.join(attr['Flags'])
+    return attr
 
 
 # Print iterations progress
@@ -108,64 +217,97 @@ def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=
     if iteration == total:
         print()
 
-
-# firstPass = open("./1stResult", "w+")
-# secondPass = open("./2ndResult", "w+")
-
 md = Cs(CS_ARCH_ARM, CS_MODE_ARM)
 
-idict = dict()
+@jit
+def Analyze(mnemonic, instruction):
+    hashResult = ((instruction & 0x0ff00000) >> 16) | ((instruction & 0xf0) >> 4)
+    record = {'HashCode': hashResult}
+    
+    if mnemonic in v4ALU:
+        record['mnemonic'] = mnemonic[:3]
+        record['Attributes'] = ALU(instruction, record)
+    elif mnemonic in v4PSR:
+        record['mnemonic'] = mnemonic
+        record['Attributes'] = PSR(instruction, record)
+    elif mnemonic in v4Branch:
+        if mnemonic[-1] == 'x':
+            record['mnemonic'] = mnemonic
+        else:
+            record['mnemonic'] = 'b'
+        record['Attributes'] = Branch(instruction, record)
+    elif mnemonic in v4MUL:
+        record['mnemonic'] = mnemonic[:3]
+        record['Attributes'] = Mul(instruction, record)
+    elif mnemonic in v4MULL:
+        record['mnemonic'] = mnemonic[1:5]
+        record['Attributes'] = Mull(instruction, record)
+    elif mnemonic in v4Transfer:
+        record['mnemonic'] = mnemonic[:3]
+        if mnemonic[-1] == 'h':
+            record['Attributes'] = HalfTransfer(instruction, record)
+        else:
+            record['Attributes'] = Transfer(instruction, record)
+    elif mnemonic in v4TransBlock:
+        record['mnemonic'] = mnemonic[:3]
+        record['Attributes'] = TransBlock(instruction, record)
+    elif mnemonic == 'swp' or mnemonic == 'swpb':
+        record['mnemonic'] = 'swp'
+        record['Attributes'] = Swap(instruction, record)
+    elif mnemonic in v4Interrupt:
+        record['mnemonic'] = 'svc'
+        record['Attributes'] = Interrupt(instruction, record)
+    elif mnemonic in v4Shift:
+        record['mnemonic'] = 'mov'
+        record['Attributes'] = ALU(instruction, record)
 
-analyzeRange = 0x10000000
-numOfInstruction = 0
-printProgressBar(iteration=0, total=analyzeRange, prefix='Progress({:x},0):'.format(0), suffix='Complete', length=50)
-for instruction in range(analyzeRange):
-    progress = instruction
-    instruction |= 0xe0000000
-    istr = ''
+    return record
 
-    for i in md.disasm(instruction.to_bytes(4, byteorder="little"), 0x0):
-        hashResult = ((instruction & 0x0ff00000) >> 16) | ((instruction & 0xf0) >> 4)
-        if i.mnemonic in v4ALU:
-            istr = ALU(i.mnemonic[:3], instruction)
-        elif i.mnemonic in v4PSR:
-            istr = PSR(i.mnemonic, instruction)
-        elif i.mnemonic in v4Branch:
-            istr = i.mnemonic
-        elif i.mnemonic in v4MUL:
-            istr = i.mnemonic
-        elif i.mnemonic in v4MULL:
-            istr = i.mnemonic
-        elif i.mnemonic in v4Transfer:
-            if i.mnemonic[-1] == 'h':
-                istr = HalfTransfer(i.mnemonic[:3], instruction)
-            else:
-                istr = Transfer(i.mnemonic[:3], instruction)
-        elif i.mnemonic in v4TransBlock:
-            istr = TransBlock(i.mnemonic[:3], instruction)
-        elif i.mnemonic == 'swp' or i.mnemonic == 'swpb' or i.mnemonic == 'svc':
-            istr = i.mnemonic
-        elif i.mnemonic in v4Shift:
-            istr = ALU('mov', instruction)
+def main(argv=None):
+    records = list()
+    rdict = dict()
+    analyzeRange = 0x10000000
+    numOfInstruction = 0
 
-        if not istr == '':
-            if hashResult not in idict:
-                idict[hashResult] = [istr]
-                numOfInstruction = numOfInstruction + 1
-            elif istr not in idict[hashResult]:
-                idict[hashResult].append(istr)
-                numOfInstruction = numOfInstruction + 1
+    printProgressBar(iteration=0, total=analyzeRange, prefix='Progress({:x},0):'.format(0), suffix='Complete', length=50)
+    for instruction in range(analyzeRange):
+        progress = instruction
+        instruction |= 0xe0000000
+        istr = ''
 
-    if progress % 0x10000 == 0:
-        printProgressBar(iteration=progress, total=analyzeRange,
-                         prefix='Progress({:x},{}):'.format(progress, numOfInstruction),
-                         suffix='Complete', length=50)
+        for i in md.disasm(instruction.to_bytes(4, byteorder="little"), 0x0):
+            record = Analyze(i.mnemonic, instruction)
 
-firstPass = open("./1stResult", "w+")
-instruction = list()
-for elem in idict.items():
-    instruction.append({"hashCode": elem[0], "functionNames": elem[1]})
+            if 'Attributes' in record.keys():
+                if record['HashCode'] in rdict:
+                    if record['Attributes']['Signature'] not in rdict[record['HashCode']]:
+                        print('hash({:x}), instruction[{}] collide with:\n'.format(
+                            record['HashCode'], record['Attributes']['Signature']
+                        ))
 
-firstPass.write(json.dumps(instruction))
-firstPass.close()
-print('\n')
+                        for istr in rdict[record['HashCode']]:
+                            print('\t {}', istr)
+                else:
+                    rdict[record['HashCode']] = list()
+                    rdict[record['HashCode']].append(record['Attributes']['Signature'])
+                    records.append(record)
+                    numOfInstruction += 1
+
+        if progress % 0x10000 == 0:
+            printProgressBar(iteration=progress, total=analyzeRange,
+                            prefix='Progress({:x},{}):'.format(progress, numOfInstruction),
+                            suffix='Complete', length=50)
+
+    firstPass = open("1stResult.json", "w+")
+
+    cnt = 1
+    for record in records:
+        record['#instruction'] = cnt
+        cnt += 1
+    firstPass.write(json.dumps(records))
+    firstPass.close()
+
+    print('\n')
+
+if __name__ == "__main__":
+    sys.exit(main())

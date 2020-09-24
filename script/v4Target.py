@@ -40,7 +40,7 @@ v4TransBlock = {
 }
 
 v4Swp = {
-    'swp'
+    'swp', 'swpb'
 }
 
 v4Interrupt = {
@@ -48,6 +48,5 @@ v4Interrupt = {
 }
 
 v4Shift = {
-    "lsl", "lsls", "lsr", "lsrs",
-    "asr", "asrs", "ror", "rors"
+    "lsl", "lsr", "asr", "ror", "rrx"
 }

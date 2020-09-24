@@ -18,6 +18,12 @@ namespace gg_core {
         struct Status {
             friend GbaInstance;
         public :
+            Regs _regs;
+
+            uint32_t CurrentInstruction() {
+                return fetchedBuffer[pipelineCnt] ;
+            } // CurrentInstruction()
+
             void WriteCPSR(uint32_t newCPSR) {
                 /// todo: test
                 E_OperationMode originalMode = static_cast<E_OperationMode>(_cpsr & 0x1fu);
@@ -80,9 +86,7 @@ namespace gg_core {
         private :
             std::array<uint32_t, 3> fetchedBuffer;
             uint8_t pipelineCnt = 0;
-            void (*ndlerTable)();
 
-            Regs _regs;
             unsigned _cpsr = 0xd3;
 
             std::array<unsigned, 7> _registers_usrsys{};

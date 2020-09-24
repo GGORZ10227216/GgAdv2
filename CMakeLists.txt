@@ -27,12 +27,13 @@ set(header_core
         include/component/memory/general_memory.h
         include/component/memory/display_memory.h
         include/component/memory/gamepak_memory.h
-        include/utility/bit_manipulate.h)
+        include/utility/bit_manipulate.h include/instruction/arm/macro.h)
 
 set(header_arm_implement
         include/instruction/arm/arm_prototype.h
         include/instruction/arm/arm_instruction_table.h
         include/instruction/arm/v4_alu_implement.h
+        include/instruction/arm/v4_alu_api.h
         include/instruction/arm/v4_branch_implement.h
         include/instruction/arm/v4_btransfer_implement.h
         include/instruction/arm/v4_interrupt_implement.h
@@ -60,3 +61,11 @@ add_executable(ggAdv main.cpp ${header_core} ${header_arm_implement} ${src_core}
             )
 
     target_link_libraries(ggAdv /usr/local/lib/libfmt.a)
+
+project(arm_analyzer)
+    add_executable(arm_analyzer tool/arm_analyzer/main.cpp)
+    target_include_directories(arm_analyzer PUBLIC
+        tool/arm_analyzer
+        )
+
+    target_link_libraries(arm_analyzer /usr/local/lib/libfmt.a /usr/local/lib/libcapstone.so)

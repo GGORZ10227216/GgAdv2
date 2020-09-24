@@ -14,9 +14,14 @@
 #ifndef GGADV_GBA_INSTANCE_H
 #define GGADV_GBA_INSTANCE_H
 
+
 namespace gg_core {
     class GbaInstance final {
     public :
+        gg_cpu::Status _status;
+        gg_mem::MMU _mem;
+        gg_io::IOReg _io;
+
         GbaInstance(const std::optional<std::filesystem::path> &romPath) :
                 _mem(romPath), _io() {
             RefillPipeline();
@@ -34,10 +39,6 @@ namespace gg_core {
             if (_worker.joinable())
                 _worker.join();
         } // ~GbaInstance()
-    private :
-        gg_cpu::Status _status;
-        gg_mem::MMU _mem;
-        gg_io::IOReg _io;
 
         bool _isRunning;
         std::thread _worker;

@@ -1,2 +1,5 @@
 /cmake-build-debug/
 /venv/
+/script/1stResult.json
+/script/__pycache__
+/.idea
