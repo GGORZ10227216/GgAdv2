@@ -29,6 +29,27 @@ namespace gg_core {
                 return _regs[ pc ] - correction ;
             }  // CurrentPC_OnExec()
 
+            uint32_t ReadCPSR() {
+                return _cpsr ;
+            }
+
+            uint32_t ReadSPSR() {
+                switch (GetOperationMode()) {
+                    case FIQ:
+                        return _spsr_fiq ;
+                    case IRQ:
+                        return _spsr_irq ;
+                    case SVC:
+                        return _spsr_svc;
+                    case ABT:
+                        return _spsr_abt;
+                    case UND:
+                        return _spsr_und ;
+                    default:
+                        exit(-2) ;
+                } // switch()
+            }
+
             void WriteCPSR(uint32_t newCPSR) {
                 /// todo: test
                 E_OperationMode originalMode = static_cast<E_OperationMode>(_cpsr & 0x1fu);
@@ -55,6 +76,23 @@ namespace gg_core {
                 } // if
 
                 _cpsr = newCPSR;
+            }
+
+            void WriteSPSR(uint32_t value) {
+                switch (GetOperationMode()) {
+                    case FIQ:
+                        _spsr_fiq = value ;
+                    case IRQ:
+                        _spsr_irq = value ;
+                    case SVC:
+                        _spsr_svc = value ;
+                    case ABT:
+                        _spsr_abt = value ;
+                    case UND:
+                        _spsr_und  = value ;
+                    default:
+                        exit(-2) ;
+                } // switch()
             }
 
             E_OperationMode GetOperationMode() {
@@ -99,7 +137,7 @@ namespace gg_core {
             std::array<uint32_t, 3> fetchedBuffer;
             uint8_t pipelineCnt = 0;
 
-            unsigned _cpsr = 0xd3;
+            uint32_t _cpsr = 0xd3;
 
             std::array<unsigned, 7> _registers_usrsys{};
             std::array<unsigned, 7> _registers_fiq{};

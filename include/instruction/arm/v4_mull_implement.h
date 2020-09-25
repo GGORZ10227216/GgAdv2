@@ -1,12 +1,10 @@
-#include <array>
-
 namespace gg_core::gg_cpu {
-	static void umull(GbaInstance& instance) {}
-	static void umulls(GbaInstance& instance) {}
-	static void umlal(GbaInstance& instance) {}
-	static void umlals(GbaInstance& instance) {}
-	static void smull(GbaInstance& instance) {}
-	static void smulls(GbaInstance& instance) {}
-	static void smlal(GbaInstance& instance) {}
-	static void smlals(GbaInstance& instance) {}
+	static void mull(GbaInstance& instance) {}
+	static void mulls(GbaInstance& instance) {}
+	static void mlala(GbaInstance& instance) {}
+	static void mlalas(GbaInstance& instance) {}
+	static void mullu(GbaInstance& instance) {}
+	static void mullus(GbaInstance& instance) {}
+	static void mlalua(GbaInstance& instance) {}
+	static void mlaluas(GbaInstance& instance) {}
 } // gg_core::gg_cpu

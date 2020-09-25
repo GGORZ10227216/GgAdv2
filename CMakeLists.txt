@@ -34,13 +34,14 @@ set(header_arm_implement
         include/instruction/arm/arm_instruction_table.h
         include/instruction/arm/v4_alu_implement.h
         include/instruction/arm/v4_alu_api.h
+        include/instruction/arm/v4_block_transfer_implement.h
         include/instruction/arm/v4_branch_implement.h
-        include/instruction/arm/v4_btransfer_implement.h
+        include/instruction/arm/v4_half_transfer_implement.h
         include/instruction/arm/v4_interrupt_implement.h
         include/instruction/arm/v4_mul_implement.h
         include/instruction/arm/v4_mull_implement.h
         include/instruction/arm/v4_psr_implement.h
-        include/instruction/arm/v4_swp_implement.h
+        include/instruction/arm/v4_swap_implement.h
         include/instruction/arm/v4_transfer_implement.h
         )
 

@@ -77,14 +77,17 @@ namespace gg_core {
     };
 }
 
+#define CURRENT_INSTRUCTION instance._status.CurrentInstruction()
+
 #include <v4_alu_implement.h>
 #include <v4_branch_implement.h>
-#include <v4_btransfer_implement.h>
+#include <v4_block_transfer_implement.h>
 #include <v4_interrupt_implement.h>
 #include <v4_mul_implement.h>
 #include <v4_mull_implement.h>
 #include <v4_psr_implement.h>
-#include <v4_swp_implement.h>
+#include <v4_swap_implement.h>
 #include <v4_transfer_implement.h>
+#include <v4_half_transfer_implement.h>
 
 #endif //GGADV_GBA_INSTANCE_H

@@ -1,5 +1,3 @@
-#include <array>
-
 namespace gg_core::gg_cpu {
 	static void stm(GbaInstance& instance) {}
 	static void ldml(GbaInstance& instance) {}

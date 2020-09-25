@@ -518,7 +518,5 @@ namespace gg_core {
 		static void bl(GbaInstance& instance) ;
 		static void svc(GbaInstance& instance) ;
 		static void undefined(GbaInstance& instance) ;
-
-        void alu_impl(GbaInstance &instance);
     } // gg_cpu
 } // gg_core
