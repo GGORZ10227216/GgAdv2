@@ -227,8 +227,8 @@ json Transfer(uint32_t i, const string_view &mnemonic) {
     attr["TypeName"] = "transfer";
     attr["TypeCode"] = 6;
 
-    if (i & (1 << 25))
-        attr["Flags"].push_back("i");
+    if (i & (1 << 20))
+        attr["Flags"].push_back("l");
     if (i & (1 << 24))
         attr["Flags"].push_back("p");
     if (i & (1 << 23))
@@ -237,8 +237,8 @@ json Transfer(uint32_t i, const string_view &mnemonic) {
         attr["Flags"].push_back("b");
     if (i & (1 << 21))
         attr["Flags"].push_back("w");
-    if (i & (1 << 20)) {
-        attr["Flags"].push_back("l");
+    if (i & (1 << 25)) {
+        attr["Flags"].push_back("i");
         attr["Shift"]["Amount"] = "Imm";
         switch ((i & (0b11 << 5)) >> 5) {
             case 0x0 :

@@ -1,5 +1,8 @@
 #include <cstdint>
 
+#ifndef ARM_ANALYZER_V4_ALU_API_H
+#define ARM_ANALYZER_V4_ALU_API_H
+
 namespace gg_core::gg_cpu {
     // using alu_handler = void(*)(uint32_t&, uint32_t, uint32_t) ;
     enum class OP_TYPE { LOGICAL, ARITHMETIC, TEST } ;
@@ -109,7 +112,7 @@ namespace gg_core::gg_cpu {
     } // ParseOp2_Imm()
 
     template<bool I, bool S, SHIFT_BY SHIFT_SRC, SHIFT_TYPE ST, OP_TYPE OT, typename F>
-    static void alu_impl(GbaInstance &instance, F operation) requires
+    static void Alu_impl(GbaInstance &instance, F operation) requires
         std::is_same_v<std::invoke_result_t<F, unsigned, unsigned, bool>, uint64_t>
     {
         const uint32_t curInst = CURRENT_INSTRUCTION ;
@@ -164,3 +167,5 @@ namespace gg_core::gg_cpu {
         } // if
     }
 }
+
+#endif

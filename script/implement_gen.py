@@ -9,7 +9,6 @@ fileList = {
     "psr": [0, open('{}/v4_psr_implement.h'.format(headerPath), 'w+')],
     "mul": [0, open('{}/v4_mul_implement.h'.format(headerPath), 'w+')],
     "mull": [0, open('{}/v4_mull_implement.h'.format(headerPath), 'w+')],
-    "transfer": [0, open('{}/v4_transfer_implement.h'.format(headerPath), 'w+')],
     "half_transfer": [0, open('{}/v4_half_transfer_implement.h'.format(headerPath), 'w+')],
     "block_transfer": [0, open('{}/v4_block_transfer_implement.h'.format(headerPath), 'w+')],
     "swap": [0, open('{}/v4_swap_implement.h'.format(headerPath), 'w+')],

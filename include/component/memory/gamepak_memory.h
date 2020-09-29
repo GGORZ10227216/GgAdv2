@@ -46,6 +46,7 @@ namespace gg_core::gg_mem {
         } // Access()
 
     private :
+        // todo: state memory initialize
         std::vector<uint8_t> state1, state2, state3 ;
         std::array<uint8_t, 0x10000> SRAM ;
     } ;

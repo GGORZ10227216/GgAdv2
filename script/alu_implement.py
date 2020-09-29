@@ -39,7 +39,7 @@ handlerTable = {
 def aluGen(record):
     mnemonic = record['Attribute']['Signature'][:3].upper()
     signature = \
-        'alu_impl<{}, {}, SHIFT_BY::{}, SHIFT_TYPE::{}, OP_TYPE::{}> (instance,\n' \
+        'Alu_impl<{}, {}, SHIFT_BY::{}, SHIFT_TYPE::{}, OP_TYPE::{}> (instance,\n' \
         '\t\t\t[](uint32_t Rn, uint32_t op2, bool carry) {{\n' \
         '\t\t\t\t{}\n' \
         '\t\t\t}}\n' \

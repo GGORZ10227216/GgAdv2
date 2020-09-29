@@ -43,7 +43,7 @@ set(header_arm_implement
         include/instruction/arm/v4_psr_implement.h
         include/instruction/arm/v4_swap_implement.h
         include/instruction/arm/v4_transfer_implement.h
-        )
+        include/instruction/arm/v4_mem_api.h)
 
 set(src_core
         src/framework/logger/console_logger.cpp
