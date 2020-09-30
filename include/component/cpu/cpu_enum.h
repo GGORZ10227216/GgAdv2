@@ -15,6 +15,15 @@ namespace gg_core::gg_cpu {
         UND = 0b11011
     };
 
+    enum E_ExceptionVector {
+        RESET = 0x0,
+        UNDEFINED_INSTRUCTION = 0x4,
+        SW_IRQ = 0x8,
+        ABORT_PREFETCH = 0xC,
+        ABORT_DATA = 0x10,
+        HW_IRQ = 0x18
+    };
+
     enum E_CpuMode {
         ARM, THUMB
     };

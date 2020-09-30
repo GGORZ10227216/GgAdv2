@@ -5,8 +5,8 @@
 #include <cstdint>
 #include <v4_alu_api.h>
 
-#ifndef ARM_ANALYZER_V4_MEM_API_H
-#define ARM_ANALYZER_V4_MEM_API_H
+#ifndef GGADV2_MEM_API_H
+#define GGADV2_MEM_API_H
 
 namespace gg_core::gg_cpu {
     template <bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
@@ -151,4 +151,4 @@ namespace gg_core::gg_cpu {
     }
 }
 
-#endif //ARM_ANALYZER_V4_MEM_API_H
+#endif //GGADV2_MEM_API_H

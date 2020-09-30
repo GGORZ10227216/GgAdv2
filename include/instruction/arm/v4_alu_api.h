@@ -1,7 +1,7 @@
 #include <cstdint>
 
-#ifndef ARM_ANALYZER_V4_ALU_API_H
-#define ARM_ANALYZER_V4_ALU_API_H
+#ifndef GGADV2_ALU_API_H
+#define GGADV2_ALU_API_H
 
 namespace gg_core::gg_cpu {
     // using alu_handler = void(*)(uint32_t&, uint32_t, uint32_t) ;

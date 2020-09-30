@@ -110,19 +110,17 @@ namespace gg_core {
                     _cpsr &= ~(0x1 << T);
             } // ChangeCpuMode()
 
-            bool FIQ_Disable() {
-                return _cpsr & 0x40u;
-            } // FIQ_Disable()
-
-            bool IRQ_Disable() {
-                return _cpsr & 0x80u;
-            } // IRQ_Disable()
-
+            bool F() { return _cpsr & 0x40u; } // F()
+            bool I() { return _cpsr & 0x80u; } // I()
             bool V() { return _cpsr & 0x10000000u; } // V()
             bool C() { return _cpsr & 0x20000000u; } // C()
             bool Z() { return _cpsr & 0x40000000u; } // Z()
             bool N() { return _cpsr & 0x80000000u; } // N()
 
+            void SetF() { _cpsr |= (1 << 6); } // SetF()
+            void ClearF() { _cpsr &= ~(1 << 6); } // ClearF()
+            void SetI() { _cpsr |= (1 << 7); } // SetI()
+            void ClearI() { _cpsr &= ~(1 << 7); } // ClearI()
             void SetV() { _cpsr |= (1 << 28); } // SetV()
             void ClearV() { _cpsr &= ~(1 << 28); } // ClearV()
             void SetC() { _cpsr |= (1 << 29); } // SetC()
