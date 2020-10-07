@@ -44,7 +44,7 @@ namespace gg_core {
         std::thread _worker;
 
         void CPUTick() {
-            gg_cpu::armHandlers[0](*this) ;
+            gg_cpu::armHandlers[4095](*this) ;
         } // Tick()
 
         void RefillPipeline() {
@@ -78,6 +78,7 @@ namespace gg_core {
 }
 
 #define CURRENT_INSTRUCTION instance._status.CurrentInstruction()
+#define CPU_REG instance._status._regs
 
 #include <v4_alu_implement.h>
 #include <v4_branch_implement.h>

@@ -1,5 +1,5 @@
 #include <bit_manipulate.h>
-#include <v4_alu_api.h>
+#include <instruction/arm/api/v4_alu_api.h>
 
 namespace gg_core::gg_cpu {
 	static void and_ImmLSL(GbaInstance& instance) {
@@ -11,6 +11,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void and_RsLSL(GbaInstance& instance) {
+        std::cout << "test" << std::endl ;
 		Alu_impl<true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, bool carry) {
 				return static_cast<uint64_t>(Rn) & op2 ;

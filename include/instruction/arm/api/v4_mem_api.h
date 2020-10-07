@@ -3,7 +3,7 @@
 //
 
 #include <cstdint>
-#include <v4_alu_api.h>
+#include <instruction/arm/api/v4_alu_api.h>
 
 #ifndef GGADV2_MEM_API_H
 #define GGADV2_MEM_API_H

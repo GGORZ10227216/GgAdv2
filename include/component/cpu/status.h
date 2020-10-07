@@ -82,14 +82,19 @@ namespace gg_core {
                 switch (GetOperationMode()) {
                     case FIQ:
                         _spsr_fiq = value ;
+                        break ;
                     case IRQ:
                         _spsr_irq = value ;
+                        break ;
                     case SVC:
                         _spsr_svc = value ;
+                        break ;
                     case ABT:
                         _spsr_abt = value ;
+                        break ;
                     case UND:
                         _spsr_und  = value ;
+                        break ;
                     default:
                         exit(-2) ;
                 } // switch()

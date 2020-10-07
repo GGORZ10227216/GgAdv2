@@ -25,23 +25,6 @@ namespace gg_core::gg_cpu {
         instance._status.ChangeCpuMode(ARM);
         instance._status.SetI() ;
     }
-    /*
-    void InterruptHW(GbaInstance &instance) {
-        const uint32_t nextPC = instance._status.CurrentPC_OnExec() + 4 ;
-        instance._status._regs[ lr ] = nextPC ;
-
-        const uint32_t preCPSR = instance._status.ReadCPSR() ;
-
-        instance._status.WriteCPSR((preCPSR & ~0b11111u) | 0b10011u) ;
-        instance._status.WriteSPSR(preCPSR) ;
-
-        instance._status._regs[ pc ] = SW_IRQ ;
-        instance.RefillPipeline() ;
-
-        instance._status.ChangeCpuMode(ARM);
-        instance._status.SetI() ;
-    }
-     */
 }
 
 #endif //GGADV2_IRQ_API_H

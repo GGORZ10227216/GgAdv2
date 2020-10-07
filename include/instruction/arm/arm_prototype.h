@@ -518,6 +518,8 @@ namespace gg_core {
 		static void b(GbaInstance& instance) ;
 		static void bl(GbaInstance& instance) ;
 		static void svc(GbaInstance& instance) ;
-		static void undefined(GbaInstance& instance) ;
+		static void undefined(GbaInstance& instance) {
+		    // todo: Undefined instruction handler
+		}
 	} // gg_cpu
 } // gg_core

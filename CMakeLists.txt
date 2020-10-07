@@ -33,7 +33,7 @@ set(header_arm_implement
         include/instruction/arm/arm_prototype.h
         include/instruction/arm/arm_instruction_table.h
         include/instruction/arm/v4_alu_implement.h
-        include/instruction/arm/v4_alu_api.h
+        include/instruction/arm/api/v4_alu_api.h
         include/instruction/arm/v4_block_transfer_implement.h
         include/instruction/arm/v4_branch_implement.h
         include/instruction/arm/v4_half_transfer_implement.h
@@ -43,7 +43,7 @@ set(header_arm_implement
         include/instruction/arm/v4_psr_implement.h
         include/instruction/arm/v4_swap_implement.h
         include/instruction/arm/v4_transfer_implement.h
-        include/instruction/arm/v4_mem_api.h include/instruction/arm/v4_irq_api.h)
+        include/instruction/arm/api/v4_mem_api.h include/instruction/arm/api/v4_irq_api.h include/instruction/arm/api/v4_multiply_api.h)
 
 set(src_core
         src/framework/logger/console_logger.cpp

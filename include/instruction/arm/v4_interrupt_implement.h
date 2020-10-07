@@ -1,4 +1,4 @@
-#include <v4_irq_api.h>
+#include <instruction/arm/api/v4_irq_api.h>
 
 namespace gg_core::gg_cpu {
 	static void svc(GbaInstance& instance) {

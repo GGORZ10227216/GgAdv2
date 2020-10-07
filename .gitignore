@@ -2,3 +2,4 @@
 /venv/
 /script/__pycache__
 /.idea
+/cmake-build-release/
