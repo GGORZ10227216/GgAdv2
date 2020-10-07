@@ -10,6 +10,7 @@
 #include <status.h>
 #include <mmu.h>
 #include <io.h>
+#include <iostream>
 
 #ifndef GGADV_GBA_INSTANCE_H
 #define GGADV_GBA_INSTANCE_H
@@ -25,7 +26,8 @@ namespace gg_core {
         GbaInstance(const std::optional<std::filesystem::path> &romPath) :
                 _mem(romPath), _io() {
             RefillPipeline();
-            _worker = std::thread(&GbaInstance::Run, this);
+            // _worker = std::thread(&GbaInstance::Run, this);
+            Run() ;
         } // GbaInstance()
 
         void Run() {
@@ -44,7 +46,29 @@ namespace gg_core {
         std::thread _worker;
 
         void CPUTick() {
-            gg_cpu::armHandlers[4095](*this) ;
+            uint32_t i = _status.CurrentInstruction() ;
+            uint32_t hash = ((i & 0x0ff00000) >> 16) | ((i & 0xf0) >> 4) ;
+
+//            if (testCnt == 1017)
+//                std::cout << "yee2" << std::endl ;
+//
+//            if (_status._regs[15] > 0x44)
+//                std::cout << "yee" << std::endl ;
+
+            gg_cpu::armHandlers[ hash ](*this) ;
+
+            if (!pipelineFilled)
+                Fetch() ;
+            else
+                pipelineFilled = false ;
+
+            if (testCnt == 0) {
+                _isRunning = false ;
+                return ;
+            }
+            else
+                testCnt = testCnt - 1 ;
+
         } // Tick()
 
         void RefillPipeline() {
@@ -62,6 +86,7 @@ namespace gg_core {
 
             _status._regs[pc] = pcBase;
             _status.pipelineCnt = 0;
+            pipelineFilled = true ;
         } // RefillPipeline()
 
         void Fetch() {
@@ -74,6 +99,10 @@ namespace gg_core {
                 _status.fetchedBuffer[_status.pipelineCnt] = _mem.Read16(_status._regs[pc]);
             _status.pipelineCnt = (_status.pipelineCnt + 1) % _status.fetchedBuffer.size();
         } // Fetch()
+
+    private:
+        bool pipelineFilled = false ;
+        int testCnt = 1024 ;
     };
 }
 

@@ -3,9 +3,9 @@ project(ggAdv)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g ")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -flto")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -g")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3")
 
 set(header_core
         include/instruction_class.h
@@ -70,3 +70,19 @@ project(arm_analyzer)
         )
 
     target_link_libraries(arm_analyzer /usr/local/lib/libfmt.a /usr/local/lib/libcapstone.so)
+
+project(ggBenchmark)
+    add_executable(ggBenchmark ${header_core} ${header_arm_implement} ${src_core} ggBenchmark/main.cpp)
+    target_include_directories(ggBenchmark PUBLIC
+        include
+        include/component/
+        include/component/cpu
+        include/component/memory
+        include/component/io
+        include/framework
+        include/instruction/arm
+        include/utility
+        )
+    target_link_libraries(ggBenchmark /usr/local/lib/libfmt.a
+            /usr/local/lib/libbenchmark.a
+            /usr/local/lib/libbenchmark_main.a)

@@ -39,27 +39,13 @@ handlerTable = {
 def aluGen(record):
     mnemonic = record['Attribute']['Signature'][:3].upper()
     signature = \
-        'Alu_impl<{}, {}, SHIFT_BY::{}, SHIFT_TYPE::{}, OP_TYPE::{}> (instance,\n' \
+        'Alu_impl (instance,\n' \
         '\t\t\t[](uint32_t Rn, uint32_t op2, bool carry) {{\n' \
         '\t\t\t\t{}\n' \
-        '\t\t\t}}\n' \
+        '\t\t\t}}, OP_TYPE::{}\n' \
         '\t\t);'
 
     tags = {}
-    if "i" in record["Attribute"]["Flags"]:
-        tags["I"] = "false"
-        tags["shtby"] = "NONE"
-        tags["shttype"] = "NONE"
-    else:
-        tags["I"] = "true"
-        tags["shtby"] = record["Attribute"]["Shift"]["Amount"].upper()
-        tags["shttype"] = record["Attribute"]["Shift"]["Type"]
-
-    if "s" in record["Attribute"]["Flags"]:
-        tags["S"] = "true"
-    else:
-        tags["S"] = "false"
-
     if mnemonic in logical:
         tags["optype"] = "LOGICAL"
     elif mnemonic in test:
@@ -68,12 +54,8 @@ def aluGen(record):
         tags["optype"] = "ARITHMETIC"
 
     signature = signature.format(
-        tags["I"],
-        tags["S"],
-        tags["shtby"],
-        tags["shttype"],
-        tags["optype"],
-        handlerTable[mnemonic]
+        handlerTable[mnemonic],
+        tags["optype"]
     )
 
     return signature

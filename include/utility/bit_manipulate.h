@@ -3,6 +3,7 @@
 //
 
 #include <cstdint>
+#include <iostream>
 
 #ifndef GGADV_BIT_MANIPULATE_H
 #define GGADV_BIT_MANIPULATE_H
@@ -13,6 +14,8 @@ namespace gg_core {
     } // AddrAlign()
 
     constexpr unsigned _BV(uint32_t bitNo) {
+        if (bitNo >= 32)
+            std::cout << "yee" << std::endl ;
         return 0x1 << bitNo;
     } // _BV()
 

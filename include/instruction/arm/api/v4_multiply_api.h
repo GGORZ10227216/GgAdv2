@@ -56,7 +56,7 @@ namespace gg_core::gg_cpu {
             Mull_t(uint64_t val) {qword = val;}
         };
 
-        uint64_t RdValue = static_cast<uint64_t>(CPU_REG[RdHiNumber] << 32) | CPU_REG[RdLoNumber] ;
+        uint64_t RdValue = (static_cast<uint64_t>(CPU_REG[RdHiNumber]) << 32) | CPU_REG[RdLoNumber] ;
         Mull_t result = RdValue + RsVal*RmVal ;
 
         unsigned boothValue = 4;
@@ -85,7 +85,7 @@ namespace gg_core::gg_cpu {
         } // if constexpr
 
         if constexpr (S) {
-            TestBit(result.dword, 63) ? instance._status.SetN() : instance._status.ClearN()  ;
+            TestBit(result.qword, 63) ? instance._status.SetN() : instance._status.ClearN()  ;
             result.dword == 0 ? instance._status.SetZ() : instance._status.ClearZ();
         } // if constexpr
 
