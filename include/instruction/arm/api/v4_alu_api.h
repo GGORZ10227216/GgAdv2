@@ -31,22 +31,22 @@ namespace gg_core::gg_cpu {
 
         if constexpr (ST == SHIFT_TYPE::LSL) {
             op2 = Rm << Rs ;
-            carry = TestBit(Rm, 32 - Rs) ;
+            carry = TestBit(Rm, 32 - (Rs + 1)) ;
         } // if
 
         if constexpr (ST == SHIFT_TYPE::LSR) {
             op2 = Rm >> Rs ;
-            carry = TestBit(Rm, Rs - 1) ;
+            carry = TestBit(Rm, Rs) ;
         } // if
 
         if constexpr (ST == SHIFT_TYPE::ASR) {
             op2 = static_cast<int32_t>(Rm) >> Rs ;
-            carry = TestBit(Rm, Rs - 1) ;
+            carry = TestBit(Rm, Rs) ;
         } // if
 
         if constexpr (ST == SHIFT_TYPE::ROR) {
             op2 = rotr(Rm, Rs) ;
-            carry = TestBit(Rm, Rs - 1) ;
+            carry = TestBit(Rm, Rs) ;
         } // if
 
         return carry ;
@@ -62,7 +62,7 @@ namespace gg_core::gg_cpu {
         if constexpr (ST == SHIFT_TYPE::LSL) {
             op2 = Rm << shiftAmount ;
             if (shiftAmount != 0)
-                carry = TestBit(Rm, 32 - shiftAmount) ;
+                carry = TestBit(Rm, 32 - (shiftAmount + 1)) ;
             else
                 carry = instance._status.C() ;
         } // if
@@ -74,7 +74,7 @@ namespace gg_core::gg_cpu {
             } // if
             else {
                 op2 = Rm >> shiftAmount ;
-                carry = TestBit(Rm, shiftAmount - 1) ;
+                carry = TestBit(Rm, shiftAmount) ;
             } // else
         } // if
 
@@ -85,7 +85,7 @@ namespace gg_core::gg_cpu {
             } // if
             else {
                 op2 = static_cast<int32_t>(Rm) >> shiftAmount ;
-                carry = TestBit(Rm, shiftAmount - 1) ;
+                carry = TestBit(Rm, shiftAmount) ;
             } // else
         } // if
 
@@ -97,7 +97,7 @@ namespace gg_core::gg_cpu {
             } // if
             else {
                 op2 = rotr(Rm, shiftAmount);
-                carry = TestBit(Rm, shiftAmount - 1) ;
+                carry = TestBit(Rm, shiftAmount) ;
             } // else
         } // if
 
