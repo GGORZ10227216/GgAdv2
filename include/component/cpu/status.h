@@ -139,6 +139,26 @@ namespace gg_core {
             void SetN() { _cpsr |= (1 << 31); } // SetN()
             void ClearN() { _cpsr &= ~(1 << 31); } // ClearN()
 
+            uint32_t ForceUserBankRead(size_t idx) {
+                if (idx >= r8 && idx <= lr) {
+                    return _registers_usrsys[idx - r8] ;
+                } // if
+                else {
+                    return _regs[idx] ;
+                } // else
+            } // ForceUserBankRead()
+
+            template <typename T>
+            void ForceUserBankWrite(size_t idx, T value)
+                requires std::is_same_v<T, uint32_t>
+            {
+                if (idx >= r8 && idx <= lr) {
+                    _registers_usrsys[idx - r8] = value ;
+                } // if
+                else {
+                    _regs[idx] = value ;
+                } // else
+            } // ForceUserBankRead()
 
         private :
             std::array<uint32_t, 3> fetchedBuffer;
