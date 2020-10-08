@@ -60,7 +60,7 @@ namespace gg_core::gg_cpu {
         if (ST == SHIFT_TYPE::LSL) {
             op2 = Rm << shiftAmount ;
             if (shiftAmount != 0)
-                carry = TestBit(Rm, 32 - shiftAmount - 1) ;
+                carry = TestBit(Rm, 32 - (shiftAmount + 1)) ;
             else
                 carry = instance._status.C() ;
         } // if
@@ -72,7 +72,7 @@ namespace gg_core::gg_cpu {
             } // if
             else {
                 op2 = Rm >> shiftAmount ;
-                carry = TestBit(Rm, shiftAmount - 1) ;
+                carry = TestBit(Rm, shiftAmount) ;
             } // else
         } // if
 
@@ -83,7 +83,7 @@ namespace gg_core::gg_cpu {
             } // if
             else {
                 op2 = static_cast<int32_t>(Rm) >> shiftAmount ;
-                carry = TestBit(Rm, shiftAmount - 1) ;
+                carry = TestBit(Rm, shiftAmount) ;
             } // else
         } // if
 
@@ -95,7 +95,7 @@ namespace gg_core::gg_cpu {
             } // if
             else {
                 op2 = rotr(Rm, shiftAmount);
-                carry = TestBit(Rm, shiftAmount - 1) ;
+                carry = TestBit(Rm, shiftAmount) ;
             } // else
         } // if
 
