@@ -49,12 +49,6 @@ namespace gg_core {
             uint32_t i = _status.CurrentInstruction() ;
             uint32_t hash = ((i & 0x0ff00000) >> 16) | ((i & 0xf0) >> 4) ;
 
-//            if (testCnt == 1017)
-//                std::cout << "yee2" << std::endl ;
-//
-//            if (_status._regs[15] > 0x44)
-//                std::cout << "yee" << std::endl ;
-
             gg_cpu::armHandlers[ hash ](*this) ;
 
             if (!pipelineFilled)
@@ -65,10 +59,9 @@ namespace gg_core {
             if (testCnt == 0) {
                 _isRunning = false ;
                 return ;
-            }
+            } // if
             else
                 testCnt = testCnt - 1 ;
-
         } // Tick()
 
         void RefillPipeline() {
@@ -92,6 +85,7 @@ namespace gg_core {
         void Fetch() {
             using namespace gg_cpu;
             unsigned pcOffset = _status.GetCpuMode() == ARM ? 4 : 2;
+
             _status._regs[pc] += pcOffset;
             if (pcOffset == 4)
                 _status.fetchedBuffer[_status.pipelineCnt] = _mem.Read32(_status._regs[pc]);
