@@ -20,6 +20,10 @@ namespace gg_core {
         public :
             Regs _regs;
 
+            Status() {
+                _regs.fill(0) ;
+            }
+
             uint32_t CurrentInstruction() {
                 return fetchedBuffer[pipelineCnt] ;
             } // CurrentInstruction()
