@@ -136,10 +136,71 @@ namespace gg_core::gg_cpu {
 
     template <bool P, bool U, bool S, bool W, bool L>
     void BlockMemAccess_impl(GbaInstance &instance) {
+        // todo: undocumented behavior of ldm/stm implement
         uint32_t regList = BitFieldValue<uint32_t, 0, 16>(CURRENT_INSTRUCTION) ;
         uint32_t &Rn = instance._status._regs[ BitFieldValue<uint32_t, 16, 4>(CURRENT_INSTRUCTION) ] ;
-        uint32_t base = Rn ;
-        bool hasR15 = TestBit(regList, 15) ;
+
+        uint32_t base = 0 ;
+        uint32_t offset = PopCount32(regList)*4 ;
+
+        uint32_t originalCPSR = instance._status.ReadCPSR() ;
+        uint32_t originalMode = instance._status.GetOperationMode() ;
+
+        if constexpr (S)
+            instance._status.WriteCPSR( (originalCPSR & ~0b11111) | static_cast<uint32_t>(E_OperationMode::USR) ) ;
+
+        if constexpr (U) {
+            if constexpr (P) {
+                // pre-increment
+                base = Rn + 4 ;
+            } // if
+            else {
+                // post-increment
+                base = Rn ;
+            } // else
+        } // if
+        else {
+            if constexpr (P) {
+                // pre-decrement
+                base = Rn - offset ;
+            } // if
+            else {
+                // post-decrement
+                base = Rn - offset + 4 ;
+            } // else
+        } // else
+
+        for (size_t idx = 0 ; idx < 16 ; ++idx) {
+            if (TestBit(regList, idx)) {
+                if constexpr (L) {
+                    CPU_REG[ idx ] = instance._mem.Read32(base) ;
+                } // if
+                else {
+                    uint32_t regVal = CPU_REG[ idx ] ;
+                    if (idx == 15)
+                        regVal += 4 ;
+                    instance._mem.Write32(base, regVal) ;
+                } // else
+
+                base += 4 ;
+            } // if
+        } // for
+
+        if constexpr (S) {
+            if constexpr (L) {
+                if (TestBit(regList, 15))
+                    instance._status.WriteCPSR(instance._status.ReadSPSR(static_cast<E_OperationMode>(originalMode))) ;
+            } // if
+
+            instance._status.WriteCPSR( (originalCPSR & ~0b11111) | originalMode ) ;
+        } // if
+
+        if constexpr (W) {
+            if constexpr (U)
+                Rn += offset ;
+            else
+                Rn -= offset ;
+        } // if
     } // BlockMemAccess_impl()
 
     template <bool B>

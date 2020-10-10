@@ -31,6 +31,14 @@ namespace gg_core {
     } // BitFieldValue
 
     template <typename T>
+    constexpr uint8_t PopCount32(T i) {
+        static_assert(sizeof(T) <= 4, "Type's size exceed 32 bit");
+        i = i - ((i >> 1) & 0x55555555);
+        i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
+        return (((i + (i >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
+    }
+
+    template <typename T>
     constexpr T rotr(T x, uint32_t n) {
         enum {
             CHAR_BIT = 8

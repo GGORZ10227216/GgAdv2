@@ -96,7 +96,7 @@ namespace gg_core {
 
     private:
         bool pipelineFilled = false ;
-        int testCnt = 1024 ;
+        int testCnt = 2048 ;
     };
 }
 
