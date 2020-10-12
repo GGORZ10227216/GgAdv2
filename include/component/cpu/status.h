@@ -11,12 +11,15 @@
 #ifndef GGADV_REGISTER_H
 #define GGADV_REGISTER_H
 
+class ggTest ;
+
 namespace gg_core {
     class GbaInstance;
 
     namespace gg_cpu {
         struct Status {
             friend GbaInstance;
+            friend class ::ggTest ;
         public :
             Regs _regs;
 
@@ -33,7 +36,7 @@ namespace gg_core {
                 return _regs[ pc ] - correction ;
             }  // CurrentPC_OnExec()
 
-            uint32_t ReadCPSR() {
+            uint32_t ReadCPSR() const {
                 return _cpsr ;
             }
 

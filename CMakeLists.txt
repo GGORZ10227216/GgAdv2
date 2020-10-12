@@ -50,30 +50,7 @@ set(src_core
         src/cpu/cpu.cpp src/cpu/status.cpp)
 
 add_executable(ggAdv main.cpp ${header_core} ${header_arm_implement} ${src_core})
-    target_include_directories(ggAdv PUBLIC
-            include
-            include/component/
-            include/component/cpu
-            include/component/memory
-            include/component/io
-            include/framework
-            include/instruction/arm
-            include/utility
-            )
-
-    target_link_libraries(ggAdv /usr/local/lib/libfmt.a)
-
-project(arm_analyzer)
-    add_executable(arm_analyzer tool/arm_analyzer/main.cpp)
-    target_include_directories(arm_analyzer PUBLIC
-        tool/arm_analyzer
-        )
-
-    target_link_libraries(arm_analyzer /usr/local/lib/libfmt.a /usr/local/lib/libcapstone.so)
-
-project(ggBenchmark)
-    add_executable(ggBenchmark ${header_core} ${header_arm_implement} ${src_core} ggBenchmark/main.cpp)
-    target_include_directories(ggBenchmark PUBLIC
+target_include_directories(ggAdv PUBLIC
         include
         include/component/
         include/component/cpu
@@ -81,8 +58,58 @@ project(ggBenchmark)
         include/component/io
         include/framework
         include/instruction/arm
+        include/instruction/arm/api
         include/utility
         )
-    target_link_libraries(ggBenchmark /usr/local/lib/libfmt.a
-            /usr/local/lib/libbenchmark.a
-            /usr/local/lib/libbenchmark_main.a)
+
+target_link_libraries(ggAdv /usr/local/lib/libfmt.a)
+
+project(arm_analyzer)
+add_executable(arm_analyzer tool/arm_analyzer/main.cpp)
+target_include_directories(arm_analyzer PUBLIC
+        tool/arm_analyzer
+        )
+
+target_link_libraries(arm_analyzer /usr/local/lib/libfmt.a /usr/local/lib/libcapstone.so)
+
+project(ggBenchmark)
+add_executable(ggBenchmark ${header_core} ${header_arm_implement} ${src_core} ggBenchmark/main.cpp)
+target_include_directories(ggBenchmark PUBLIC
+        include
+        include/component/
+        include/component/cpu
+        include/component/memory
+        include/component/io
+        include/framework
+        include/instruction/arm
+        include/instruction/arm/api
+        include/utility
+        )
+target_link_libraries(ggBenchmark /usr/local/lib/libfmt.a
+        /usr/local/lib/libbenchmark.a
+        /usr/local/lib/libbenchmark_main.a)
+
+project(ggTest)
+add_executable(ggTest ${header_core} ${header_arm_implement} ${src_core} ggTest/main.cpp ggTest/gg_test.h)
+target_include_directories(ggTest PUBLIC
+        include
+        include/component/
+        include/component/cpu
+        include/component/memory
+        include/component/io
+        include/framework
+        include/instruction/arm
+        include/instruction/arm/api
+        include/utility
+        ./eggvance/eggvance/src/
+        ./eggvance/eggvance/external/shell/include/
+        ggTest
+        )
+target_link_libraries(ggTest /usr/local/lib/libfmt.a
+        /usr/local/lib/libegg.a
+        /usr/local/lib/libgtest.a
+        /usr/local/lib/libgtest_main.a
+        /usr/local/lib/libkeystone.so
+        SDL2
+        stdc++fs
+        )

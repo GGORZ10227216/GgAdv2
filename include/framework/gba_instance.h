@@ -27,7 +27,7 @@ namespace gg_core {
                 _mem(romPath), _io() {
             RefillPipeline();
             // _worker = std::thread(&GbaInstance::Run, this);
-            Run() ;
+            // Run() ;
         } // GbaInstance()
 
         void Run() {
@@ -55,13 +55,14 @@ namespace gg_core {
                 Fetch() ;
             else
                 pipelineFilled = false ;
+        } // Tick()
 
-            if (testCnt == 0) {
-                _isRunning = false ;
-                return ;
-            } // if
-            else
-                testCnt = testCnt - 1 ;
+        void CPUTick_Debug(uint32_t inst) {
+            _status.fetchedBuffer[ 0 ] = inst ;
+            uint32_t hash = ((inst & 0x0ff00000) >> 16) | ((inst & 0xf0) >> 4) ;
+
+            gg_cpu::armHandlers[ hash ](*this) ;
+            // Execute only ONE instruction, no need to fetch()!!
         } // Tick()
 
         void RefillPipeline() {
