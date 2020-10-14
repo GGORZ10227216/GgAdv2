@@ -30,23 +30,36 @@ namespace gg_core::gg_cpu {
             Rs += 4 ;
 
         if constexpr (ST == SHIFT_TYPE::LSL) {
+            // todo: Does the behavior of shift_by_Rs_eq_zero and shift_by_imm_eq_zero same?
             op2 = Rm << Rs ;
-            carry = TestBit(Rm, 32 - (Rs + 1)) ;
+            if (Rs != 0)
+                carry = TestBit(Rm, 33 - (Rs + 1)) ;
+            else
+                carry = instance._status.C() ;
         } // if
 
         if constexpr (ST == SHIFT_TYPE::LSR) {
             op2 = Rm >> Rs ;
-            carry = TestBit(Rm, Rs) ;
+            if (Rs != 0)
+                carry = TestBit(Rm, Rs - 1) ;
+            else
+                carry = instance._status.C() ;
         } // if
 
         if constexpr (ST == SHIFT_TYPE::ASR) {
             op2 = static_cast<int32_t>(Rm) >> Rs ;
-            carry = TestBit(Rm, Rs) ;
+            if (Rs != 0)
+                carry = TestBit(Rm, Rs - 1) ;
+            else
+                carry = instance._status.C() ;
         } // if
 
         if constexpr (ST == SHIFT_TYPE::ROR) {
             op2 = rotr(Rm, Rs) ;
-            carry = TestBit(Rm, Rs) ;
+            if (Rs != 0)
+                carry = TestBit(Rm, Rs - 1) ;
+            else
+                carry = instance._status.C() ;
         } // if
 
         return carry ;
@@ -62,7 +75,7 @@ namespace gg_core::gg_cpu {
         if constexpr (ST == SHIFT_TYPE::LSL) {
             op2 = Rm << shiftAmount ;
             if (shiftAmount != 0)
-                carry = TestBit(Rm, 32 - (shiftAmount + 1)) ;
+                carry = TestBit(Rm, 33 - (shiftAmount + 1)) ;
             else
                 carry = instance._status.C() ;
         } // if
