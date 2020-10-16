@@ -17,31 +17,15 @@
 #ifndef GGTEST_GG_TEST_H
 #define GGTEST_GG_TEST_H
 
-class ggTest : public testing::Test {
-protected:
-    enum E_RegName {
-        r0, r1, r2, r3, r4, r5,
-        r6, r7, r8, r9, r10, r11,
-        r12, r13, r14, r15
-    };
-
-    enum E_Shift {
-        lsl, lsr, asr, ror
-    };
-
-    ks_engine *ks;
-    ks_err err;
-    size_t count;
-    unsigned char *encode;
-    size_t size;
-
-    void SetUp() override {
+class ArmAssembler {
+public :
+    ArmAssembler() {
         err = ks_open(KS_ARCH_ARM, KS_MODE_ARM, &ks);
         if (err != KS_ERR_OK) {
             printf("ERROR: failed on ks_open(), quit\n");
             exit(-1);
         }
-    } // SetUp()
+    }
 
     uint32_t ASM(std::string CODE) {
         if (ks_asm(ks, CODE.c_str(), 0, &encode, &size, &count) != KS_ERR_OK) {
@@ -53,6 +37,30 @@ protected:
             return result;
         }
     }
+
+    ~ArmAssembler() {
+        ks_close(ks);
+    }
+
+private:
+    ks_engine *ks;
+    ks_err err;
+    size_t count;
+    unsigned char *encode;
+    size_t size;
+};
+
+class ggTest : public testing::Test {
+protected:
+    enum E_RegName {
+        r0, r1, r2, r3, r4, r5,
+        r6, r7, r8, r9, r10, r11,
+        r12, r13, r14, r15
+    };
+
+    enum E_Shift {
+        lsl, lsr, asr, ror
+    };
 
     constexpr uint hashArm(u32 instr)
     {
@@ -67,10 +75,6 @@ protected:
 
         ASSERT_EQ(mine._status.ReadCPSR(), egg.cpsr) << inst << '\n' << testcase << '\n' << PrintStatus(mine, egg) ;
     }
-
-    void TearDown() override {
-        ks_close(ks);
-    } // TearDown()
 
     std::string PrintStatus(const gg_core::GbaInstance& mine, const Arm& egg) const {
         std::stringstream ss ;
