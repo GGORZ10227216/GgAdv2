@@ -57,6 +57,23 @@ namespace gg_core {
                 } // switch()
             }
 
+            uint32_t ReadSPSR(E_OperationMode mode) {
+                switch (mode) {
+                    case FIQ:
+                        return _spsr_fiq ;
+                    case IRQ:
+                        return _spsr_irq ;
+                    case SVC:
+                        return _spsr_svc;
+                    case ABT:
+                        return _spsr_abt;
+                    case UND:
+                        return _spsr_und ;
+                    default:
+                        exit(-2) ;
+                } // switch()
+            }
+
             void WriteCPSR(uint32_t newCPSR) {
                 /// todo: test
                 E_OperationMode originalMode = static_cast<E_OperationMode>(_cpsr & 0x1fu);
@@ -141,27 +158,6 @@ namespace gg_core {
             void ClearZ() { _cpsr &= ~(1 << 30); } // ClearZ()
             void SetN() { _cpsr |= (1 << 31); } // SetN()
             void ClearN() { _cpsr &= ~(1 << 31); } // ClearN()
-
-            uint32_t ForceUserBankRead(size_t idx) {
-                if (idx >= r8 && idx <= lr) {
-                    return _registers_usrsys[idx - r8] ;
-                } // if
-                else {
-                    return _regs[idx] ;
-                } // else
-            } // ForceUserBankRead()
-
-            template <typename T>
-            void ForceUserBankWrite(size_t idx, T value)
-                requires std::is_same_v<T, uint32_t>
-            {
-                if (idx >= r8 && idx <= lr) {
-                    _registers_usrsys[idx - r8] = value ;
-                } // if
-                else {
-                    _regs[idx] = value ;
-                } // else
-            } // ForceUserBankRead()
 
         private :
             std::array<uint32_t, 3> fetchedBuffer;
