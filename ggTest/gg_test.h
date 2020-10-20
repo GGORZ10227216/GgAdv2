@@ -80,12 +80,12 @@ protected:
         std::stringstream ss ;
         for (int i = r0 ; i <= r15 ; ++i) {
             if (mine._status._regs[i] != egg.regs[i])
-                ss << fmt::format("After: R{}=Mine:{:x},egg:{:x} R{}=Mine:{:x},egg:{:x} R{}=Mine:{:x},egg:{:x}",
+                ss << fmt::format("R{}=Mine:{:x},egg:{:x} R{}=Mine:{:x},egg:{:x} R{}=Mine:{:x},egg:{:x}",
                                      i, mine._status._regs[i], egg.regs[i]) << std::endl;
 
         } // for
 
-        ss << fmt::format("cpsr_mine:{:x} cpsr_egg:{:x}", mine._status.ReadCPSR(), arm.cpsr)
+        ss << fmt::format("cpsr_mine:{:x} cpsr_egg:{:x}", mine._status.ReadCPSR(), egg.cpsr)
                   << std::endl;
         return ss.str() ;
     }

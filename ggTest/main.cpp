@@ -5,9 +5,55 @@
 #include <thread>
 
 namespace {
-    /*TEST_F(ggTest, mov_rd_rm_shift_rs_test) {
+    TEST_F(ggTest, mov_rd_rm_shift_imm_test) {
         Arm arm;
         gg_core::GbaInstance instance(std::nullopt);
+        ArmAssembler assembler;
+
+        uint32_t t = 0;
+        for (int Rd = r0; Rd <= r14; ++Rd) {
+            for (int Rm = r0; Rm <= r14; ++Rm) {
+                for (int shift = lsl; shift <= ror; ++shift) {
+                    for (int i = 0; i < TestCases.size(); ++i) {
+                        ++t ;
+
+                        instance._status._regs[Rd] = TestCases[i][0];
+                        instance._status._regs[Rm] = TestCases[i][1];
+
+                        arm.regs[Rd] = TestCases[i][0];
+                        arm.regs[Rm] = TestCases[i][1];
+
+                        std::string instruction = fmt::format(
+                                "movs {}, {}, {} #{}",
+                                regNames[Rd],
+                                regNames[Rm],
+                                shiftNames[shift],
+                                TestCases[i][2]
+                        );
+
+                        uint32_t binary = assembler.ASM(instruction);
+
+                        std::invoke(arm.instr_arm[hashArm(binary)], &arm, binary);
+                        instance.CPUTick_Debug(binary);
+
+                        CheckStatus(instance, arm, instruction, fmt::format("R{}=0x{:x} R{}=0x{:x} imm={}",
+                                                                            Rd, TestCases[i][0],
+                                                                            Rm, TestCases[i][1],
+                                                                            TestCases[i][2]
+                        ));
+                    } // for
+                } // for
+            } // for
+        } // for
+
+        std::cout << t << std::endl ;
+    }
+
+    TEST_F(ggTest, mov_rd_rm_shift_rs_test) {
+        Arm arm;
+        gg_core::GbaInstance instance(std::nullopt);
+        ArmAssembler assembler;
+
         uint32_t t = 0;
         for (int Rd = r0; Rd <= r14; ++Rd) {
             for (int Rm = r0; Rm <= r14; ++Rm) {
@@ -31,7 +77,7 @@ namespace {
                                     regNames[Rs]
                             );
 
-                            uint32_t binary = ASM(instruction);
+                            uint32_t binary = assembler.ASM(instruction);
 
                             std::invoke(arm.instr_arm[hashArm(binary)], &arm, binary);
                             instance.CPUTick_Debug(binary);
@@ -48,7 +94,7 @@ namespace {
         } // for
 
         std::cout << t << std::endl ;
-    }*/
+    }
 
     TEST_F(ggTest, mov_r0_r1_shift_r2_full_test_threaded) {
         std::cout << std::thread::hardware_concurrency() << " thread available" << std::endl;
@@ -56,7 +102,6 @@ namespace {
         auto worker = [=](int RsStart, int loopCnt) {
             Arm arm;
             gg_core::GbaInstance instance(std::nullopt);
-            ArmAssembler assembler;
 
             for (int i = RsStart; i < RsStart + loopCnt; ++i) {
                 for (uint64_t RmVal = 0; RmVal <= 0xffffffff; ++RmVal) {
@@ -68,14 +113,6 @@ namespace {
                         arm.regs[Rd] = 0;
                         arm.regs[Rm] = RmVal;
                         arm.regs[Rs] = i;
-
-//                        std::string instruction = fmt::format(
-//                                "movs {}, {}, {} {}",
-//                                regNames[Rd],
-//                                regNames[Rm],
-//                                shiftNames[shift],
-//                                regNames[Rs]
-//                        );
 
                         uint32_t binary = 0xe1b00211 | (shift << 5);
 
@@ -104,10 +141,11 @@ namespace {
         for (auto &t : workers)
             t.join();
     }
-/*
+
     TEST_F(ggTest, mov_rd_r15_shift_rs_test) {
         Arm arm;
         gg_core::GbaInstance instance(std::nullopt);
+        ArmAssembler assembler;
 
         for (int Rd = r0; Rd <= r14; ++Rd) {
             uint32_t Rm = r15 ;
@@ -130,7 +168,7 @@ namespace {
                                 regNames[Rs]
                         );
 
-                        uint32_t binary = ASM(instruction);
+                        uint32_t binary = assembler.ASM(instruction);
 
                         std::invoke(arm.instr_arm[hashArm(binary)], &arm, binary);
                         instance.CPUTick_Debug(binary);
@@ -145,5 +183,5 @@ namespace {
             } // for
         } // for
     }
-    */
+
 }
