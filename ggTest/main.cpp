@@ -12,7 +12,7 @@ namespace {
 
         uint32_t t = 0;
         for (int Rd = r0; Rd <= r14; ++Rd) {
-            for (int Rm = r0; Rm <= r14; ++Rm) {
+            for (int Rm = r0; Rm <= r15; ++Rm) {
                 for (int shift = lsl; shift <= ror; ++shift) {
                     for (int i = 0; i < TestCases.size(); ++i) {
                         ++t ;
@@ -36,7 +36,7 @@ namespace {
                         std::invoke(arm.instr_arm[hashArm(binary)], &arm, binary);
                         instance.CPUTick_Debug(binary);
 
-                        CheckStatus(instance, arm, instruction, fmt::format("R{}=0x{:x} R{}=0x{:x} imm={}",
+                        CheckStatus(instance, arm, instruction, fmt::format("TestCase: R{}=0x{:x} R{}=0x{:x} imm={}",
                                                                             Rd, TestCases[i][0],
                                                                             Rm, TestCases[i][1],
                                                                             TestCases[i][2]
@@ -49,6 +49,28 @@ namespace {
         std::cout << t << std::endl ;
     }
 
+    TEST_F(ggTest, mov_rd_imm_test) {
+        Arm arm;
+        gg_core::GbaInstance instance(std::nullopt);
+        ArmAssembler assembler;
+
+        uint32_t t = 0;
+        for (int Rd = r0; Rd <= r14; ++Rd) {
+            std::string instruction = fmt::format(
+                    "movs {}, #{}",
+                    regNames[Rd],
+                    0x10000000
+            );
+
+            uint32_t binary = assembler.ASM(instruction);
+
+            std::invoke(arm.instr_arm[hashArm(binary)], &arm, binary);
+            instance.CPUTick_Debug(binary);
+
+            CheckStatus(instance, arm, instruction, "");
+        } // for
+    }
+
     TEST_F(ggTest, mov_rd_rm_shift_rs_test) {
         Arm arm;
         gg_core::GbaInstance instance(std::nullopt);
@@ -56,10 +78,10 @@ namespace {
 
         uint32_t t = 0;
         for (int Rd = r0; Rd <= r14; ++Rd) {
-            for (int Rm = r0; Rm <= r14; ++Rm) {
-                for (int Rs = r0; Rs <= r14; ++Rs) {
+            for (int Rm = r0; Rm <= r15; ++Rm) {
+                for (int Rs = r0; Rs <= r15; ++Rs) {
                     for (int shift = lsl; shift <= ror; ++shift) {
-                        for (int i = 0; i < TestCases.size(); ++i) {
+                        for (int i = 73; i < TestCases.size(); ++i) {
                             ++t ;
                             instance._status._regs[Rd] = TestCases[i][0];
                             instance._status._regs[Rm] = TestCases[i][1];

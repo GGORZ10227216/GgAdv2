@@ -172,11 +172,11 @@ namespace gg_core {
             std::array<unsigned, 2> _registers_irq{};
             std::array<unsigned, 2> _registers_und{};
 
-            unsigned _spsr_fiq = E_OperationMode::FIQ,
-                    _spsr_svc = E_OperationMode::SVC,
-                    _spsr_abt = E_OperationMode::ABT,
-                    _spsr_irq = E_OperationMode::IRQ,
-                    _spsr_und = E_OperationMode::UND;
+            unsigned _spsr_fiq = 0,
+                    _spsr_svc = 0,
+                    _spsr_abt = 0,
+                    _spsr_irq = 0,
+                    _spsr_und = 0;
 
             unsigned *GetBankRegDataPtr(E_OperationMode mode) {
                 switch (mode) {
@@ -195,6 +195,7 @@ namespace gg_core {
                         return _registers_usrsys.data();
                 } // switch
 
+                // todo: log undefined mode
                 return nullptr;
             } // GetBankRegDataPtr()
         };

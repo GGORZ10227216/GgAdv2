@@ -21,37 +21,52 @@ namespace gg_core::gg_cpu {
         const uint8_t RsNumber = (curInst & 0xf00) >> 8 ;
 
         uint32_t Rm = instance._status._regs[ RmNumber ] ;
-        uint32_t Rs = instance._status._regs[ RsNumber ] % 32 ;
+        uint32_t Rs = instance._status._regs[ RsNumber ] & 0xff ;
         bool carry = false ;
 
         if (RmNumber == pc)
-            Rm += 4 ;
-        if (RsNumber == pc)
-            Rs += 4 ;
+            Rm = (Rm + 4) ;
 
         if constexpr (ST == SHIFT_TYPE::LSL) {
             // todo: Does the behavior of shift_by_Rs_eq_zero and shift_by_imm_eq_zero same?
-            op2 = Rm << Rs ;
-            if (Rs != 0)
-                carry = TestBit(Rm, 33 - (Rs + 1)) ;
-            else
+            if (Rs == 0) {
+                op2 = Rm ;
                 carry = instance._status.C() ;
+            } // if
+            else if (Rs <= 32) {
+                op2 = Rm << Rs ;
+                carry = TestBit(Rm, 33 - (Rs + 1)) ;
+            } // else if
+            else {
+                op2 = 0 ;
+                carry = false ;
+            } // else
         } // if
 
         if constexpr (ST == SHIFT_TYPE::LSR) {
-            op2 = Rm >> Rs ;
-            if (Rs != 0)
-                carry = TestBit(Rm, Rs - 1) ;
-            else
+            if (Rs == 0) {
+                op2 = Rm ;
                 carry = instance._status.C() ;
+            } // if
+            else if (Rs <= 32) {
+                op2 = Rm >> Rs ;
+                carry = TestBit(Rm, Rs - 1) ;
+            } // else if
+            else {
+                op2 = 0 ;
+                carry = false ;
+            } // else
         } // if
 
         if constexpr (ST == SHIFT_TYPE::ASR) {
-            op2 = static_cast<int32_t>(Rm) >> Rs ;
-            if (Rs != 0)
+            if (Rs >= 32) {
+                carry = TestBit(Rm, 31) ;
+                op2 = carry ? 0xffffffff : 0x0 ;
+            } // if
+            else {
+                op2 = static_cast<int32_t>(Rm) >> Rs ;
                 carry = TestBit(Rm, Rs - 1) ;
-            else
-                carry = instance._status.C() ;
+            } // else if
         } // if
 
         if constexpr (ST == SHIFT_TYPE::ROR) {

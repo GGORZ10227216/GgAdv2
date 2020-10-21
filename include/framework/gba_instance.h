@@ -26,6 +26,7 @@ namespace gg_core {
         GbaInstance(const std::optional<std::filesystem::path> &romPath) :
                 _mem(romPath), _io() {
             RefillPipeline();
+            Fetch() ;
             // _worker = std::thread(&GbaInstance::Run, this);
             // Run() ;
         } // GbaInstance()
@@ -50,11 +51,7 @@ namespace gg_core {
             uint32_t hash = ((i & 0x0ff00000) >> 16) | ((i & 0xf0) >> 4) ;
 
             gg_cpu::armHandlers[ hash ](*this) ;
-
-            if (!pipelineFilled)
-                Fetch() ;
-            else
-                pipelineFilled = false ;
+            Fetch() ;
         } // Tick()
 
         void CPUTick_Debug(uint32_t inst) {
@@ -68,19 +65,19 @@ namespace gg_core {
         void RefillPipeline() {
             using namespace gg_cpu;
             unsigned pcOffset = _status.GetCpuMode() == ARM ? 4 : 2;
-            unsigned pcBase = 0;
+            unsigned pcBase = _status._regs[pc] + pcOffset ;
 
-            for (int i = 0; i < _status.fetchedBuffer.size(); ++i) {
-                pcBase = _status._regs[pc] + pcOffset * i;
-                if (pcOffset == 4)
-                    _status.fetchedBuffer[i] = _mem.Read32(pcBase);
-                else
-                    _status.fetchedBuffer[i] = _mem.Read16(pcBase);
-            } // for
+            if (_status.GetCpuMode() == ARM) {
+                _status.fetchedBuffer[0] = _mem.Read32(pcBase);
+                _status.fetchedBuffer[1] = _mem.Read32(pcBase + pcOffset);
+            } // if
+            else {
+                _status.fetchedBuffer[0] = _mem.Read16(pcBase);
+                _status.fetchedBuffer[1] = _mem.Read16(pcBase + pcOffset);
+            } // else
 
             _status._regs[pc] = pcBase;
-            _status.pipelineCnt = 0;
-            pipelineFilled = true ;
+            _status.pipelineCnt = 2;
         } // RefillPipeline()
 
         void Fetch() {
@@ -88,7 +85,7 @@ namespace gg_core {
             unsigned pcOffset = _status.GetCpuMode() == ARM ? 4 : 2;
 
             _status._regs[pc] += pcOffset;
-            if (pcOffset == 4)
+            if (_status.GetCpuMode() == ARM)
                 _status.fetchedBuffer[_status.pipelineCnt] = _mem.Read32(_status._regs[pc]);
             else
                 _status.fetchedBuffer[_status.pipelineCnt] = _mem.Read16(_status._regs[pc]);

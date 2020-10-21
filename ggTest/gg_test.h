@@ -29,8 +29,8 @@ public :
 
     uint32_t ASM(std::string CODE) {
         if (ks_asm(ks, CODE.c_str(), 0, &encode, &size, &count) != KS_ERR_OK) {
-            printf("ERROR: ks_asm() failed & count = %lu, error = %u\n",
-                   count, ks_errno(ks));
+            printf("[%s] ERROR: ks_asm() failed & count = %lu, error = %u\n",
+                   CODE.c_str(), count, ks_errno(ks));
         } else {
             uint32_t result = *reinterpret_cast<uint32_t *>(encode);
             ks_free(encode);
@@ -80,7 +80,7 @@ protected:
         std::stringstream ss ;
         for (int i = r0 ; i <= r15 ; ++i) {
             if (mine._status._regs[i] != egg.regs[i])
-                ss << fmt::format("R{}=Mine:{:x},egg:{:x} R{}=Mine:{:x},egg:{:x} R{}=Mine:{:x},egg:{:x}",
+                ss << fmt::format("R{}=Mine:{:x},egg:{:x}",
                                      i, mine._status._regs[i], egg.regs[i]) << std::endl;
 
         } // for
@@ -92,7 +92,7 @@ protected:
 };
 
 using TestCase = std::array<uint32_t, 3>;
-static constexpr std::array<TestCase, 73> TestCases{
+static constexpr std::array<TestCase, 74> TestCases{
         TestCase{0xffffffff, 0, 31},
         TestCase{0xffffffff, 0, 15},
         TestCase{0xffffffff, 0, 0},
@@ -165,7 +165,8 @@ static constexpr std::array<TestCase, 73> TestCases{
         TestCase{0, 0x55555555, 28},
         TestCase{0, 0x55555555, 29},
         TestCase{0, 0x55555555, 30},
-        TestCase{0, 0x55555555, 31}
+        TestCase{0, 0x55555555, 31},
+        TestCase{0, 0x55555555, 64}
 };
 
 static constexpr std::array<const char *, 16> regNames{
