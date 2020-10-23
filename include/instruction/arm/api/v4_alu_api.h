@@ -70,6 +70,7 @@ namespace gg_core::gg_cpu {
         } // if
 
         if constexpr (ST == SHIFT_TYPE::ROR) {
+            Rs %= 32 ;
             op2 = rotr(Rm, Rs) ;
             if (Rs != 0)
                 carry = TestBit(Rm, Rs - 1) ;
@@ -146,7 +147,7 @@ namespace gg_core::gg_cpu {
         const uint32_t curInst = CURRENT_INSTRUCTION ;
         const uint8_t RnNumber = (curInst & 0xf0000) >> 16 ;
 
-        uint32_t& Rn = instance._status._regs[RnNumber] ;
+        uint32_t RnVal = instance._status._regs[RnNumber] ;
         uint32_t op2 = 0 ;
         bool shiftCarry = false ;
 
@@ -155,15 +156,15 @@ namespace gg_core::gg_cpu {
         } // if
         else {
             if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
-                if (RnNumber == pc)
-                    Rn += 4 ;
                 shiftCarry = ParseOp2_Shift_RS<ST>(instance, op2) ;
+                if (RnNumber == pc)
+                    RnVal += 4 ;
             } // if
             else
                 shiftCarry = ParseOp2_Shift_Imm<ST>(instance, op2) ;
         } // else
 
-        uint64_t result = operation(Rn, op2, instance._status.C()) ;
+        uint64_t result = operation(RnVal, op2, instance._status.C()) ;
 
         if constexpr (S) {
             if constexpr (OT == OP_TYPE::LOGICAL || OT == OP_TYPE::TEST) {
@@ -172,7 +173,7 @@ namespace gg_core::gg_cpu {
                 result == 0 ? instance._status.SetZ() : instance._status.ClearZ();
             } // if
             else {
-                const bool RnSigned = TestBit(Rn, 31);
+                const bool RnSigned = TestBit(instance._status._regs[RnNumber], 31);
                 const bool op2Signed = TestBit(op2, 31);
                 const bool resultSigned = TestBit(result, 31);
 

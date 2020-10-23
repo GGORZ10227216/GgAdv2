@@ -90,7 +90,7 @@ target_link_libraries(ggBenchmark /usr/local/lib/libfmt.a
         /usr/local/lib/libbenchmark_main.a)
 
 project(ggTest)
-add_executable(ggTest ${header_core} ${header_arm_implement} ${src_core} ggTest/main.cpp ggTest/gg_test.h)
+add_executable(ggTest ${header_core} ${header_arm_implement} ${src_core} ggTest/mov.cpp ggTest/gg_test.h)
 target_include_directories(ggTest PUBLIC
         include
         include/component/

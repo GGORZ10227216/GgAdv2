@@ -206,4 +206,74 @@ namespace {
         } // for
     }
 
+    TEST_F(ggTest, test_test) {
+        constexpr std::array<const char*, 16> operations {
+                "and", "eor", "sub", "rsb",
+                "add", "adc", "sbc", "rsc",
+                "tst", "teq", "cmp", "cmn",
+                "orr", "mov", "bic", "mvn"
+        } ;
+
+        auto worker = [&](int operation) {
+            Arm arm;
+            gg_core::GbaInstance instance(std::nullopt);
+
+            constexpr static std::array<const char*, 4> shiftTypes {
+                    "lsl", "lsr", "asr", "ror"
+            };
+
+            uint8_t Rd = r0, Rn = r0, Rm = r0, Rs = r4 ;
+            for (uint64_t RnVal = 0 ; RnVal <= 0xffffffff ; RnVal += 0x11111111) {
+                for (uint64_t RmVal = 0 ; RmVal <= 0xffffffff ; RmVal += 0x11111111) {
+                    for (uint64_t RsVal = 0 ; RsVal <= 0x1ff ; RsVal += 0x1) {
+                        for (int rgNum = 0 ; rgNum <= 0xff ; ++rgNum) {
+                            Rn = gg_core::BitFieldValue<uint8_t, 0, 4>(rgNum) ;
+                            Rm = gg_core::BitFieldValue<uint8_t, 4, 4>(rgNum) ;
+
+                            for (int s = 0 ; s < 1 ; ++s) {
+                                uint32_t instruction = s ? 0xe0100410 : 0xe0000410 ;
+                                for (int shiftType = lsl ; shiftType <= ror ; ++shiftType) {
+                                    instruction |= Rn << 16 ;
+                                    instruction |= Rm ;
+                                    instruction |= shiftType << 5 ;
+
+                                    std::invoke(arm.instr_arm[hashArm(instruction)], &arm, instruction);
+                                    instance.CPUTick_Debug(instruction);
+
+                                    auto CheckStatus = [&]() {
+                                        for (int i = r0 ; i <= r15 ; ++i) {
+                                            ASSERT_EQ(instance._status._regs[i], arm.regs[i])
+                                                                        << "#" << i
+                                                                        << "\tInstruction: " << std::hex << instruction << '\n'
+                                                                        << "\tTestcast: " << fmt::format("Rn: {}, Rm: {}, Rs: {}, shift: {}\n",
+                                                                                                         RnVal, RmVal, RsVal, shiftType) ;
+                                        } // for
+
+
+                                        ASSERT_EQ(instance._status.ReadCPSR(), arm.cpsr)
+                                                                    << "\tInstruction: " << instruction << '\n'
+                                                                    << "\t Testcast: " << fmt::format(
+                                                                            "Rn: {}, Rm: {}, Rs: {}, shift: {}\n",
+                                                                            RnVal, RmVal, RsVal, shiftType) ;
+                                    };
+
+                                    CheckStatus() ;
+                                } // for
+                            } // for
+                        } // for
+                    } // for
+                } // for
+            } // for
+        };
+
+        std::vector<std::thread> workers ;
+        for (int i = 0 ; i < 16 ; ++i) {
+            std::cout << '[' << operations[i] << ']' << "start!" << std::endl ;
+            workers.emplace_back(worker, i);
+        } // for
+
+        for (auto& t : workers) {
+            t.join();
+        } // for
+    }
 }
