@@ -3,7 +3,6 @@
 //
 
 #include <cstdint>
-#include <iostream>
 
 #ifndef GGADV_BIT_MANIPULATE_H
 #define GGADV_BIT_MANIPULATE_H

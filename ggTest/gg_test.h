@@ -9,10 +9,13 @@
 
 #include <gtest/gtest.h>
 #include <fmt/format.h>
+#include <capstone/capstone.h>
 #include <keystone/keystone.h>
 
 #include <framework/gba_instance.h>
 #include <arm/arm.h>
+#include <gg_utility.h>
+#include <cpu_enum.h>
 
 #ifndef GGTEST_GG_TEST_H
 #define GGTEST_GG_TEST_H
@@ -25,12 +28,16 @@ public :
             printf("ERROR: failed on ks_open(), quit\n");
             exit(-1);
         }
+
+        if (cs_open(CS_ARCH_ARM, CS_MODE_ARM, &handle) != CS_ERR_OK)
+            exit(-1);
     }
 
     uint32_t ASM(std::string CODE) {
-        if (ks_asm(ks, CODE.c_str(), 0, &encode, &size, &count) != KS_ERR_OK) {
-            printf("[%s] ERROR: ks_asm() failed & count = %lu, error = %u\n",
-                   CODE.c_str(), count, ks_errno(ks));
+        if (ks_asm(ks, CODE.c_str(), 0, &encode, &size, &count_asm) != KS_ERR_OK) {
+            printf("[%s] ERROR: ks_asm() failed & count_asm = %lu, error = %u\n",
+                   CODE.c_str(), count_asm, ks_errno(ks));
+            return 0xffffffff ;
         } else {
             uint32_t result = *reinterpret_cast<uint32_t *>(encode);
             ks_free(encode);
@@ -38,136 +45,73 @@ public :
         }
     }
 
+    std::string DASM(uint32_t binary) {
+        count_dasm = cs_disasm(handle, reinterpret_cast<uint8_t*>(&binary), 4, 0x0, 0, &insn);
+        if (count_dasm > 0) {
+            std::string result = fmt::format("{} {}", insn[0].mnemonic, insn[0].op_str) ;
+            cs_free(insn, count_dasm);
+            return result ;
+        } // if
+        else {
+            return "Disassemble failed." ;
+        } // else
+    }
+
     ~ArmAssembler() {
         ks_close(ks);
+        cs_close(&handle);
     }
 
 private:
     ks_engine *ks;
     ks_err err;
-    size_t count;
+    size_t count_asm;
     unsigned char *encode;
     size_t size;
+
+    csh handle;
+    cs_insn *insn;
+    size_t count_dasm ;
 };
 
 class ggTest : public testing::Test {
 protected:
-    enum E_RegName {
-        r0, r1, r2, r3, r4, r5,
-        r6, r7, r8, r9, r10, r11,
-        r12, r13, r14, r15
-    };
-
-    enum E_Shift {
-        lsl, lsr, asr, ror
-    };
-
     constexpr uint hashArm(u32 instr)
     {
         return ((instr >> 16) & 0xFF0) | ((instr >> 4) & 0xF);
     }
 
-    void CheckStatus(const gg_core::GbaInstance& mine, const Arm& egg, const std::string inst, const std::string testcase) const {
-        for (int i = r0 ; i <= r15 ; ++i) {
-            ASSERT_EQ(mine._status._regs[i], egg.regs[i]) << inst << '\n' << testcase << '\n' << PrintStatus(mine, egg) ;
-        }
+    uint32_t CheckStatus(const gg_core::GbaInstance& mine, const Arm& egg) const {
+        using namespace gg_core::gg_cpu ;
 
-
-        ASSERT_EQ(mine._status.ReadCPSR(), egg.cpsr) << inst << '\n' << testcase << '\n' << PrintStatus(mine, egg) ;
-    }
-
-    std::string PrintStatus(const gg_core::GbaInstance& mine, const Arm& egg) const {
-        std::stringstream ss ;
-        for (int i = r0 ; i <= r15 ; ++i) {
+        uint32_t status_flag = 0 ;
+        for (int i = r0 ; i <= pc ; ++i) {
             if (mine._status._regs[i] != egg.regs[i])
-                ss << fmt::format("R{}=Mine:{:x},egg:{:x}",
-                                     i, mine._status._regs[i], egg.regs[i]) << std::endl;
-
+                status_flag |= gg_core::_BV(i) ;
         } // for
 
-        ss << fmt::format("cpsr_mine:{:x} cpsr_egg:{:x}", mine._status.ReadCPSR(), egg.cpsr)
-                  << std::endl;
-        return ss.str() ;
+        if (mine._status.ReadCPSR() != egg.cpsr)
+            status_flag |= gg_core::_BV(16) ;
+        return status_flag == 0 ;
+    }
+
+    std::string Diagnose(const gg_core::GbaInstance& mine, const Arm& egg, uint32_t status_flag) const {
+        using namespace gg_core::gg_cpu ;
+
+        std::string result ;
+        for (int i = r0 ; i <= 16 ; ++i) {
+            if (status_flag & gg_core::_BV(i)) {
+                if (i < 16)
+                    result += fmt::format("\t[X] r{}: mine={} ref={}\n", i, mine._status._regs[i], egg.regs[i]) ;
+                else
+                    result += fmt::format("\t[X] cpsr: mine={} ref={}\n", mine._status.ReadCPSR(), egg.cpsr) ;
+            } // if
+        } // for
+
+        return result ;
     }
 };
 
-using TestCase = std::array<uint32_t, 3>;
-static constexpr std::array<TestCase, 74> TestCases{
-        TestCase{0xffffffff, 0, 31},
-        TestCase{0xffffffff, 0, 15},
-        TestCase{0xffffffff, 0, 0},
-        TestCase{0, 0xffffffff, 31},
-        TestCase{0, 0xffffffff, 15},
-        TestCase{0, 0xffffffff, 0},
-        TestCase{0xffffffff, 0xffffffff, 31},
-        TestCase{0xffffffff, 0xffffffff, 15},
-        TestCase{0xffffffff, 0xffffffff, 0},
-        TestCase{0, 0xdeadbeef, 0},
-        TestCase{0, 0xdeadbeef, 1},
-        TestCase{0, 0xdeadbeef, 2},
-        TestCase{0, 0xdeadbeef, 3},
-        TestCase{0, 0xdeadbeef, 4},
-        TestCase{0, 0xdeadbeef, 5},
-        TestCase{0, 0xdeadbeef, 6},
-        TestCase{0, 0xdeadbeef, 7},
-        TestCase{0, 0xdeadbeef, 8},
-        TestCase{0, 0xdeadbeef, 9},
-        TestCase{0, 0xdeadbeef, 10},
-        TestCase{0, 0xdeadbeef, 11},
-        TestCase{0, 0xdeadbeef, 12},
-        TestCase{0, 0xdeadbeef, 13},
-        TestCase{0, 0xdeadbeef, 14},
-        TestCase{0, 0xdeadbeef, 15},
-        TestCase{0, 0xdeadbeef, 16},
-        TestCase{0, 0xdeadbeef, 17},
-        TestCase{0, 0xdeadbeef, 18},
-        TestCase{0, 0xdeadbeef, 19},
-        TestCase{0, 0xdeadbeef, 20},
-        TestCase{0, 0xdeadbeef, 21},
-        TestCase{0, 0xdeadbeef, 22},
-        TestCase{0, 0xdeadbeef, 23},
-        TestCase{0, 0xdeadbeef, 24},
-        TestCase{0, 0xdeadbeef, 25},
-        TestCase{0, 0xdeadbeef, 26},
-        TestCase{0, 0xdeadbeef, 27},
-        TestCase{0, 0xdeadbeef, 28},
-        TestCase{0, 0xdeadbeef, 29},
-        TestCase{0, 0xdeadbeef, 30},
-        TestCase{0, 0xdeadbeef, 31},
-        TestCase{0, 0x55555555, 0},
-        TestCase{0, 0x55555555, 1},
-        TestCase{0, 0x55555555, 2},
-        TestCase{0, 0x55555555, 3},
-        TestCase{0, 0x55555555, 4},
-        TestCase{0, 0x55555555, 5},
-        TestCase{0, 0x55555555, 6},
-        TestCase{0, 0x55555555, 7},
-        TestCase{0, 0x55555555, 8},
-        TestCase{0, 0x55555555, 9},
-        TestCase{0, 0x55555555, 10},
-        TestCase{0, 0x55555555, 11},
-        TestCase{0, 0x55555555, 12},
-        TestCase{0, 0x55555555, 13},
-        TestCase{0, 0x55555555, 14},
-        TestCase{0, 0x55555555, 15},
-        TestCase{0, 0x55555555, 16},
-        TestCase{0, 0x55555555, 17},
-        TestCase{0, 0x55555555, 18},
-        TestCase{0, 0x55555555, 19},
-        TestCase{0, 0x55555555, 20},
-        TestCase{0, 0x55555555, 21},
-        TestCase{0, 0x55555555, 22},
-        TestCase{0, 0x55555555, 23},
-        TestCase{0, 0x55555555, 24},
-        TestCase{0, 0x55555555, 25},
-        TestCase{0, 0x55555555, 26},
-        TestCase{0, 0x55555555, 27},
-        TestCase{0, 0x55555555, 28},
-        TestCase{0, 0x55555555, 29},
-        TestCase{0, 0x55555555, 30},
-        TestCase{0, 0x55555555, 31},
-        TestCase{0, 0x55555555, 64}
-};
 
 static constexpr std::array<const char *, 16> regNames{
         "r0", "r1", "r2", "r3", "r4", "r5",
@@ -178,5 +122,66 @@ static constexpr std::array<const char *, 16> regNames{
 static constexpr std::array<const char *, 4> shiftNames{
         "lsl", "lsr", "asr", "ror"
 };
+
+enum F_Type {
+    Cond, I, OpCode, S, Rn, Rd, ShiftType, ShiftAmount, Rm, Rs, Rotate, Imm
+};
+
+template <F_Type F, typename V>
+uint32_t ALUInstruction(V value) {
+    uint32_t result = 0 ;
+    if constexpr (F == F_Type::S) {
+        static_assert(std::is_same_v<V, bool>, "Type missmatch") ;
+        result |= value << 20 ;
+    } // if
+    else {
+        if constexpr (F == F_Type::Cond) {
+            static_assert(std::is_same_v<V, gg_core::gg_cpu::E_CondName>) ;
+            result |= value << 28 ;
+        } // else if
+        else if constexpr (F == F_Type::OpCode) {
+            static_assert(std::is_same_v<V, gg_core::gg_cpu::E_DataProcess>) ;
+            result |= value << 21 ;
+        } // else if
+        else if constexpr (F == F_Type::Rn) {
+            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+            result |= value << 16 ;
+        } // else if
+        else if constexpr (F == F_Type::Rd) {
+            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+            result |= value << 12 ;
+        } // else if
+        else if constexpr (F == F_Type::Rm) {
+            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+            result |= value ;
+        } // else if
+        else if constexpr (F == F_Type::Imm) {
+            result |= (1 << 25) | value ;
+        } // else if
+        else if constexpr (F == F_Type::Rs) {
+            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+            result |= (1 << 4) | (value << 8) ;
+        } // else if
+        else if constexpr (F == F_Type::Rotate) {
+            static_assert(std::is_integral_v<V>) ;
+            result |= value << 8 ;
+        } // else if
+        else if constexpr (F == F_Type::ShiftType) {
+            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_ShiftType>) ;
+            result |= value << 5 ;
+        } // else if
+        else if constexpr (F == F_Type::ShiftAmount) {
+            static_assert(std::is_integral_v<V>) ;
+            result |= value << 7 ;
+        } // else if
+    } // else
+
+    return result ;
+}
+
+template <F_Type... Fs, typename... Vs>
+uint32_t MakeALUInstruction(Vs... values) {
+    return (ALUInstruction<Fs>(values) | ...) ;
+}
 
 #endif //GGTEST_GG_TEST_H

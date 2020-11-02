@@ -27,7 +27,7 @@ set(header_core
         include/component/memory/general_memory.h
         include/component/memory/display_memory.h
         include/component/memory/gamepak_memory.h
-        include/utility/bit_manipulate.h include/instruction/arm/macro.h)
+        include/utility/bit_manipulate.h include/instruction/arm/macro.h include/utility/gg_utility.h)
 
 set(header_arm_implement
         include/instruction/arm/arm_prototype.h
@@ -90,7 +90,7 @@ target_link_libraries(ggBenchmark /usr/local/lib/libfmt.a
         /usr/local/lib/libbenchmark_main.a)
 
 project(ggTest)
-add_executable(ggTest ${header_core} ${header_arm_implement} ${src_core} ggTest/mov.cpp ggTest/gg_test.h)
+add_executable(ggTest ${header_core} ${header_arm_implement} ${src_core} ggTest/mov.cpp ggTest/gg_test.h ggTest/include/loop_tool.h)
 target_include_directories(ggTest PUBLIC
         include
         include/component/
@@ -104,12 +104,15 @@ target_include_directories(ggTest PUBLIC
         ./eggvance/eggvance/src/
         ./eggvance/eggvance/external/shell/include/
         ggTest
+        ggTest/include
         )
+
 target_link_libraries(ggTest /usr/local/lib/libfmt.a
         /usr/local/lib/libegg.a
         /usr/local/lib/libgtest.a
         /usr/local/lib/libgtest_main.a
         /usr/local/lib/libkeystone.so
+        /usr/local/lib/libcapstone.a
         SDL2
         stdc++fs
         )
