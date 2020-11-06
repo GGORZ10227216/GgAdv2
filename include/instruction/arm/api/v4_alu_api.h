@@ -33,13 +33,13 @@ namespace gg_core::gg_cpu {
                 op2 = Rm ;
                 carry = instance._status.C() ;
             } // if
-            else if (Rs <= 32) {
+            else if (Rs < 32) {
                 op2 = Rm << Rs ;
                 carry = TestBit(Rm, 33 - (Rs + 1)) ;
             } // else if
             else {
                 op2 = 0 ;
-                carry = false ;
+                carry = Rs == 32 && TestBit(Rm, 0);
             } // else
         } // if
 
@@ -48,13 +48,13 @@ namespace gg_core::gg_cpu {
                 op2 = Rm ;
                 carry = instance._status.C() ;
             } // if
-            else if (Rs <= 32) {
+            else if (Rs < 32) {
                 op2 = Rm >> Rs ;
                 carry = TestBit(Rm, Rs - 1) ;
             } // else if
             else {
                 op2 = 0 ;
-                carry = false ;
+                carry = Rs == 32 && TestBit(Rm, Rs - 1);
             } // else
         } // if
 
@@ -142,7 +142,7 @@ namespace gg_core::gg_cpu {
 
     template<bool I, bool S, SHIFT_BY SHIFT_SRC, SHIFT_TYPE ST, OP_TYPE OT, typename F>
     static void Alu_impl(GbaInstance &instance, F operation) requires
-        std::is_same_v<std::invoke_result_t<F, unsigned, unsigned, bool>, uint64_t>
+        std::is_same_v<std::invoke_result_t<F, unsigned, unsigned, gg_cpu::Status&>, uint64_t>
     {
         const uint32_t curInst = CURRENT_INSTRUCTION ;
         const uint8_t RnNumber = (curInst & 0xf0000) >> 16 ;
@@ -164,7 +164,7 @@ namespace gg_core::gg_cpu {
                 shiftCarry = ParseOp2_Shift_Imm<ST>(instance, op2) ;
         } // else
 
-        uint64_t result = operation(RnVal, op2, instance._status.C()) ;
+        uint64_t result = operation(RnVal, op2, instance._status) ;
 
         if constexpr (S) {
             if constexpr (OT == OP_TYPE::LOGICAL || OT == OP_TYPE::TEST) {
@@ -173,12 +173,12 @@ namespace gg_core::gg_cpu {
                 result == 0 ? instance._status.SetZ() : instance._status.ClearZ();
             } // if
             else {
-                const bool RnSigned = TestBit(instance._status._regs[RnNumber], 31);
+                const bool RnSigned = TestBit(RnVal, 31);
                 const bool op2Signed = TestBit(op2, 31);
                 const bool resultSigned = TestBit(result, 31);
 
                 (RnSigned == op2Signed) && (RnSigned != resultSigned) ? instance._status.SetV() : instance._status.ClearV();
-                result > 0xffffffff ? instance._status.SetC() : instance._status.ClearC() ;
+//                result > 0xffffffff ? instance._status.ClearC() : instance._status.SetC() ;
                 (result & 0xffffffff) == 0 ? instance._status.SetZ() : instance._status.ClearZ() ;
                 TestBit(result, 31) ? instance._status.SetN() : instance._status.ClearN() ;
             } // else

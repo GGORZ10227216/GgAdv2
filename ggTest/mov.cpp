@@ -8,7 +8,7 @@
 namespace {
     using namespace gg_core::gg_cpu ;
 
-    constexpr static std::array<const char*, 16> operations {
+    constexpr static std::array<const char*, 16> opName {
             "and", "eor", "sub", "rsb",
             "add", "adc", "sbc", "rsc",
             "tst", "teq", "cmp", "cmn",
@@ -17,6 +17,8 @@ namespace {
 
     TEST_F(ggTest, alu_rd_rn_op2ShiftRs_test) {
         auto worker = [&](E_DataProcess operation) {
+            using namespace gg_core ;
+
             Arm egg;
             gg_core::GbaInstance instance(std::nullopt);
             ArmAssembler gg_asm ;
@@ -42,32 +44,33 @@ namespace {
                 // dbg
                 // fmt::print("{}\n", gg_asm.DASM(instruction)) ;
 
-                if (t == 2054)
+                if (t == 2053)
                     std::cout << "gg" << std::endl ;
 
-                std::invoke(egg.instr_arm[hashArm(instruction)], &egg, instruction);
+                uint32_t inst_hash = hashArm(instruction) ;
+                std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
                 instance.CPUTick_Debug(instruction);
 
                 uint32_t errFlag = CheckStatus(instance, egg) ;
                 ASSERT_EQ(errFlag, 0)
                     << std::hex << "Errflag: " << errFlag << '\n'
-                    << FieldRn.value << " " << FieldRm.value << " " << FieldRs.value << '\n'
+                    << fmt::format( "Rn: {:x}, Rm: {:x}, Rs: {:x}\n", FieldRn.value, FieldRm.value, FieldRs.value )
                     << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                     << Diagnose(instance, egg, errFlag) ;
             };
 
             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, FieldRs, shiftType) ;
-            fmt::print("Total performed tests: {}\n", t) ;
+            fmt::print("[{}] Total performed tests: {}\n", opName[operation], t) ;
         };
 
 //        std::vector<std::thread> workers ;
 //        for (int i = 0 ; i < 16 ; ++i) {
-//            std::cout << '[' << operations[i] << ']' << "start!" << std::endl ;
-//            workers.emplace_back(worker, i);
+//            std::cout << '[' << opName[i] << ']' << "start!" << std::endl ;
+//            workers.emplace_back(worker, static_cast<E_DataProcess>(i)) ;
 //        } // for
 //
 //        for (auto& t : workers)
 //            t.join();
-        worker(AND) ;
+        worker(SUB) ;
     }
 }

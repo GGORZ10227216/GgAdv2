@@ -17,31 +17,50 @@ args = 'GbaInstance& instance'
 logical = ["AND", "EOR", "ORR", "MOV", "BIC", "MVN"]
 test = ["TST", "TEQ", "CMP", "CMN"]
 
-handlerTable = {
-    "AND": "return static_cast<uint64_t>(Rn) & op2 ;",
-    "EOR": "return static_cast<uint64_t>(Rn) ^ op2 ;",
-    "SUB": "return static_cast<uint64_t>(Rn) - op2 ;",
-    "RSB": "return static_cast<uint64_t>(op2) - Rn ;",
-    "ADD": "return static_cast<uint64_t>(Rn) + op2 ;",
-    "ADC": "return static_cast<uint64_t>(Rn) + op2 + carry ;",
-    "SBC": "return static_cast<uint64_t>(Rn) - op2 + carry - 1 ;",
-    "RSC": "return static_cast<uint64_t>(op2) - Rn + carry - 1 ;",
-    "TST": "return static_cast<uint64_t>(Rn) & op2 ;",
-    "TEQ": "return static_cast<uint64_t>(Rn) ^ op2 ;",
-    "CMP": "return static_cast<uint64_t>(Rn) - op2 ;",
-    "CMN": "return static_cast<uint64_t>(Rn) + op2 ;",
-    "ORR": "return static_cast<uint64_t>(Rn) | op2 ;",
-    "MOV": "return static_cast<uint64_t>(op2) ;",
-    "BIC": "return static_cast<uint64_t>(Rn) & (~op2) ;",
-    "MVN": "return ~static_cast<uint64_t>(op2);"
+carryRules = {
+    'ADD': 'static_cast<uint64_t>(Rn) + op2 > 0xffffffff',
+    'CMN': 'static_cast<uint64_t>(Rn) + op2 > 0xffffffff',
+    'ADC': 'static_cast<uint64_t>(Rn) + op2 + status.C() > 0xffffffff',
+    'SUB': 'static_cast<uint64_t>(Rn) <= op2',
+    'CMP': 'static_cast<uint64_t>(Rn) <= op2',
+    'SBC': 'static_cast<uint64_t>(Rn) <= op2 + status.C()',
+    'RSB': 'static_cast<uint64_t>(op2) <= Rn',
+    'RSC': 'static_cast<uint64_t>(op2) <= Rn + status.C()'
 }
 
+handlerTable = {
+    "AND": "static_cast<uint64_t>(Rn) & op2 ;",
+    "EOR": "static_cast<uint64_t>(Rn) ^ op2 ;",
+    "SUB": "static_cast<uint64_t>(Rn) - op2 ;",
+    "RSB": "static_cast<uint64_t>(op2) - Rn ;",
+    "ADD": "static_cast<uint64_t>(Rn) + op2 ;",
+    "ADC": "static_cast<uint64_t>(Rn) + op2 + status.C() ;",
+    "SBC": "static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;",
+    "RSC": "static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;",
+    "TST": "static_cast<uint64_t>(Rn) & op2 ;",
+    "TEQ": "static_cast<uint64_t>(Rn) ^ op2 ;",
+    "CMP": "static_cast<uint64_t>(Rn) - op2 ;",
+    "CMN": "static_cast<uint64_t>(Rn) + op2 ;",
+    "ORR": "static_cast<uint64_t>(Rn) | op2 ;",
+    "MOV": "static_cast<uint64_t>(op2) ;",
+    "BIC": "static_cast<uint64_t>(Rn) & (~op2) ;",
+    "MVN": "~static_cast<uint64_t>(op2);"
+}
+
+def flagGen(mnemonic, s):
+    if mnemonic in ['ADD', 'ADC', 'CMN', 'SUB', 'SBC', 'RSB', 'RSC', 'CMP'] and s:
+        return '\t\t\t\t' + carryRules[mnemonic] + ' ? status.SetC() : status.ClearC() ;\n'
+    else:
+        return ''
+    
 def aluGen(record):
     mnemonic = record['Attribute']['Signature'][:3].upper()
     signature = \
         'Alu_impl<{}, {}, SHIFT_BY::{}, SHIFT_TYPE::{}, OP_TYPE::{}> (instance,\n' \
-        '\t\t\t[](uint32_t Rn, uint32_t op2, bool carry) {{\n' \
-        '\t\t\t\t{}\n' \
+        '\t\t\t[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {{\n' \
+        '\t\t\t\tuint64_t result = {}\n' \
+        '{}' \
+        '\t\t\t\treturn result ;\n' \
         '\t\t\t}}\n' \
         '\t\t);'
 
@@ -73,7 +92,8 @@ def aluGen(record):
         tags["shtby"],
         tags["shttype"],
         tags["optype"],
-        handlerTable[mnemonic]
+        handlerTable[mnemonic],
+        flagGen(mnemonic, tags["S"] == "true")
     )
 
     return signature

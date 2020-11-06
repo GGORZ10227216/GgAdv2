@@ -25,14 +25,16 @@ namespace gg_core {
 
         GbaInstance(const std::optional<std::filesystem::path> &romPath) :
                 _mem(romPath), _io() {
-            RefillPipeline();
-            Fetch() ;
             // _worker = std::thread(&GbaInstance::Run, this);
             // Run() ;
         } // GbaInstance()
 
         void Run() {
             _isRunning = true ;
+
+            RefillPipeline();
+            Fetch() ;
+
             while (_isRunning) {
                 CPUTick();
             } // while
