@@ -92,7 +92,7 @@ protected:
 
         if (mine._status.ReadCPSR() != egg.cpsr)
             status_flag |= gg_core::_BV(16) ;
-        return status_flag == 0 ;
+        return status_flag ;
     }
 
     std::string Diagnose(const gg_core::GbaInstance& mine, const Arm& egg, uint32_t status_flag) const {
@@ -102,9 +102,9 @@ protected:
         for (int i = r0 ; i <= 16 ; ++i) {
             if (status_flag & gg_core::_BV(i)) {
                 if (i < 16)
-                    result += fmt::format("\t[X] r{}: mine={} ref={}\n", i, mine._status._regs[i], egg.regs[i]) ;
+                    result += fmt::format("\t[X] r{}: mine={:x} ref={:x}\n", i, mine._status._regs[i], egg.regs[i]) ;
                 else
-                    result += fmt::format("\t[X] cpsr: mine={} ref={}\n", mine._status.ReadCPSR(), egg.cpsr) ;
+                    result += fmt::format("\t[X] cpsr: mine={:x} ref={:x}\n", mine._status.ReadCPSR(), egg.cpsr) ;
             } // if
         } // for
 
@@ -177,6 +177,21 @@ uint32_t ALUInstruction(V value) {
     } // else
 
     return result ;
+}
+
+template <typename A, typename B, size_t... Is, typename... RS, typename... VS>
+void FillRegs_Impl(A& mineRegs, B& refRegs, std::tuple<RS...>& R, std::tuple<VS...>& V, std::index_sequence<Is...>) {
+    ((mineRegs[std::get<Is>(R)] = std::get<Is>(V)), ...) ;
+    ((refRegs[std::get<Is>(R)] = std::get<Is>(V)), ...) ;
+}
+
+template <typename A, typename B, typename... RS, typename... VS>
+void FillRegs(A& mineRegs, B& refRegs, std::tuple<RS...>& R, std::tuple<VS...>& V) {
+    constexpr size_t reg_idx_number = sizeof...(RS);
+    constexpr size_t field_number = sizeof...(VS);
+    static_assert(reg_idx_number == field_number) ;
+
+    FillRegs_Impl(mineRegs, refRegs, R, V, std::make_index_sequence<reg_idx_number>{});
 }
 
 template <F_Type... Fs, typename... Vs>

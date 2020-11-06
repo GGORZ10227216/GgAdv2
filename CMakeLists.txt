@@ -3,7 +3,7 @@ project(ggAdv)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS "${CMAKXX_FLAGS} -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKXX_FLAGS} -pthread -D_REENTRANT -I/usr/include/SDL2")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -flto")
 
@@ -90,7 +90,18 @@ target_link_libraries(ggBenchmark /usr/local/lib/libfmt.a
         /usr/local/lib/libbenchmark_main.a)
 
 project(ggTest)
-add_executable(ggTest ${header_core} ${header_arm_implement} ${src_core} ggTest/mov.cpp ggTest/gg_test.h ggTest/include/loop_tool.h)
+
+include_directories(./eggvance/eggvance/external/shell/include)
+include_directories(./eggvance/eggvance/external/icon/eggvance/include)
+include_directories(./eggvance/eggvance/src)
+
+file(GLOB_RECURSE SOURCE_FILES
+        ./eggvance/eggvance/src/*.h
+        ./eggvance/eggvance/src/*.cpp
+        )
+
+add_executable(ggTest ${SOURCE_FILES} ${header_core} ${header_arm_implement} ${src_core} ggTest/mov.cpp ggTest/gg_test.h ggTest/include/loop_tool.h)
+
 target_include_directories(ggTest PUBLIC
         include
         include/component/
@@ -108,7 +119,6 @@ target_include_directories(ggTest PUBLIC
         )
 
 target_link_libraries(ggTest /usr/local/lib/libfmt.a
-        /usr/local/lib/libegg.a
         /usr/local/lib/libgtest.a
         /usr/local/lib/libgtest_main.a
         /usr/local/lib/libkeystone.so

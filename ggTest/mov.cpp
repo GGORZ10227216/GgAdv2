@@ -36,20 +36,28 @@ namespace {
                         AL, operation, true, RnNumber.value, r0, r4, shiftType.value, RmNumber.value
                 ) ;
 
+                auto idx = std::make_tuple(RnNumber.value, RmNumber.value, r4) ;
+                auto val = std::make_tuple(FieldRn.value, FieldRm.value, FieldRs.value);
+                FillRegs(instance._status._regs, egg.regs, idx, val) ;
                 // dbg
-                fmt::print("{}\n", gg_asm.DASM(instruction)) ;
+                // fmt::print("{}\n", gg_asm.DASM(instruction)) ;
 
-                std::invoke(arm.instr_arm[hashArm(instruction)], &arm, instruction);
+                if (t == 2054)
+                    std::cout << "gg" << std::endl ;
+
+                std::invoke(egg.instr_arm[hashArm(instruction)], &egg, instruction);
                 instance.CPUTick_Debug(instruction);
 
                 uint32_t errFlag = CheckStatus(instance, egg) ;
-                ASSERT_TRUE(errFlag == 0)
-                    << gg_asm.DASM(instruction) << '\n'
+                ASSERT_EQ(errFlag, 0)
+                    << std::hex << "Errflag: " << errFlag << '\n'
+                    << FieldRn.value << " " << FieldRm.value << " " << FieldRs.value << '\n'
+                    << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                     << Diagnose(instance, egg, errFlag) ;
             };
 
-            TEST_LOOPS(TestMain, RmNumber, RnNumber, shiftType) ;
-            fmt::print("{}\n", t) ;
+            TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, FieldRs, shiftType) ;
+            fmt::print("Total performed tests: {}\n", t) ;
         };
 
 //        std::vector<std::thread> workers ;
