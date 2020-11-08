@@ -3,7 +3,7 @@
 
 namespace gg_core::gg_cpu {
 	static void and_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -12,7 +12,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void and_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -21,7 +21,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void and_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -30,7 +30,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void and_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -39,7 +39,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void and_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -48,7 +48,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void and_RsASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -57,7 +57,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void and_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -66,7 +66,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void and_RsROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -75,7 +75,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void ands_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -84,7 +84,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void ands_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -93,7 +93,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void ands_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -102,7 +102,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void ands_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -111,7 +111,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void ands_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -120,7 +120,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void ands_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -129,7 +129,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void ands_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -138,7 +138,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void ands_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -147,7 +147,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eor_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -156,7 +156,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eor_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -165,7 +165,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eor_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -174,7 +174,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eor_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -183,7 +183,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eor_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -192,7 +192,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eor_RsASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -201,7 +201,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eor_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -210,7 +210,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eor_RsROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -219,7 +219,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eors_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -228,7 +228,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eors_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -237,7 +237,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eors_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -246,7 +246,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eors_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -255,7 +255,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eors_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -264,7 +264,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eors_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -273,7 +273,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eors_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -282,7 +282,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eors_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -291,7 +291,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sub_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
 				return result ;
@@ -300,7 +300,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sub_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
 				return result ;
@@ -309,7 +309,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sub_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
 				return result ;
@@ -318,7 +318,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sub_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
 				return result ;
@@ -327,7 +327,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sub_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
 				return result ;
@@ -336,7 +336,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sub_RsASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
 				return result ;
@@ -345,7 +345,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sub_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
 				return result ;
@@ -354,7 +354,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sub_RsROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
 				return result ;
@@ -363,87 +363,95 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void subs_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void subs_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void subs_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void subs_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void subs_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void subs_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void subs_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void subs_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rsb_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
 				return result ;
@@ -452,7 +460,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsb_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
 				return result ;
@@ -461,7 +469,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsb_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
 				return result ;
@@ -470,7 +478,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsb_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
 				return result ;
@@ -479,7 +487,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsb_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
 				return result ;
@@ -488,7 +496,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsb_RsASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
 				return result ;
@@ -497,7 +505,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsb_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
 				return result ;
@@ -506,7 +514,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsb_RsROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
 				return result ;
@@ -515,87 +523,95 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsbs_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
-				static_cast<uint64_t>(op2) <= Rn ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= Rn ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rsbs_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
-				static_cast<uint64_t>(op2) <= Rn ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= Rn ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rsbs_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
-				static_cast<uint64_t>(op2) <= Rn ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= Rn ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rsbs_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
-				static_cast<uint64_t>(op2) <= Rn ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= Rn ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rsbs_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
-				static_cast<uint64_t>(op2) <= Rn ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= Rn ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rsbs_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
-				static_cast<uint64_t>(op2) <= Rn ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= Rn ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rsbs_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
-				static_cast<uint64_t>(op2) <= Rn ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= Rn ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rsbs_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
-				static_cast<uint64_t>(op2) <= Rn ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= Rn ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void add_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				return result ;
@@ -604,7 +620,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void add_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				return result ;
@@ -613,7 +629,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void add_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				return result ;
@@ -622,7 +638,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void add_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				return result ;
@@ -631,7 +647,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void add_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				return result ;
@@ -640,7 +656,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void add_RsASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				return result ;
@@ -649,7 +665,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void add_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				return result ;
@@ -658,7 +674,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void add_RsROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				return result ;
@@ -667,87 +683,95 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void adds_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adds_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adds_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adds_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adds_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adds_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adds_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adds_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adc_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				return result ;
@@ -756,7 +780,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void adc_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				return result ;
@@ -765,7 +789,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void adc_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				return result ;
@@ -774,7 +798,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void adc_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				return result ;
@@ -783,7 +807,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void adc_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				return result ;
@@ -792,7 +816,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void adc_RsASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				return result ;
@@ -801,7 +825,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void adc_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				return result ;
@@ -810,7 +834,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void adc_RsROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				return result ;
@@ -819,87 +843,95 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void adcs_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				static_cast<uint64_t>(Rn) + op2 + status.C() > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adcs_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				static_cast<uint64_t>(Rn) + op2 + status.C() > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adcs_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				static_cast<uint64_t>(Rn) + op2 + status.C() > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adcs_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				static_cast<uint64_t>(Rn) + op2 + status.C() > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adcs_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				static_cast<uint64_t>(Rn) + op2 + status.C() > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adcs_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				static_cast<uint64_t>(Rn) + op2 + status.C() > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adcs_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				static_cast<uint64_t>(Rn) + op2 + status.C() > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adcs_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				static_cast<uint64_t>(Rn) + op2 + status.C() > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void sbc_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
 				return result ;
@@ -908,7 +940,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sbc_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
 				return result ;
@@ -917,7 +949,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sbc_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
 				return result ;
@@ -926,7 +958,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sbc_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
 				return result ;
@@ -935,7 +967,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sbc_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
 				return result ;
@@ -944,7 +976,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sbc_RsASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
 				return result ;
@@ -953,7 +985,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sbc_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
 				return result ;
@@ -962,7 +994,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sbc_RsROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
 				return result ;
@@ -971,87 +1003,95 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sbcs_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
-				static_cast<uint64_t>(Rn) <= op2 + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= static_cast<uint64_t>(op2) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void sbcs_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
-				static_cast<uint64_t>(Rn) <= op2 + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= static_cast<uint64_t>(op2) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void sbcs_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
-				static_cast<uint64_t>(Rn) <= op2 + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= static_cast<uint64_t>(op2) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void sbcs_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
-				static_cast<uint64_t>(Rn) <= op2 + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= static_cast<uint64_t>(op2) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void sbcs_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
-				static_cast<uint64_t>(Rn) <= op2 + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= static_cast<uint64_t>(op2) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void sbcs_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
-				static_cast<uint64_t>(Rn) <= op2 + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= static_cast<uint64_t>(op2) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void sbcs_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
-				static_cast<uint64_t>(Rn) <= op2 + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= static_cast<uint64_t>(op2) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void sbcs_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
-				static_cast<uint64_t>(Rn) <= op2 + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= static_cast<uint64_t>(op2) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rsc_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
 				return result ;
@@ -1060,7 +1100,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsc_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
 				return result ;
@@ -1069,7 +1109,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsc_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
 				return result ;
@@ -1078,7 +1118,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsc_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
 				return result ;
@@ -1087,7 +1127,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsc_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
 				return result ;
@@ -1096,7 +1136,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsc_RsASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
 				return result ;
@@ -1105,7 +1145,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsc_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
 				return result ;
@@ -1114,7 +1154,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsc_RsROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
 				return result ;
@@ -1123,87 +1163,95 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rscs_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
-				static_cast<uint64_t>(op2) <= Rn + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= static_cast<uint64_t>(Rn) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rscs_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
-				static_cast<uint64_t>(op2) <= Rn + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= static_cast<uint64_t>(Rn) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rscs_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
-				static_cast<uint64_t>(op2) <= Rn + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= static_cast<uint64_t>(Rn) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rscs_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
-				static_cast<uint64_t>(op2) <= Rn + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= static_cast<uint64_t>(Rn) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rscs_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
-				static_cast<uint64_t>(op2) <= Rn + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= static_cast<uint64_t>(Rn) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rscs_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
-				static_cast<uint64_t>(op2) <= Rn + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= static_cast<uint64_t>(Rn) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rscs_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
-				static_cast<uint64_t>(op2) <= Rn + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= static_cast<uint64_t>(Rn) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rscs_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
-				static_cast<uint64_t>(op2) <= Rn + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= static_cast<uint64_t>(Rn) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void tsts_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -1212,7 +1260,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void tsts_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -1221,7 +1269,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void tsts_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -1230,7 +1278,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void tsts_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -1239,7 +1287,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void tsts_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -1248,7 +1296,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void tsts_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -1257,7 +1305,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void tsts_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -1266,7 +1314,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void tsts_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -1275,7 +1323,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void teqs_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -1284,7 +1332,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void teqs_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -1293,7 +1341,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void teqs_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -1302,7 +1350,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void teqs_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -1311,7 +1359,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void teqs_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -1320,7 +1368,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void teqs_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -1329,7 +1377,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void teqs_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -1338,7 +1386,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void teqs_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -1347,167 +1395,183 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void cmps_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmps_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmps_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmps_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmps_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmps_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmps_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmps_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmns_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmns_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmns_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmns_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmns_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmns_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmns_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmns_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::TEST> (instance,
+		Alu_impl<false, true, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void orr_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1516,7 +1580,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orr_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1525,7 +1589,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orr_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1534,7 +1598,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orr_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1543,7 +1607,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orr_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1552,7 +1616,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orr_RsASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1561,7 +1625,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orr_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1570,7 +1634,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orr_RsROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1579,7 +1643,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orrs_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1588,7 +1652,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orrs_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1597,7 +1661,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orrs_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1606,7 +1670,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orrs_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1615,7 +1679,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orrs_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1624,7 +1688,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orrs_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1633,7 +1697,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orrs_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1642,7 +1706,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orrs_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -1651,7 +1715,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void mov_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1660,7 +1724,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void mov_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1669,7 +1733,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void mov_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1678,7 +1742,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void mov_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1687,7 +1751,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void mov_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1696,7 +1760,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void mov_RsASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1705,7 +1769,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void mov_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1714,7 +1778,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void mov_RsROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1723,7 +1787,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void movs_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1732,7 +1796,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void movs_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1741,7 +1805,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void movs_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1750,7 +1814,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void movs_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1759,7 +1823,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void movs_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1768,7 +1832,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void movs_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1777,7 +1841,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void movs_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1786,7 +1850,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void movs_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -1795,7 +1859,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bic_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1804,7 +1868,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bic_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1813,7 +1877,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bic_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1822,7 +1886,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bic_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1831,7 +1895,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bic_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1840,7 +1904,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bic_RsASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1849,7 +1913,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bic_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1858,7 +1922,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bic_RsROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1867,7 +1931,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bics_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1876,7 +1940,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bics_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1885,7 +1949,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bics_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1894,7 +1958,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bics_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1903,7 +1967,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bics_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1912,7 +1976,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bics_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1921,7 +1985,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bics_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1930,7 +1994,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bics_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -1939,151 +2003,151 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void mvn_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvn_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvn_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvn_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvn_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvn_RsASR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvn_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvn_RsROR(GbaInstance& instance) {
-		Alu_impl<false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, false, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvns_ImmLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvns_RsLSL(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSL, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvns_ImmLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvns_RsLSR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::LSR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvns_ImmASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvns_RsASR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ASR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvns_ImmROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::IMM, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvns_RsROR(GbaInstance& instance) {
-		Alu_impl<false, true, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<false, true, false, SHIFT_BY::RS, SHIFT_TYPE::ROR, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void andi(GbaInstance& instance) {
-		Alu_impl<true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<true, false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -2092,7 +2156,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void andsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<true, true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -2101,7 +2165,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eori(GbaInstance& instance) {
-		Alu_impl<true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<true, false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -2110,7 +2174,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void eorsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<true, true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -2119,7 +2183,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void subi(GbaInstance& instance) {
-		Alu_impl<true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<true, false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
 				return result ;
@@ -2128,17 +2192,18 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void subsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<true, true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rsbi(GbaInstance& instance) {
-		Alu_impl<true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<true, false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
 				return result ;
@@ -2147,17 +2212,18 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rsbsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<true, true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn ;
-				static_cast<uint64_t>(op2) <= Rn ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= Rn ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void addi(GbaInstance& instance) {
-		Alu_impl<true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<true, false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				return result ;
@@ -2166,17 +2232,18 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void addsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<true, true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void adci(GbaInstance& instance) {
-		Alu_impl<true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<true, false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				return result ;
@@ -2185,17 +2252,18 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void adcsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<true, true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 + status.C() ;
 				static_cast<uint64_t>(Rn) + op2 + status.C() > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void sbci(GbaInstance& instance) {
-		Alu_impl<true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<true, false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
 				return result ;
@@ -2204,17 +2272,18 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void sbcsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<true, true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 + status.C() - 1 ;
-				static_cast<uint64_t>(Rn) <= op2 + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= static_cast<uint64_t>(op2) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void rsci(GbaInstance& instance) {
-		Alu_impl<true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<true, false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
 				return result ;
@@ -2223,17 +2292,18 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void rscsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
+		Alu_impl<true, true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) - Rn + status.C() - 1 ;
-				static_cast<uint64_t>(op2) <= Rn + status.C() ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(op2) >= static_cast<uint64_t>(Rn) - status.C() + 1 ? status.SetC() : status.ClearC() ;
+				TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void tstsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::TEST> (instance,
+		Alu_impl<true, true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & op2 ;
 				return result ;
@@ -2242,7 +2312,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void teqsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::TEST> (instance,
+		Alu_impl<true, true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) ^ op2 ;
 				return result ;
@@ -2251,27 +2321,29 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void cmpsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::TEST> (instance,
+		Alu_impl<true, true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) - op2 ;
-				static_cast<uint64_t>(Rn) <= op2 ? status.SetC() : status.ClearC() ;
+				static_cast<uint64_t>(Rn) >= op2 ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void cmnsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::TEST> (instance,
+		Alu_impl<true, true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::ARITHMETIC> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) + op2 ;
 				static_cast<uint64_t>(Rn) + op2 > 0xffffffff ? status.SetC() : status.ClearC() ;
+				TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ? status.SetV() : status.ClearV() ;
 				return result ;
 			}
 		);
 	}
 
 	static void orri(GbaInstance& instance) {
-		Alu_impl<true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<true, false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -2280,7 +2352,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void orrsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<true, true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) | op2 ;
 				return result ;
@@ -2289,7 +2361,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void movi(GbaInstance& instance) {
-		Alu_impl<true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<true, false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -2298,7 +2370,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void movsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<true, true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(op2) ;
 				return result ;
@@ -2307,7 +2379,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bici(GbaInstance& instance) {
-		Alu_impl<true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<true, false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -2316,7 +2388,7 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void bicsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<true, true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
 				uint64_t result = static_cast<uint64_t>(Rn) & (~op2) ;
 				return result ;
@@ -2325,18 +2397,18 @@ namespace gg_core::gg_cpu {
 	}
 
 	static void mvni(GbaInstance& instance) {
-		Alu_impl<true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<true, false, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);
 	}
 
 	static void mvnsi(GbaInstance& instance) {
-		Alu_impl<true, true, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
+		Alu_impl<true, true, false, SHIFT_BY::NONE, SHIFT_TYPE::NONE, OP_TYPE::LOGICAL> (instance,
 			[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {
-				uint64_t result = ~static_cast<uint64_t>(op2);
+				uint64_t result = ~op2;
 				return result ;
 			}
 		);

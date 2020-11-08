@@ -65,7 +65,10 @@ namespace gg_core::gg_cpu {
             } // if
             else {
                 op2 = static_cast<int32_t>(Rm) >> Rs ;
-                carry = TestBit(Rm, Rs - 1) ;
+                if (Rs != 0)
+                    carry = TestBit(Rm, Rs - 1) ;
+                else
+                    carry = instance._status.C() ;
             } // else if
         } // if
 
@@ -140,7 +143,7 @@ namespace gg_core::gg_cpu {
         op2 = rotr(imm, rot) ;
     } // ParseOp2_Imm()
 
-    template<bool I, bool S, SHIFT_BY SHIFT_SRC, SHIFT_TYPE ST, OP_TYPE OT, typename F>
+    template<bool I, bool S, bool TEST, SHIFT_BY SHIFT_SRC, SHIFT_TYPE ST, OP_TYPE OT, typename F>
     static void Alu_impl(GbaInstance &instance, F operation) requires
         std::is_same_v<std::invoke_result_t<F, unsigned, unsigned, gg_cpu::Status&>, uint64_t>
     {
@@ -167,7 +170,7 @@ namespace gg_core::gg_cpu {
         uint64_t result = operation(RnVal, op2, instance._status) ;
 
         if constexpr (S) {
-            if constexpr (OT == OP_TYPE::LOGICAL || OT == OP_TYPE::TEST) {
+            if constexpr (OT == OP_TYPE::LOGICAL) {
                 TestBit(result, 31) ? instance._status.SetN() : instance._status.ClearN() ;
                 shiftCarry ? instance._status.SetC() : instance._status.ClearC() ;;
                 result == 0 ? instance._status.SetZ() : instance._status.ClearZ();
@@ -177,14 +180,14 @@ namespace gg_core::gg_cpu {
                 const bool op2Signed = TestBit(op2, 31);
                 const bool resultSigned = TestBit(result, 31);
 
-                (RnSigned == op2Signed) && (RnSigned != resultSigned) ? instance._status.SetV() : instance._status.ClearV();
+//                (RnSigned == op2Signed) && (RnSigned != resultSigned) ? instance._status.SetV() : instance._status.ClearV();
 //                result > 0xffffffff ? instance._status.ClearC() : instance._status.SetC() ;
                 (result & 0xffffffff) == 0 ? instance._status.SetZ() : instance._status.ClearZ() ;
                 TestBit(result, 31) ? instance._status.SetN() : instance._status.ClearN() ;
             } // else
         } // if
 
-        if constexpr (OT != OP_TYPE::TEST) {
+        if constexpr (!TEST) {
             const uint8_t RdNumber = (curInst & 0xf000) >> 12 ;
             instance._status._regs[RdNumber] = result ;
             if (RdNumber == pc) {

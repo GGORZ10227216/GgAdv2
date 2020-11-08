@@ -14,18 +14,29 @@ alu_required_Header = ['bit_manipulate.h', 'v4_alu_api.h']
 headerPath = '../include/instruction/arm'
 args = 'GbaInstance& instance'
 
-logical = ["AND", "EOR", "ORR", "MOV", "BIC", "MVN"]
+logical = ["AND", "EOR", "ORR", "MOV", "BIC", "MVN", "TST", "TEQ"]
 test = ["TST", "TEQ", "CMP", "CMN"]
 
 carryRules = {
     'ADD': 'static_cast<uint64_t>(Rn) + op2 > 0xffffffff',
     'CMN': 'static_cast<uint64_t>(Rn) + op2 > 0xffffffff',
     'ADC': 'static_cast<uint64_t>(Rn) + op2 + status.C() > 0xffffffff',
-    'SUB': 'static_cast<uint64_t>(Rn) <= op2',
-    'CMP': 'static_cast<uint64_t>(Rn) <= op2',
-    'SBC': 'static_cast<uint64_t>(Rn) <= op2 + status.C()',
-    'RSB': 'static_cast<uint64_t>(op2) <= Rn',
-    'RSC': 'static_cast<uint64_t>(op2) <= Rn + status.C()'
+    'SUB': 'static_cast<uint64_t>(Rn) >= op2',
+    'CMP': 'static_cast<uint64_t>(Rn) >= op2',
+    'SBC': 'static_cast<uint64_t>(Rn) >= static_cast<uint64_t>(op2) - status.C() + 1',
+    'RSB': 'static_cast<uint64_t>(op2) >= Rn',
+    'RSC': 'static_cast<uint64_t>(op2) >= static_cast<uint64_t>(Rn) - status.C() + 1'
+}
+
+overflowRules = {
+    'ADD': 'TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31)',
+    'CMN': 'TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31)',
+    'ADC': 'TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31)',
+    'SUB': 'TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31)',
+    'CMP': 'TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31)',
+    'SBC': 'TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31)',
+    'RSB': 'TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31)',
+    'RSC': 'TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31)'
 }
 
 handlerTable = {
@@ -44,19 +55,21 @@ handlerTable = {
     "ORR": "static_cast<uint64_t>(Rn) | op2 ;",
     "MOV": "static_cast<uint64_t>(op2) ;",
     "BIC": "static_cast<uint64_t>(Rn) & (~op2) ;",
-    "MVN": "~static_cast<uint64_t>(op2);"
+    "MVN": "~op2;"
 }
 
 def flagGen(mnemonic, s):
     if mnemonic in ['ADD', 'ADC', 'CMN', 'SUB', 'SBC', 'RSB', 'RSC', 'CMP'] and s:
-        return '\t\t\t\t' + carryRules[mnemonic] + ' ? status.SetC() : status.ClearC() ;\n'
+        result = '\t\t\t\t' + carryRules[mnemonic] + ' ? status.SetC() : status.ClearC() ;\n'
+        result += '\t\t\t\t' + overflowRules[mnemonic] + ' ? status.SetV() : status.ClearV() ;\n'
+        return result
     else:
         return ''
     
 def aluGen(record):
     mnemonic = record['Attribute']['Signature'][:3].upper()
     signature = \
-        'Alu_impl<{}, {}, SHIFT_BY::{}, SHIFT_TYPE::{}, OP_TYPE::{}> (instance,\n' \
+        'Alu_impl<{}, {}, {}, SHIFT_BY::{}, SHIFT_TYPE::{}, OP_TYPE::{}> (instance,\n' \
         '\t\t\t[](uint32_t Rn, uint32_t op2, gg_cpu::Status& status) {{\n' \
         '\t\t\t\tuint64_t result = {}\n' \
         '{}' \
@@ -81,14 +94,18 @@ def aluGen(record):
 
     if mnemonic in logical:
         tags["optype"] = "LOGICAL"
-    elif mnemonic in test:
-        tags["optype"] = "TEST"
     else:
         tags["optype"] = "ARITHMETIC"
+
+    if mnemonic in test:
+        tags["test"] = 'true'
+    else:
+        tags["test"] = 'false'
 
     signature = signature.format(
         tags["I"],
         tags["S"],
+        tags["test"],
         tags["shtby"],
         tags["shttype"],
         tags["optype"],

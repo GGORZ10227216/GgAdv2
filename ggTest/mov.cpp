@@ -44,15 +44,16 @@ namespace {
                 // dbg
                 // fmt::print("{}\n", gg_asm.DASM(instruction)) ;
 
-                if (t == 2053)
-                    std::cout << "gg" << std::endl ;
+//                if (t == 16511)
+//                    std::cout << "gg" << std::endl ;
 
                 uint32_t inst_hash = hashArm(instruction) ;
                 std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
                 instance.CPUTick_Debug(instruction);
 
                 uint32_t errFlag = CheckStatus(instance, egg) ;
-                ASSERT_EQ(errFlag, 0)
+                ASSERT_TRUE(errFlag == 0)
+                    << "#" << t << " of test" << '\n'
                     << std::hex << "Errflag: " << errFlag << '\n'
                     << fmt::format( "Rn: {:x}, Rm: {:x}, Rs: {:x}\n", FieldRn.value, FieldRm.value, FieldRs.value )
                     << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
@@ -63,14 +64,14 @@ namespace {
             fmt::print("[{}] Total performed tests: {}\n", opName[operation], t) ;
         };
 
-//        std::vector<std::thread> workers ;
-//        for (int i = 0 ; i < 16 ; ++i) {
-//            std::cout << '[' << opName[i] << ']' << "start!" << std::endl ;
-//            workers.emplace_back(worker, static_cast<E_DataProcess>(i)) ;
-//        } // for
-//
-//        for (auto& t : workers)
-//            t.join();
-        worker(SUB) ;
+        std::vector<std::thread> workers ;
+        for (int i = 0 ; i < 16 ; ++i) {
+            std::cout << '[' << opName[i] << ']' << "start!" << std::endl ;
+            workers.emplace_back(worker, static_cast<E_DataProcess>(i)) ;
+        } // for
+
+        for (auto& t : workers)
+            t.join();
+//        worker(MVN) ;
     }
 }
