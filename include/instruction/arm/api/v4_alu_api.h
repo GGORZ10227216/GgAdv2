@@ -15,7 +15,7 @@ namespace gg_core::gg_cpu {
     };
 
     template <SHIFT_TYPE ST>
-    bool ParseOp2_Shift_RS(GbaInstance &instance, uint32_t &op2) {
+    inline bool ParseOp2_Shift_RS(GbaInstance &instance, uint32_t &op2) {
         const uint32_t curInst = CURRENT_INSTRUCTION ;
         const uint8_t RmNumber = curInst & 0b1111 ;
         const uint8_t RsNumber = (curInst & 0xf00) >> 8 ;
@@ -73,12 +73,10 @@ namespace gg_core::gg_cpu {
         } // if
 
         if constexpr (ST == SHIFT_TYPE::ROR) {
-            Rs %= 32 ;
-            op2 = rotr(Rm, Rs) ;
-            if (Rs != 0)
-                carry = TestBit(Rm, Rs - 1) ;
-            else
-                carry = instance._status.C() ;
+            if (Rs > 32)
+                Rs -= 32 ;
+            carry = Rs == 0 ? instance._status.C() : TestBit(Rm, Rs - 1) ;
+            op2 = rotr(Rm, Rs);
         } // if
 
         return carry ;

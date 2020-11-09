@@ -179,19 +179,18 @@ uint32_t ALUInstruction(V value) {
     return result ;
 }
 
-template <typename A, typename B, size_t... Is, typename... RS, typename... VS>
-void FillRegs_Impl(A& mineRegs, B& refRegs, std::tuple<RS...>& R, std::tuple<VS...>& V, std::index_sequence<Is...>) {
-    ((mineRegs[std::get<Is>(R)] = std::get<Is>(V)), ...) ;
-    ((refRegs[std::get<Is>(R)] = std::get<Is>(V)), ...) ;
+template <typename A, size_t... Is, typename... RS, typename... VS>
+void FillRegs_Impl(A& regs, std::tuple<RS...>& R, std::tuple<VS...>& V, std::index_sequence<Is...>) {
+    ((regs[std::get<Is>(R)] = std::get<Is>(V)), ...) ;
 }
 
-template <typename A, typename B, typename... RS, typename... VS>
-void FillRegs(A& mineRegs, B& refRegs, std::tuple<RS...>& R, std::tuple<VS...>& V) {
+template <typename A, typename... RS, typename... VS>
+void FillRegs(A& regs, std::tuple<RS...>& R, std::tuple<VS...>& V) {
     constexpr size_t reg_idx_number = sizeof...(RS);
     constexpr size_t field_number = sizeof...(VS);
     static_assert(reg_idx_number == field_number) ;
 
-    FillRegs_Impl(mineRegs, refRegs, R, V, std::make_index_sequence<reg_idx_number>{});
+    FillRegs_Impl(regs, R, V, std::make_index_sequence<reg_idx_number>{});
 }
 
 template <F_Type... Fs, typename... Vs>
