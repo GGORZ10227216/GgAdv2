@@ -7,6 +7,8 @@ set(CMAKE_CXX_FLAGS "${CMAKXX_FLAGS} -pthread -D_REENTRANT -I/usr/include/SDL2")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -flto")
 
+set(arm_decoder_path include/component/cpu/core/arm)
+
 set(header_core
         include/instruction_class.h
         include/framework/logger.h
@@ -49,7 +51,7 @@ set(src_core
         src/framework/logger/console_logger.cpp
         src/cpu/cpu.cpp src/cpu/status.cpp)
 
-add_executable(ggAdv main.cpp ${header_core} ${header_arm_implement} ${src_core})
+add_executable(ggAdv main.cpp ${arm_core_header} ${header_core} ${header_arm_implement} ${src_core})
 target_include_directories(ggAdv PUBLIC
         include
         include/component/
@@ -60,6 +62,7 @@ target_include_directories(ggAdv PUBLIC
         include/instruction/arm
         include/instruction/arm/api
         include/utility
+        ${arm_decoder_path}
         )
 
 target_link_libraries(ggAdv /usr/local/lib/libfmt.a)
