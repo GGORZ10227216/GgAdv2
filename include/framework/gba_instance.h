@@ -6,7 +6,7 @@
 #include <optional>
 #include <filesystem>
 
-#include <arm_instruction_table.h>
+#include <arm_decoder.h>
 #include <status.h>
 #include <mmu.h>
 #include <io.h>

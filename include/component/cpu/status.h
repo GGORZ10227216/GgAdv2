@@ -18,7 +18,7 @@ namespace gg_core {
 
     namespace gg_cpu {
         struct Status {
-            friend GbaInstance;
+            friend class gg_core::GbaInstance;
             friend class ::ggTest ;
         public :
             Regs _regs;
