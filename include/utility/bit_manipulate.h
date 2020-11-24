@@ -21,8 +21,8 @@ namespace gg_core {
         return bin & _BV(bitNo);
     } // TestBit()
 
-    template <typename T, unsigned START_BIT, unsigned LENG>
-    constexpr T BitFieldValue(T bin) {
+    template <unsigned START_BIT, unsigned LENG, typename T>
+    constexpr auto BitFieldValue(T bin) -> T {
         constexpr T mask = static_cast<T>(~0) >> (sizeof(T)*8 - LENG);
         return (bin >> START_BIT) & mask ;
     } // BitFieldValue

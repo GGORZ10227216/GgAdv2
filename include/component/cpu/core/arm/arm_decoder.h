@@ -17,7 +17,7 @@ namespace gg_core {
 
     namespace gg_cpu {
         template <uint32_t HashCode32>
-        void DataProcessing(GbaInstance &instance) ;
+        static void DataProcessing(GbaInstance &instance) ;
 
         template <uint32_t HashCode32>
         void PSR_Transfer(GbaInstance &instance) ;
