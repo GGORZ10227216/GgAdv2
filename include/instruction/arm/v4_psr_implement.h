@@ -66,4 +66,32 @@ namespace gg_core::gg_cpu {
             instance._status.WriteSPSR(immVal) ;
         } // else
     }
+
+    template <uint32_t HashCode32>
+    void PSR_Transfer(GbaInstance &instance) {
+        if constexpr (BitFieldValue<20,2>(HashCode32) == 0b00) {
+            // MRS
+            if constexpr (TestBit(HashCode32, 22))
+                mrsp(instance) ;
+            else
+                mrs(instance);
+        } // if
+        else if constexpr (BitFieldValue<20,2>(HashCode32) == 0b10) {
+            // MSR
+            if constexpr (TestBit(HashCode32, 25)) {
+                if constexpr (TestBit(HashCode32, 22))
+                    msrp_Imm(instance);
+                else
+                    msr_Imm(instance);
+            } // if
+            else {
+                if constexpr (TestBit(HashCode32, 22))
+                    msrp_Rm(instance);
+                else
+                    msr_Rm(instance);
+            } // else
+        } // else
+        else
+            __builtin_unreachable() ;
+    } // PSR_Transfer()
 } // gg_core::gg_cpu
