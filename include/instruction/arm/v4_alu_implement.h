@@ -1,6 +1,9 @@
 #include <bit_manipulate.h>
 #include <cstdint>
 
+#ifndef GGADV_V4_ALU_IMPLEMENT
+#define GGADV_V4_ALU_IMPLEMENT
+
 namespace gg_core::gg_cpu {
     enum class OP_TYPE { LOGICAL, ARITHMETIC, TEST } ;
 
@@ -246,3 +249,5 @@ namespace gg_core::gg_cpu {
         } // if
     }
 } // gg_core::gg_cpu
+
+#endif // GGADV_V4_ALU_IMPLEMENT

@@ -1,3 +1,8 @@
+#include <gg_utility.h>
+
+#ifndef GGADV_V4_PSR_IMPLEMENT
+#define GGADV_V4_PSR_IMPLEMENT
+
 namespace gg_core::gg_cpu {
     static void mrs(GbaInstance& instance) {
         const uint32_t RdNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
@@ -92,6 +97,8 @@ namespace gg_core::gg_cpu {
             } // else
         } // else
         else
-            __builtin_unreachable() ;
+            Unreachable() ;
     } // PSR_Transfer()
 } // gg_core::gg_cpu
+
+#endif // GGADV_V4_PSR_IMPLEMENT
