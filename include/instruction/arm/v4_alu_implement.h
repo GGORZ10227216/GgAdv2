@@ -140,9 +140,27 @@ namespace gg_core::gg_cpu {
         op2 = rotr(imm, rot) ;
     } // ParseOp2_Imm()
 
+    template <E_DataProcess opcode>
+    inline void CPSR_Arithmetic(GbaInstance &instance, uint32_t Rn, uint32_t op2) {
+        bool needSet = false ;
+        if constexpr (opcode == ADD || opcode == CMN)
+            needSet = static_cast<uint64_t>(Rn) + op2 > 0xffffffff ;
+        else if constexpr (opcode == ADC)
+            needSet = static_cast<uint64_t>(Rn) + op2 + instance._status.C() > 0xffffffff ;
+        else if constexpr (opcode == SUB || opcode == CMP)
+            needSet = static_cast<uint64_t>(Rn) >= op2 ;
+        else if constexpr (opcode == SBC)
+            needSet = static_cast<uint64_t>(Rn) >= static_cast<uint64_t>(op2) - instance._status.C() + 1 ;
+        else if constexpr (opcode == RSB)
+            needSet = static_cast<uint64_t>(op2) >= Rn ;
+        else if constexpr (opcode == RSC)
+            needSet = static_cast<uint64_t>(op2) >= static_cast<uint64_t>(Rn) - instance._status.C() + 1 ;
+        needSet ? instance._status.SetC() : instance._status.ClearC() ;
+    }
+
     // template<bool I, bool S, bool TEST, SHIFT_BY SHIFT_SRC, SHIFT_TYPE ST, OP_TYPE OT, typename F>
     template <uint32_t HashCode32>
-    static void DataProcessing(GbaInstance &instance)
+    void DataProcessing(GbaInstance &instance)
     {
         enum {I = 25, S = 20, SHIFT_BY_RS = 4, SHIFT_TYPE = 5, SHIFT_TYPE_SIZE = 2} ;
 
@@ -194,6 +212,14 @@ namespace gg_core::gg_cpu {
             result = static_cast<uint64_t>(RnVal) - op2 + instance._status.C() - 1 ;
         else if constexpr (opcode == RSC)
             result = static_cast<uint64_t>(op2) - RnVal + instance._status.C() - 1 ;
+        else if constexpr (opcode == ORR)
+            result = static_cast<uint64_t>(RnVal) | op2 ;
+        else if constexpr (opcode == MOV)
+            result = static_cast<uint64_t>(op2) ;
+        else if constexpr (opcode == BIC)
+            result = static_cast<uint64_t>(RnVal) & (~op2) ;
+        else if constexpr (opcode == MVN)
+            result = ~op2 ;
 
         if constexpr (TestBit(HashCode32, S)) {
             if constexpr (OT == OP_TYPE::LOGICAL) {
@@ -202,12 +228,7 @@ namespace gg_core::gg_cpu {
                 result == 0 ? instance._status.SetZ() : instance._status.ClearZ();
             } // if
             else {
-                const bool RnSigned = TestBit(RnVal, 31);
-                const bool op2Signed = TestBit(op2, 31);
-                const bool resultSigned = TestBit(result, 31);
-
-//                (RnSigned == op2Signed) && (RnSigned != resultSigned) ? instance._status.SetV() : instance._status.ClearV();
-//                result > 0xffffffff ? instance._status.ClearC() : instance._status.SetC() ;
+                CPSR_Arithmetic<opcode> (instance, RnVal, op2);
                 (result & 0xffffffff) == 0 ? instance._status.SetZ() : instance._status.ClearZ() ;
                 TestBit(result, 31) ? instance._status.SetN() : instance._status.ClearN() ;
             } // else
