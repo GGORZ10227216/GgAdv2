@@ -29,13 +29,12 @@ set(header_core
         include/component/memory/general_memory.h
         include/component/memory/display_memory.h
         include/component/memory/gamepak_memory.h
-        include/utility/bit_manipulate.h include/instruction/arm/macro.h include/utility/gg_utility.h)
+        include/utility/bit_manipulate.h include/instruction/arm/macro.h include/utility/gg_utility.h include/instruction/arm/v4_operand2.h)
 
 set(header_arm_implement
         include/instruction/arm/arm_prototype.h
         include/instruction/arm/arm_instruction_table.h
         include/instruction/arm/v4_alu_implement.h
-        include/instruction/arm/api/v4_alu_api.h
         include/instruction/arm/v4_block_transfer_implement.h
         include/instruction/arm/v4_branch_implement.h
         include/instruction/arm/v4_half_transfer_implement.h

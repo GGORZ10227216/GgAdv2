@@ -1,12 +1,14 @@
+//
+// Created by buildmachine on 2020-11-27.
+//
+
+#include <bit_manipulate.h>
 #include <cstdint>
 
-#ifndef GGADV2_ALU_API_H
-#define GGADV2_ALU_API_H
+#ifndef GGTEST_V4_OPERAND2_H
+#define GGTEST_V4_OPERAND2_H
 
 namespace gg_core::gg_cpu {
-    // using alu_handler = void(*)(uint32_t&, uint32_t, uint32_t) ;
-    enum class OP_TYPE { LOGICAL, ARITHMETIC, TEST } ;
-
     enum class SHIFT_BY {
         RS, IMM, NONE
     };
@@ -142,62 +144,6 @@ namespace gg_core::gg_cpu {
         const uint8_t rot = (curInst & 0xf00) >> 7 ;
         op2 = rotr(imm, rot) ;
     } // ParseOp2_Imm()
-
-    template<bool I, bool S, bool TEST, SHIFT_BY SHIFT_SRC, SHIFT_TYPE ST, OP_TYPE OT, typename F>
-    static void Alu_impl(GbaInstance &instance, F operation) requires
-        std::is_same_v<std::invoke_result_t<F, unsigned, unsigned, gg_cpu::Status&>, uint64_t>
-    {
-        const uint32_t curInst = CURRENT_INSTRUCTION ;
-        const uint8_t RnNumber = (curInst & 0xf0000) >> 16 ;
-
-        uint32_t RnVal = instance._status._regs[RnNumber] ;
-        uint32_t op2 = 0 ;
-        bool shiftCarry = false ;
-
-        if constexpr (I) {
-            ParseOp2_Imm(instance, op2) ;
-        } // if
-        else {
-            if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
-                shiftCarry = ParseOp2_Shift_RS<ST>(instance, op2) ;
-                if (RnNumber == pc)
-                    RnVal += 4 ;
-            } // if
-            else
-                shiftCarry = ParseOp2_Shift_Imm<ST>(instance, op2) ;
-        } // else
-
-        uint64_t result = operation(RnVal, op2, instance._status) ;
-
-        if constexpr (S) {
-            if constexpr (OT == OP_TYPE::LOGICAL) {
-                TestBit(result, 31) ? instance._status.SetN() : instance._status.ClearN() ;
-                shiftCarry ? instance._status.SetC() : instance._status.ClearC() ;;
-                result == 0 ? instance._status.SetZ() : instance._status.ClearZ();
-            } // if
-            else {
-                const bool RnSigned = TestBit(RnVal, 31);
-                const bool op2Signed = TestBit(op2, 31);
-                const bool resultSigned = TestBit(result, 31);
-
-//                (RnSigned == op2Signed) && (RnSigned != resultSigned) ? instance._status.SetV() : instance._status.ClearV();
-//                result > 0xffffffff ? instance._status.ClearC() : instance._status.SetC() ;
-                (result & 0xffffffff) == 0 ? instance._status.SetZ() : instance._status.ClearZ() ;
-                TestBit(result, 31) ? instance._status.SetN() : instance._status.ClearN() ;
-            } // else
-        } // if
-
-        if constexpr (!TEST) {
-            const uint8_t RdNumber = (curInst & 0xf000) >> 12 ;
-            instance._status._regs[RdNumber] = result ;
-            if (RdNumber == pc) {
-                instance.RefillPipeline() ;
-                if constexpr (S) {
-                    instance._status.WriteCPSR( instance._status.ReadSPSR() ) ;
-                } // if
-            } // if
-        } // if
-    }
 }
 
-#endif
+#endif //GGTEST_V4_OPERAND2_H
