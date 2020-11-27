@@ -7,8 +7,6 @@ set(CMAKE_CXX_FLAGS "${CMAKXX_FLAGS} -pthread -D_REENTRANT -I/usr/include/SDL2")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3")
 
-set(arm_decoder_path include/component/cpu/core/arm)
-
 set(header_core
         include/instruction_class.h
         include/framework/logger.h
@@ -32,9 +30,9 @@ set(header_core
         include/utility/bit_manipulate.h include/instruction/arm/macro.h include/utility/gg_utility.h)
 
 set(header_arm_implement
+        include/component/cpu/core/arm/arm_decoder.h
         include/instruction/arm/arm_prototype.h
         include/instruction/arm/arm_instruction_table.h
-        include/instruction/arm/v4_alu_implement.h
         include/instruction/arm/api/v4_alu_api.h
         include/instruction/arm/v4_block_transfer_implement.h
         include/instruction/arm/v4_branch_implement.h
@@ -45,24 +43,24 @@ set(header_arm_implement
         include/instruction/arm/v4_psr_implement.h
         include/instruction/arm/v4_swap_implement.h
         include/instruction/arm/v4_transfer_implement.h
-        include/instruction/arm/api/v4_mem_api.h include/instruction/arm/api/v4_irq_api.h include/instruction/arm/api/v4_multiply_api.h)
+        include/instruction/arm/api/v4_mem_api.h include/instruction/arm/api/v4_irq_api.h include/instruction/arm/api/v4_multiply_api.h include/instruction/arm/api/v4_operand2.h)
 
 set(src_core
         src/framework/logger/console_logger.cpp
         src/cpu/cpu.cpp src/cpu/status.cpp)
 
-add_executable(ggAdv main.cpp ${arm_core_header} ${header_core} ${header_arm_implement} ${src_core})
+add_executable(ggAdv main.cpp ${header_core} ${header_arm_implement} ${src_core})
 target_include_directories(ggAdv PUBLIC
         include
         include/component/
         include/component/cpu
         include/component/memory
         include/component/io
+        include/component/cpu/core/arm
         include/framework
         include/instruction/arm
         include/instruction/arm/api
         include/utility
-        ${arm_decoder_path}
         )
 
 target_link_libraries(ggAdv /usr/local/lib/libfmt.a)
