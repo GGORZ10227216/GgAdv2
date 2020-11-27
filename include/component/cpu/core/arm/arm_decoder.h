@@ -29,7 +29,7 @@ namespace gg_core {
         void MultiplyLong(GbaInstance &instance) ;
 
         template <uint32_t HashCode32>
-        void Interrupt(GbaInstance &instance) ;
+        void SoftwareInterrupt(GbaInstance &instance) ;
 
         template <uint32_t HashCode32>
         void Branch(GbaInstance &instance) ;
@@ -59,13 +59,13 @@ namespace gg_core {
             constexpr uint32_t HashCode32 = ((HashCode12 & 0xff0) << 16) | ((HashCode12 & 0xf) << 4);
 
             if constexpr ((HashCode12 & 0b1111'0000'0000) == 0b1111'0000'0000)
-                return &Interrupt<HashCode32>;
+                return &SoftwareInterrupt<0>; // HashCode32 for sw interrupt is useless
             if constexpr ((HashCode12 & 0b1110'0000'0000) == 0b1010'0000'0000)
                 return &Branch<HashCode32>;
             if constexpr ((HashCode12 & 0b1110'0000'0000) == 0b1000'0000'0000)
                 return &BlockTransfer<HashCode32>;
             if constexpr ((HashCode12 & 0b1110'0000'0001) == 0b0110'0000'0001)
-                return &Undefined<0>;
+                return &Undefined<0>; // HashCode for Undefined() is only useful when debugging.
             if constexpr ((HashCode12 & 0b1100'0000'0000) == 0b0100'0000'0000)
                 return &SingleDataTransfer<HashCode32>;
             if constexpr ((HashCode12 & 0b1111'1111'1111) == 0b0001'0010'0001)
