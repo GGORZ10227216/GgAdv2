@@ -2,13 +2,16 @@
 // Created by jason4_lee on 2020-09-30.
 //
 
+#include <cpu_enum.h>
+
 #ifndef GGADV2_IRQ_API_H
 #define GGADV2_IRQ_API_H
 
 namespace gg_core::gg_cpu {
     template <E_OperationMode opMode>
-    void Interrupt(GbaInstance &instance, uint32_t nextInstructionAddr) {
-        instance._status._regs[ lr ] = nextInstructionAddr ;
+    void Interrupt_impl(GbaInstance &instance) {
+        instance._status._regs[ lr ] =
+                instance._status.CurrentPC_OnExec() - (instance._status.GetCpuMode() == ARM ? 4 : 2) ;
 
         const uint32_t preCPSR = instance._status.ReadCPSR() ;
 
@@ -24,7 +27,7 @@ namespace gg_core::gg_cpu {
 
         instance._status.ChangeCpuMode(ARM);
         instance._status.SetI() ;
-    }
+    } // Interrupt_impl()
 }
 
 #endif //GGADV2_IRQ_API_H

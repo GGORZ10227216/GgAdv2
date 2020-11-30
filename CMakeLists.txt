@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.16)
-project(ggAdv)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 20)
@@ -7,7 +6,29 @@ set(CMAKE_CXX_FLAGS "${CMAKXX_FLAGS} -pthread -D_REENTRANT -I/usr/include/SDL2")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3")
 
-set(header_core
+project(ggAdv)
+#    set(v4_arm_core_path include/component/cpu/core/arm)
+#    set(v4_arm_decoder_src
+#        ${v4_arm_core_path}/arm_decoder.h
+#        ${v4_arm_core_path}/decoder/branch.h
+#        ${v4_arm_core_path}/decoder/data_processing.h
+#        ${v4_arm_core_path}/decoder/memory_access.h
+#        ${v4_arm_core_path}/decoder/multiply.h
+#        ${v4_arm_core_path}/decoder/psr_transfer.h
+#        ${v4_arm_core_path}/decoder/software_interrupt.h
+#    )
+#    set(v4_arm_implement_src
+#        ${v4_arm_core_path}/implements/v4_operand2.h
+#        ${v4_arm_core_path}/implements/v4_alu_implement.h
+#        ${v4_arm_core_path}/implements/v4_branch_implement.h
+#        ${v4_arm_core_path}/implements/v4_irq_implement.h
+#        ${v4_arm_core_path}/implements/v4_mem_implement.h
+#        ${v4_arm_core_path}/implements/v4_multiply_implement.h
+#        ${v4_arm_core_path}/implements/v4_psr_implement.h
+#    )
+#    set(v4_arm_core_src ${v4_arm_decoder_src} ${v4_arm_implement_src})
+
+    set(header_core
         include/instruction_class.h
         include/framework/logger.h
         include/component/cpu/cpu.h
@@ -27,43 +48,26 @@ set(header_core
         include/component/memory/general_memory.h
         include/component/memory/display_memory.h
         include/component/memory/gamepak_memory.h
-        include/utility/bit_manipulate.h include/instruction/arm/macro.h include/utility/gg_utility.h)
+        include/utility/bit_manipulate.h include/utility/gg_utility.h include/component/cpu/core/arm/decoder/multiply.h include/component/cpu/core/arm/decoder/memory_access.h
+    )
 
-set(header_arm_implement
-        include/component/cpu/core/arm/arm_decoder.h
-        include/instruction/arm/arm_prototype.h
-        include/instruction/arm/arm_instruction_table.h
-        include/instruction/arm/api/v4_alu_api.h
-        include/instruction/arm/v4_block_transfer_implement.h
-        include/instruction/arm/v4_branch_implement.h
-        include/instruction/arm/v4_half_transfer_implement.h
-        include/instruction/arm/v4_interrupt_implement.h
-        include/instruction/arm/v4_mul_implement.h
-        include/instruction/arm/v4_mull_implement.h
-        include/instruction/arm/v4_psr_implement.h
-        include/instruction/arm/v4_swap_implement.h
-        include/instruction/arm/v4_transfer_implement.h
-        include/instruction/arm/api/v4_mem_api.h include/instruction/arm/api/v4_irq_api.h include/instruction/arm/api/v4_multiply_api.h include/instruction/arm/api/v4_operand2.h)
+    set(src_core src/framework/logger/console_logger.cpp)
 
-set(src_core
-        src/framework/logger/console_logger.cpp
-        src/cpu/cpu.cpp src/cpu/status.cpp)
-
-add_executable(ggAdv main.cpp ${header_core} ${header_arm_implement} ${src_core})
-target_include_directories(ggAdv PUBLIC
+    add_executable(ggAdv main.cpp ${header_core} ${v4_arm_core_src} ${src_core})
+    target_link_libraries(ggAdv /usr/local/lib/libfmt.a)
+    target_include_directories(ggAdv PUBLIC
         include
-        include/component/
+        include/component
         include/component/cpu
-        include/component/memory
-        include/component/io
+        include/component/cpu/core
         include/component/cpu/core/arm
+        include/component/cpu/core/arm/decoder
+        include/component/cpu/core/arm/implements
+        include/component/io
+        include/component/memory
         include/framework
-        include/instruction/arm
-        include/instruction/arm/api
         include/utility
-        )
-
-target_link_libraries(ggAdv /usr/local/lib/libfmt.a)
+    )
 
 project(arm_analyzer)
 add_executable(arm_analyzer tool/arm_analyzer/main.cpp)
@@ -83,7 +87,7 @@ target_include_directories(ggBenchmark PUBLIC
         include/component/io
         include/framework
         include/instruction/arm
-        include/instruction/arm/api
+        include/component/cpu/core/arm/implements
         include/utility
         )
 target_link_libraries(ggBenchmark /usr/local/lib/libfmt.a
@@ -111,7 +115,7 @@ target_include_directories(ggTest PUBLIC
         include/component/io
         include/framework
         include/instruction/arm
-        include/instruction/arm/api
+        include/component/cpu/core/arm/implements
         include/utility
         ./eggvance/eggvance/src/
         ./eggvance/eggvance/external/shell/include/

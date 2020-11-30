@@ -5,12 +5,12 @@
 #include <thread>
 #include <optional>
 #include <filesystem>
+#include <iostream>
 
-#include <arm_decoder.h>
 #include <status.h>
 #include <mmu.h>
 #include <io.h>
-#include <iostream>
+#include <arm_decoder.h>
 
 #ifndef GGADV_GBA_INSTANCE_H
 #define GGADV_GBA_INSTANCE_H
@@ -103,6 +103,11 @@ namespace gg_core {
 #define CURRENT_INSTRUCTION instance._status.CurrentInstruction()
 #define CPU_REG instance._status._regs
 
-#include <v4_alu_api.h>
+#include <v4_alu_implement.h>
+#include <v4_multiply_implement.h>
+#include <v4_mem_implement.h>
+#include <v4_irq_implement.h>
+#include <v4_psr_implement.h>
+#include <v4_branch_implement.h>
 
 #endif //GGADV_GBA_INSTANCE_H
