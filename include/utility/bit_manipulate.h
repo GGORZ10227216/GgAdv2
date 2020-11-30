@@ -12,7 +12,7 @@ namespace gg_core {
         return ((addr + align) & ~(align - 1)) - align ;
     } // AddrAlign()
 
-    constexpr unsigned _BV(uint32_t bitNo) {
+    constexpr auto _BV(uint32_t bitNo) {
         return 0x1 << bitNo;
     } // _BV()
 

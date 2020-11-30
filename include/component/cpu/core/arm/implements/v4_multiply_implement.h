@@ -2,15 +2,17 @@
 // Created by jason4_lee on 2020-10-06.
 //
 
+#include <bit_manipulate.h>
+
 #ifndef ARM_ANALYZER_V4_MULTIPLY_API_H
 #define ARM_ANALYZER_V4_MULTIPLY_API_H
 
 namespace gg_core::gg_cpu {
     template<bool A, bool S>
-    void Multiply(GbaInstance &instance) {
-        uint8_t RsNumber = BitFieldValue<uint32_t, 8, 4>(CURRENT_INSTRUCTION) ;
-        uint8_t RdNumber = BitFieldValue<uint32_t, 16, 4>(CURRENT_INSTRUCTION) ;
-        uint8_t RmNumber = BitFieldValue<uint32_t, 0, 4>(CURRENT_INSTRUCTION) ;
+    void Multiply_impl(GbaInstance &instance) {
+        uint8_t RsNumber = BitFieldValue<8, 4>(CURRENT_INSTRUCTION) ;
+        uint8_t RdNumber = BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ;
+        uint8_t RmNumber = BitFieldValue<0, 4>(CURRENT_INSTRUCTION) ;
 
         unsigned RsValue = instance._status._regs[ RsNumber ] ;
         unsigned RmValue = instance._status._regs[ RmNumber ] ;
@@ -28,7 +30,7 @@ namespace gg_core::gg_cpu {
         uint32_t result = RmValue * RsValue ;
 
         if constexpr (A) {
-            uint8_t RnNumber = BitFieldValue<uint32_t, 12, 4>(CURRENT_INSTRUCTION);
+            uint8_t RnNumber = BitFieldValue<12, 4>(CURRENT_INSTRUCTION);
             unsigned RnValue = instance._status._regs[ RnNumber ] ;
             result += RnValue ;
         } // if
@@ -43,12 +45,12 @@ namespace gg_core::gg_cpu {
     } // Multiply()
 
     template<bool U, bool A, bool S>
-    void MultiplyLong(GbaInstance &instance) {
-        uint64_t RsVal = instance._status._regs[BitFieldValue<uint32_t, 8, 4>(CURRENT_INSTRUCTION)] ;
-        uint64_t RmVal = instance._status._regs[BitFieldValue<uint32_t, 0, 4>(CURRENT_INSTRUCTION)] ;
+    void MultiplyLong_impl(GbaInstance &instance) {
+        uint64_t RsVal = instance._status._regs[BitFieldValue<8, 4>(CURRENT_INSTRUCTION)] ;
+        uint64_t RmVal = instance._status._regs[BitFieldValue<0, 4>(CURRENT_INSTRUCTION)] ;
 
-        uint8_t RdLoNumber = BitFieldValue<uint32_t, 12, 4>(CURRENT_INSTRUCTION) ;
-        uint8_t RdHiNumber = BitFieldValue<uint32_t, 16, 4>(CURRENT_INSTRUCTION) ;
+        uint8_t RdLoNumber = BitFieldValue<12, 4>(CURRENT_INSTRUCTION) ;
+        uint8_t RdHiNumber = BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ;
 
         union Mull_t {
             uint64_t qword ;
@@ -86,7 +88,7 @@ namespace gg_core::gg_cpu {
 
         if constexpr (S) {
             TestBit(result.qword, 63) ? instance._status.SetN() : instance._status.ClearN()  ;
-            result.dword == 0 ? instance._status.SetZ() : instance._status.ClearZ();
+            result.qword == 0 ? instance._status.SetZ() : instance._status.ClearZ();
         } // if constexpr
 
         CPU_REG[RdLoNumber] = result.dword[0] ;

@@ -52,6 +52,16 @@ namespace gg_core::gg_cpu {
         Execute, Decode, Fetched
     };
 
+    enum class OP_TYPE { LOGICAL, ARITHMETIC, TEST } ;
+
+    enum class SHIFT_BY {
+        RS, IMM, NONE
+    };
+    enum class SHIFT_TYPE {
+        LSL, LSR, ASR, ROR, NONE
+    };
+
+    enum class OFFSET_TYPE { RM, IMM };
 }
 
 #endif //GGADV_CPU_ENUM_H

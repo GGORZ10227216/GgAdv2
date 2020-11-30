@@ -3,14 +3,14 @@
 //
 
 #include <cstdint>
-#include <instruction/arm/api/v4_alu_api.h>
+#include <v4_operand2.h>
 
 #ifndef GGADV2_MEM_API_H
 #define GGADV2_MEM_API_H
 
 namespace gg_core::gg_cpu {
     template <bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
-    void MemAccess_impl(GbaInstance &instance) {
+    void SingleDataTransfer_impl(GbaInstance &instance) {
         // todo: Rd == r15 behavior
         uint32_t immOffset = 0 ;
         uint32_t &Rn = instance._status._regs[ (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ] ;
@@ -65,7 +65,7 @@ namespace gg_core::gg_cpu {
         } // else
     } // MemAccess_impl()
 
-    enum class OFFSET_TYPE { RM, IMM };
+
 
     template <bool P, bool U, bool W, bool L, bool S, bool H,  OFFSET_TYPE OT>
     void HalfMemAccess_impl(GbaInstance &instance) {
@@ -137,8 +137,8 @@ namespace gg_core::gg_cpu {
     template <bool P, bool U, bool S, bool W, bool L>
     void BlockMemAccess_impl(GbaInstance &instance) {
         // todo: undocumented behavior of ldm/stm implement
-        uint32_t regList = BitFieldValue<uint32_t, 0, 16>(CURRENT_INSTRUCTION) ;
-        uint32_t &Rn = instance._status._regs[ BitFieldValue<uint32_t, 16, 4>(CURRENT_INSTRUCTION) ] ;
+        uint32_t regList = BitFieldValue<0, 16>(CURRENT_INSTRUCTION) ;
+        uint32_t &Rn = instance._status._regs[ BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ] ;
 
         uint32_t base = 0 ;
         uint32_t offset = PopCount32(regList)*4 ;
@@ -204,7 +204,7 @@ namespace gg_core::gg_cpu {
     } // BlockMemAccess_impl()
 
     template <bool B>
-    void Swap(GbaInstance &instance) {
+    void Swap_impl(GbaInstance &instance) {
         uint32_t &Rn = instance._status._regs[ (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ] ;
         uint32_t &Rd = instance._status._regs[ (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ] ;
         uint32_t &Rm = instance._status._regs[ CURRENT_INSTRUCTION & 0xf ] ;
@@ -217,7 +217,7 @@ namespace gg_core::gg_cpu {
             Rd = instance._mem.Read32(Rn) ;
             instance._mem.Write32(Rn, Rm) ;
         } // if
-    }
+    } // Swap_impl()
 }
 
 #endif //GGADV2_MEM_API_H
