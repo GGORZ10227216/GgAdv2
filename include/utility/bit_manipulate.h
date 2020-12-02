@@ -12,8 +12,8 @@ namespace gg_core {
         return ((addr + align) & ~(align - 1)) - align ;
     } // AddrAlign()
 
-    constexpr auto _BV(uint32_t bitNo) {
-        return 0x1 << bitNo;
+    constexpr uint64_t _BV(uint32_t bitNo) {
+        return static_cast<unsigned>(0x1) << bitNo;
     } // _BV()
 
     template<typename T>

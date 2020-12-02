@@ -83,6 +83,10 @@ target_include_directories(ggBenchmark PUBLIC
         include
         include/component/
         include/component/cpu
+        include/component/cpu/core
+        include/component/cpu/core/arm
+        include/component/cpu/core/arm/decoder
+        include/component/cpu/core/arm/implements
         include/component/memory
         include/component/io
         include/framework
@@ -105,12 +109,16 @@ file(GLOB_RECURSE SOURCE_FILES
         ./eggvance/eggvance/src/*.cpp
         )
 
-add_executable(ggTest ${SOURCE_FILES} ${header_core} ${header_arm_implement} ${src_core} ggTest/mov.cpp ggTest/gg_test.h ggTest/include/loop_tool.h)
+add_executable(ggTest ${SOURCE_FILES} ${header_core} ${header_arm_implement} ${src_core} ggTest/alu.cpp ggTest/gg_test.h ggTest/include/loop_tool.h)
 
 target_include_directories(ggTest PUBLIC
         include
         include/component/
         include/component/cpu
+        include/component/cpu/core
+        include/component/cpu/core/arm
+        include/component/cpu/core/arm/decoder
+        include/component/cpu/core/arm/implements
         include/component/memory
         include/component/io
         include/framework

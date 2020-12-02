@@ -21,7 +21,10 @@ namespace gg_core {
     class GbaInstance ;
 
     namespace gg_cpu {
-        void UndefinedHandler(GbaInstance &instance) ;
+        void UndefinedHandler(GbaInstance &instance) {
+            std::cout << "Execute a undefined instruction." << std::endl ;
+            exit(-2) ;
+        }
 
         using HandlerType = decltype(&UndefinedHandler) ;
 
