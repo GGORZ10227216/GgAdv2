@@ -10,7 +10,7 @@
 
 namespace gg_core::gg_cpu {
     template <SHIFT_TYPE ST>
-    bool ParseOp2_Shift_RS(GbaInstance &instance, uint32_t &op2) {
+    inline bool ParseOp2_Shift_RS(GbaInstance &instance, uint32_t &op2) {
         const uint32_t curInst = CURRENT_INSTRUCTION ;
         const uint8_t RmNumber = curInst & 0b1111 ;
         const uint8_t RsNumber = (curInst & 0xf00) >> 8 ;
@@ -80,7 +80,7 @@ namespace gg_core::gg_cpu {
     } // ParseOp2_Shift_RS()
 
     template <SHIFT_TYPE ST>
-    bool ParseOp2_Shift_Imm(GbaInstance &instance, uint32_t &op2) {
+    inline bool ParseOp2_Shift_Imm(GbaInstance &instance, uint32_t &op2) {
         const uint32_t curInst = CURRENT_INSTRUCTION ;
         uint32_t Rm = instance._status._regs[ curInst & 0b1111 ] ;
         const uint8_t shiftAmount = (curInst & 0xf80) >> 7 ;
@@ -131,7 +131,7 @@ namespace gg_core::gg_cpu {
         return carry ;
     } // ParseOp2_Shift_Imm()
 
-    void ParseOp2_Imm(GbaInstance &instance, uint32_t &op2) {
+    inline void ParseOp2_Imm(GbaInstance &instance, uint32_t &op2) {
         const uint32_t curInst = CURRENT_INSTRUCTION ;
         const uint32_t imm = curInst & 0xff ;
         const uint8_t rot = (curInst & 0xf00) >> 7 ;

@@ -41,11 +41,6 @@ namespace {
                 auto idx = std::make_tuple(RnNumber.value, RmNumber.value, r4) ;
                 auto val = std::make_tuple(FieldRn.value, FieldRm.value, FieldRs.value);
                 FillRegs(instance._status._regs, egg.regs, idx, val) ;
-                // dbg
-                // fmt::print("{}\n", gg_asm.DASM(instruction)) ;
-
-//                if (t == 16511)
-//                    std::cout << "gg" << std::endl ;
 
                 uint32_t inst_hash = hashArm(instruction) ;
                 std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
@@ -72,6 +67,5 @@ namespace {
 
         for (auto& t : workers)
             t.join();
-//        worker(MVN) ;
     }
 }
