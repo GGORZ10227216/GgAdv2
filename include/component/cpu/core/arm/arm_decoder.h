@@ -43,8 +43,23 @@ namespace gg_core {
                 return UndefinedHandler;
             if constexpr ((HashCode12 & 0b1100'0000'0000) == 0b0100'0000'0000)
                 return SingleDataTransfer<HashCode32>();
-            if constexpr ((HashCode12 & 0b1111'1111'1111) == 0b0001'0010'0001)
+            if constexpr ((HashCode12 & 0b1111'1111'1111) == 0b0001'0010'0001) {
+                /*
+                 * TODO: The safe mode of our interpreter :
+                 *
+                 * The hash code 0x121 is may be a undefined instruction if
+                 * instruction[19:4] is not all ONE.
+                 *
+                 * Because we are using instruction[27:20] and instruction[7:4] (total 12 bits)
+                 * to decode the instruction, that means we CAN NOT detect this problem in
+                 * compile time.
+                 *
+                 * We should design a mechanism to perform a check in execute time when user
+                 * think he/she is running a gba program that probably has undefined
+                 * instruction.
+                 * */
                 return BranchExchange();
+            } // if
             if constexpr ((HashCode12 & 0b1111'1100'1111) == 0b0000'0000'1001)
                 return Multiply<HashCode32>();
             if constexpr ((HashCode12 & 0b1111'1000'1111) == 0b0000'1000'1001)
@@ -59,7 +74,7 @@ namespace gg_core {
                 return PSR_Transfer<HashCode32>();
             if constexpr ((HashCode12 & 0b1100'0000'0000) == 0b0000'0000'0000) {
                 auto NoResult = []() {
-                    constexpr uint32_t opcode = (HashCode12 & 0x1e0) >> 4;
+                    constexpr uint32_t opcode = (HashCode12 & 0x1e0) >> 5;
                     if (opcode >= 0b1000 && opcode <= 0b1011)
                         return true ;
                     return false ;
