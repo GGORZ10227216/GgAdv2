@@ -3,12 +3,17 @@
 //
 #include <gg_test.h>
 #include <loop_tool.h>
+
 #include <thread>
+#include <future>
+#include <string>
+#include <utility>
 
 namespace {
     using namespace gg_core::gg_cpu ;
+    using WorkerResult = std::pair<std::string, std::future<int>> ;
 
-    constexpr static std::array<const char*, 16> opName {
+    const static std::array<std::string, 16> opName {
             "and", "eor", "sub", "rsb",
             "add", "adc", "sbc", "rsc",
             "tst", "teq", "cmp", "cmn",
@@ -16,7 +21,7 @@ namespace {
     } ;
 
     TEST_F(ggTest, alu_rd_rn_op2ShiftRs_cpsr_test) {
-        auto worker = [&](E_DataProcess operation) {
+        auto task = [&](E_DataProcess operation) {
             using namespace gg_core ;
 
             Arm egg;
@@ -58,25 +63,30 @@ namespace {
             };
 
             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, FieldRs, shiftType) ;
-            fmt::print("[{}] Total performed tests: {}\n", opName[operation], t) ;
+            return t ;
         };
 
-        std::vector<std::thread> workers ;
+        std::vector<WorkerResult> workers ;
         for (int i = 0 ; i < 16 ; ++i) {
             std::string op = opName[i] ;
             if (i < 0b1000 || i > 0b1011)
                 op += 's' ;
 
             std::cout << '[' << op << "]" << "start!" << std::endl ;
-            workers.emplace_back(worker, static_cast<E_DataProcess>(i)) ;
+            auto result = std::make_pair(
+                    op,
+                    std::async(std::launch::async, task, static_cast<E_DataProcess>(i))
+            ) ;
+
+            workers.push_back(std::move(result)) ;
         } // for
 
         for (auto& t : workers)
-            t.join();
+            fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get()) ;
     }
 
     TEST_F(ggTest, alu_rd_rn_op2ShiftRs_test) {
-        auto worker = [&](E_DataProcess operation) {
+        auto task = [&](E_DataProcess operation) {
             using namespace gg_core ;
 
             Arm egg;
@@ -118,21 +128,27 @@ namespace {
             };
 
             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, FieldRs, shiftType) ;
-            fmt::print("[{}] Total performed tests: {}\n", opName[operation], t) ;
+            // fmt::print("[{}] Total performed tests: {}\n", opName[operation], t) ;
+            return t ;
         };
 
-        std::vector<std::thread> workers ;
+        std::vector<WorkerResult> workers ;
         for (int i = 0 ; i < 16 ; ++i) {
             if (i >= 0b1000 && i <= 0b1011) {
                 std::cout << "No need to check Test type instruction[" << opName[i] << "]" << std::endl ;
             } // if
             else {
                 std::cout << '[' << opName[i] << ']' << "start!" << std::endl ;
-                workers.emplace_back(worker, static_cast<E_DataProcess>(i)) ;
+                auto result = std::make_pair(
+                   opName[i],
+                   std::async(std::launch::async, task, static_cast<E_DataProcess>(i))
+                ) ;
+
+                workers.push_back(std::move(result)) ;
             } // else
         } // for
 
         for (auto& t : workers)
-            t.join();
+            fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get()) ;
     }
 }
