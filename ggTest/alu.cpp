@@ -151,4 +151,210 @@ namespace {
         for (auto& t : workers)
             fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get()) ;
     }
+
+    TEST_F(ggTest, alu_rd_rn_op2ShiftImm_cpsr_test) {
+        auto task = [&](E_DataProcess operation) {
+            using namespace gg_core ;
+
+            Arm egg;
+            gg_core::GbaInstance instance(std::nullopt);
+            ArmAssembler gg_asm ;
+
+            int t = 0 ;
+
+            TestField FieldRn(0, 0xffffffff, 0x11111111) ;
+            TestField FieldRm(0, 0xffffffff, 0x11111111) ;
+            TestField shiftAmount(0, 0x1f, 1) ;
+            TestField RnNumber(0, 0xf, 1) ;
+            TestField RmNumber(0, 0xf, 1) ;
+            TestField shiftType(0, 3, 1) ;
+
+            auto TestMain = [&]() {
+                ++t ;
+                uint32_t instruction = MakeALUInstruction<Cond, OpCode, S, Rn, Rd, ShiftAmount, ShiftType, Rm>(
+                        AL, operation, true, RnNumber.value, r0, shiftAmount.value, shiftType.value, RmNumber.value
+                ) ;
+
+                auto idx = std::make_tuple(RnNumber.value, RmNumber.value) ;
+                auto val = std::make_tuple(FieldRn.value, FieldRm.value);
+                FillRegs(instance._status._regs, idx, val) ;
+                FillRegs(egg.regs, idx, val) ;
+
+                uint32_t inst_hash = hashArm(instruction) ;
+                std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+                instance.CPUTick_Debug(instruction);
+
+                uint32_t errFlag = CheckStatus(instance, egg) ;
+                ASSERT_TRUE(errFlag == 0)
+                                            << "#" << t << " of test(" << operation << ")" << '\n'
+                                            << std::hex << "Errflag: " << errFlag << '\n'
+                                            << fmt::format( "Rn: {:x}, Rm: {:x}, shiftAmount: {:x}\n",
+                                                            FieldRn.value, FieldRm.value, shiftAmount.value )
+                                            << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                            << Diagnose(instance, egg, errFlag) ;
+            };
+
+            TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, shiftAmount, shiftType) ;
+            // fmt::print("[{}] Total performed tests: {}\n", opName[operation], t) ;
+            return t ;
+        };
+
+        std::vector<WorkerResult> workers ;
+        for (int i = 0 ; i < 16 ; ++i) {
+            std::string op = opName[i] ;
+            if (i < 0b1000 || i > 0b1011)
+                op += 's' ;
+
+            std::cout << '[' << op << "]" << "start!" << std::endl ;
+            auto result = std::make_pair(
+                    op,
+                    std::async(std::launch::async, task, static_cast<E_DataProcess>(i))
+            ) ;
+
+            workers.push_back(std::move(result)) ;
+        } // for
+
+        for (auto& t : workers)
+            fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get()) ;
+    }
+
+    TEST_F(ggTest, alu_rd_rn_op2ShiftImm_test) {
+        auto task = [&](E_DataProcess operation) {
+            using namespace gg_core ;
+
+            Arm egg;
+            gg_core::GbaInstance instance(std::nullopt);
+            ArmAssembler gg_asm ;
+
+            int t = 0 ;
+
+            TestField FieldRn(0, 0xffffffff, 0x11111111) ;
+            TestField FieldRm(0, 0xffffffff, 0x11111111) ;
+            TestField shiftAmount(0, 0x1f, 1) ;
+            TestField RnNumber(0, 0xf, 1) ;
+            TestField RmNumber(0, 0xf, 1) ;
+            TestField shiftType(0, 3, 1) ;
+
+            auto TestMain = [&]() {
+                ++t ;
+                uint32_t instruction = MakeALUInstruction<Cond, OpCode, S, Rn, Rd, ShiftAmount, ShiftType, Rm>(
+                        AL, operation, false, RnNumber.value, r0, shiftAmount.value, shiftType.value, RmNumber.value
+                ) ;
+
+                auto idx = std::make_tuple(RnNumber.value, RmNumber.value) ;
+                auto val = std::make_tuple(FieldRn.value, FieldRm.value);
+                FillRegs(instance._status._regs, idx, val) ;
+                FillRegs(egg.regs, idx, val) ;
+
+                uint32_t inst_hash = hashArm(instruction) ;
+                std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+                instance.CPUTick_Debug(instruction);
+
+                uint32_t errFlag = CheckStatus(instance, egg) ;
+                ASSERT_TRUE(errFlag == 0)
+                                            << "#" << t << " of test(" << operation << ")" << '\n'
+                                            << std::hex << "Errflag: " << errFlag << '\n'
+                                            << fmt::format( "Rn: {:x}, Rm: {:x}, shiftAmount: {:x}\n",
+                                                            FieldRn.value, FieldRm.value, shiftAmount.value )
+                                            << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                            << Diagnose(instance, egg, errFlag) ;
+            };
+
+            TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, shiftAmount, shiftType) ;
+            // fmt::print("[{}] Total performed tests: {}\n", opName[operation], t) ;
+            return t ;
+        };
+
+        std::vector<WorkerResult> workers ;
+        for (int i = 0 ; i < 16 ; ++i) {
+            if (i >= 0b1000 && i <= 0b1011) {
+                std::cout << "No need to check Test type instruction[" << opName[i] << "]" << std::endl ;
+            } // if
+            else {
+                std::cout << '[' << opName[i] << ']' << "start!" << std::endl ;
+                auto result = std::make_pair(
+                        opName[i],
+                        std::async(std::launch::async, task, static_cast<E_DataProcess>(i))
+                ) ;
+
+                workers.push_back(std::move(result)) ;
+            } // else
+        } // for
+
+        for (auto& t : workers)
+            fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get()) ;
+    }
+
+    TEST_F(ggTest, alu_rd_rn_op2Imm_test) {
+        auto task = [&](E_DataProcess operation) {
+            using namespace gg_core ;
+
+            Arm egg;
+            gg_core::GbaInstance instance(std::nullopt);
+            ArmAssembler gg_asm ;
+
+            int t = 0 ;
+
+            TestField FieldRn(0, 0xffffffff, 0x11111111) ;
+            TestField RnNumber(0, 0xf, 1) ;
+            TestField RdNumber(0, 0xf, 1) ;
+            TestField imm(0, 0xff, 1) ;
+            TestField rotate(0, 0xf, 1) ;
+
+            auto TestMain = [&]() {
+                ++t ;
+                uint32_t instruction = MakeALUInstruction<Cond, OpCode, S, Rn, Rd, Rotate, Imm>(
+                        AL, operation, false, RnNumber.value, RdNumber.value, rotate.value, imm.value
+                ) ;
+
+                instance._status._regs[ RnNumber.value ] = FieldRn.value ;
+                egg.regs[ RnNumber.value ] = FieldRn.value ;
+
+                if (t == 15732737)
+                    std::cout << "stop" << std::endl ;
+
+                uint32_t inst_hash = hashArm(instruction) ;
+                std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+                instance.CPUTick_Debug(instruction);
+
+                uint32_t errFlag = CheckStatus(instance, egg) ;
+                ASSERT_TRUE(errFlag == 0)
+                                            << "#" << t << " of test(" << operation << ")" << '\n'
+                                            << std::hex << "Errflag: " << errFlag << '\n'
+                                            << fmt::format( "Rn: {:x}, imm: {:x}, rotate: {:x}\n",
+                                                            FieldRn.value, imm.value, rotate.value )
+                                            << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                            << Diagnose(instance, egg, errFlag) ;
+            };
+
+            TEST_LOOPS(TestMain, RdNumber, RnNumber, FieldRn, imm, rotate) ;
+            // fmt::print("[{}] Total performed tests: {}\n", opName[operation], t) ;
+            return t ;
+        };
+
+//        std::vector<WorkerResult> workers ;
+//        for (int i = 0 ; i < 16 ; ++i) {
+//            if (i >= 0b1000 && i <= 0b1011) {
+//                std::cout << "No need to check Test type instruction[" << opName[i] << "]" << std::endl ;
+//            } // if
+//            else {
+//                std::cout << '[' << opName[i] << ']' << "start!" << std::endl ;
+//                auto result = std::make_pair(
+//                        opName[i],
+//                        std::async(std::launch::async, task, static_cast<E_DataProcess>(i))
+//                ) ;
+//
+//                workers.push_back(std::move(result)) ;
+//            } // else
+//        } // for
+//
+//        for (auto& t : workers)
+//            fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get()) ;
+
+        auto result = std::make_pair(
+                        "and",
+                        std::async(std::launch::async, task, static_cast<E_DataProcess>(0))
+                ) ;
+        result.second.wait() ;
+    }
 }

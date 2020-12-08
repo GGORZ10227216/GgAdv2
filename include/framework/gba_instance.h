@@ -57,7 +57,7 @@ namespace gg_core {
         } // Tick()
 
         void CPUTick_Debug(uint32_t inst) {
-            _status.fetchedBuffer[ 0 ] = inst ;
+            _status.fetchedBuffer[ _status.pipelineCnt ] = inst ;
             uint32_t hash = ((inst & 0x0ff00000) >> 16) | ((inst & 0xf0) >> 4) ;
 
             gg_cpu::armHandlers[ hash ](*this) ;
@@ -67,18 +67,20 @@ namespace gg_core {
         void RefillPipeline() {
             using namespace gg_cpu;
             unsigned pcOffset = _status.GetCpuMode() == ARM ? 4 : 2;
-            unsigned pcBase = _status._regs[pc] + pcOffset ;
+            unsigned pcBase ;
 
             if (_status.GetCpuMode() == ARM) {
+                pcBase = (_status._regs[pc] & ~0x3) ;
                 _status.fetchedBuffer[0] = _mem.Read32(pcBase);
                 _status.fetchedBuffer[1] = _mem.Read32(pcBase + pcOffset);
             } // if
             else {
+                pcBase = (_status._regs[pc] & ~0x1) ;
                 _status.fetchedBuffer[0] = _mem.Read16(pcBase);
                 _status.fetchedBuffer[1] = _mem.Read16(pcBase + pcOffset);
             } // else
 
-            _status._regs[pc] = pcBase;
+            _status._regs[pc] = pcBase + pcOffset;
             _status.pipelineCnt = 2;
         } // RefillPipeline()
 
