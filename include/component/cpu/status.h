@@ -160,7 +160,7 @@ namespace gg_core {
             void ClearN() { _cpsr &= ~(1 << 31); } // ClearN()
 
         private :
-            std::array<uint32_t, 3> fetchedBuffer;
+            std::array<uint32_t, 2> fetchedBuffer;
             uint8_t pipelineCnt = 0;
 
             uint32_t _cpsr = 0xd3;

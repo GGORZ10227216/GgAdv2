@@ -81,19 +81,19 @@ namespace gg_core {
             } // else
 
             _status._regs[pc] = pcBase + pcOffset;
-            _status.pipelineCnt = 2;
+            _status.pipelineCnt = 0;
         } // RefillPipeline()
 
         void Fetch() {
             using namespace gg_cpu;
             unsigned pcOffset = _status.GetCpuMode() == ARM ? 4 : 2;
 
+            _status.pipelineCnt = (_status.pipelineCnt + 1) % _status.fetchedBuffer.size();
             _status._regs[pc] += pcOffset;
             if (_status.GetCpuMode() == ARM)
                 _status.fetchedBuffer[_status.pipelineCnt] = _mem.Read32(_status._regs[pc]);
             else
                 _status.fetchedBuffer[_status.pipelineCnt] = _mem.Read16(_status._regs[pc]);
-            _status.pipelineCnt = (_status.pipelineCnt + 1) % _status.fetchedBuffer.size();
         } // Fetch()
 
     private:

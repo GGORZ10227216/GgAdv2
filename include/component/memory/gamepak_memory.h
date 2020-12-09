@@ -30,7 +30,7 @@ namespace gg_core::gg_mem {
         uint8_t &AccessImpl(unsigned addr, E_AccessWidth width) {
             // todo: cycle counting
             if (addr >= state1Start && addr <= state1End)
-                return state1[addr];
+                return state1[addr - state1Start];
             else if (addr >= state2Start && addr <= state2End) {
                 return state2[addr - state2Start];
             } // else if()

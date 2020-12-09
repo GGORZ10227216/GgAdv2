@@ -48,11 +48,11 @@ namespace gg_core {
                  * TODO: The safe mode of our interpreter :
                  *
                  * The hash code 0x121 is may be a undefined instruction if
-                 * instruction[19:4] is not all ONE.
+                 * instruction[19:4] are not all ONE.
                  *
-                 * Because we are using instruction[27:20] and instruction[7:4] (total 12 bits)
-                 * to decode the instruction, that means we CAN NOT detect this problem in
-                 * compile time.
+                 * We "CAN NOT" detect this problem in compile time since we only
+                 * use instruction[27:20] and instruction[7:4] (total 12 bits)
+                 * to decode the instruction.
                  *
                  * We should design a mechanism to perform a check in execute time when user
                  * think he/she is running a gba program that probably has undefined

@@ -71,7 +71,7 @@ namespace gg_core::gg_cpu {
             Rs %= 32 ;
             op2 = rotr(Rm, Rs) ;
             if (Rs != 0)
-                carry = TestBit(Rm, Rs - 1) ;
+                carry = TestBit(op2, 31) ;
             else
                 carry = instance._status.C() ;
         } // if
@@ -124,18 +124,19 @@ namespace gg_core::gg_cpu {
             } // if
             else {
                 op2 = rotr(Rm, shiftAmount);
-                carry = TestBit(Rm, shiftAmount -1) ;
+                carry = TestBit(op2, 31) ;
             } // else
         } // if
 
         return carry ;
     } // ParseOp2_Shift_Imm()
 
-    inline void ParseOp2_Imm(GbaInstance &instance, uint32_t &op2) {
+    inline bool ParseOp2_Imm(GbaInstance &instance, uint32_t &op2) {
         const uint32_t curInst = CURRENT_INSTRUCTION ;
         const uint32_t imm = curInst & 0xff ;
         const uint8_t rot = (curInst & 0xf00) >> 7 ;
         op2 = rotr(imm, rot) ;
+        return TestBit(op2, 31) ;
     } // ParseOp2_Imm()
 }
 

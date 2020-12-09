@@ -51,7 +51,7 @@ namespace gg_core::gg_cpu {
         bool shiftCarry = false ;
 
         if constexpr (I) {
-            ParseOp2_Imm(instance, op2) ;
+            shiftCarry = ParseOp2_Imm(instance, op2) ;
         } // if
         else {
             if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
@@ -93,7 +93,7 @@ namespace gg_core::gg_cpu {
         if constexpr (S) {
             if constexpr (OT == OP_TYPE::LOGICAL) {
                 TestBit(result, 31) ? instance._status.SetN() : instance._status.ClearN() ;
-                shiftCarry ? instance._status.SetC() : instance._status.ClearC() ;;
+                shiftCarry ? instance._status.SetC() : instance._status.ClearC() ;
                 result == 0 ? instance._status.SetZ() : instance._status.ClearZ();
             } // if
             else {

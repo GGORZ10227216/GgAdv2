@@ -18,7 +18,7 @@ namespace gg_core::gg_mem {
         uint8_t &AccessImpl(unsigned addr, E_AccessWidth width) {
             // todo: cycle counting
             if (addr >= paletteStart && addr <= paletteEnd)
-                return palette[addr];
+                return palette[addr - paletteStart];
             else if (addr >= VRAM_Start && addr <= VRAM_End) {
                 return VRAM[addr - VRAM_Start];
             } // else if()
