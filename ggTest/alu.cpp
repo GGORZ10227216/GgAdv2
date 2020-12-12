@@ -11,7 +11,7 @@
 
 namespace {
     using namespace gg_core::gg_cpu ;
-    using WorkerResult = std::pair<std::string, std::future<int>> ;
+    using WorkerResult = std::pair<std::string, std::future<unsigned int>> ;
 
     const static std::array<std::string, 16> opName {
             "and", "eor", "sub", "rsb",
@@ -28,7 +28,7 @@ namespace {
             gg_core::GbaInstance instance(std::nullopt);
             ArmAssembler gg_asm ;
 
-            int t = 0 ;
+            unsigned int t = 0 ;
 
             TestField FieldRn(0, 0xffffffff, 0x11111111) ;
             TestField FieldRm(0, 0xffffffff, 0x11111111) ;
@@ -36,6 +36,7 @@ namespace {
             TestField RnNumber(0, 0xf, 1) ;
             TestField RmNumber(0, 0xf, 1) ;
             TestField shiftType(0, 3, 1) ;
+            TestField cpsr(0, 0xf, 1) ;
 
             auto TestMain = [&]() {
                 ++t ;
@@ -47,6 +48,9 @@ namespace {
                 auto val = std::make_tuple(FieldRn.value, FieldRm.value, FieldRs.value);
                 FillRegs(instance._status._regs, idx, val) ;
                 FillRegs(egg.regs, idx, val) ;
+
+                egg.cpsr = (cpsr.value << 28) | 0xd3 ;
+                instance._status.WriteCPSR(cpsr.value << 28 | 0xd3) ;
 
                 uint32_t inst_hash = hashArm(instruction) ;
 
@@ -62,7 +66,7 @@ namespace {
                     << Diagnose(instance, egg, errFlag) ;
             };
 
-            TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, FieldRs, shiftType) ;
+            TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, FieldRs, shiftType, cpsr) ;
             return t ;
         };
 
@@ -83,6 +87,12 @@ namespace {
 
         for (auto& t : workers)
             fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get()) ;
+//        auto result = std::make_pair(
+//                "movs",
+//                std::async(std::launch::async, task, static_cast<E_DataProcess>(13))
+//        ) ;
+//
+//        result.second.wait();
     }
 
     TEST_F(ggTest, alu_rd_rn_op2ShiftRs_test) {
@@ -93,7 +103,7 @@ namespace {
             gg_core::GbaInstance instance(std::nullopt);
             ArmAssembler gg_asm ;
 
-            int t = 0 ;
+            unsigned int t = 0 ;
 
             TestField FieldRn(0, 0xffffffff, 0x11111111) ;
             TestField FieldRm(0, 0xffffffff, 0x11111111) ;
@@ -160,7 +170,7 @@ namespace {
             gg_core::GbaInstance instance(std::nullopt);
             ArmAssembler gg_asm ;
 
-            int t = 0 ;
+            unsigned int t = 0 ;
 
             TestField FieldRn(0, 0xffffffff, 0x11111111) ;
             TestField FieldRm(0, 0xffffffff, 0x11111111) ;
@@ -168,6 +178,7 @@ namespace {
             TestField RnNumber(0, 0xf, 1) ;
             TestField RmNumber(0, 0xf, 1) ;
             TestField shiftType(0, 3, 1) ;
+            TestField cpsr(0, 0xf, 1) ;
 
             auto TestMain = [&]() {
                 ++t ;
@@ -179,6 +190,9 @@ namespace {
                 auto val = std::make_tuple(FieldRn.value, FieldRm.value);
                 FillRegs(instance._status._regs, idx, val) ;
                 FillRegs(egg.regs, idx, val) ;
+
+                egg.cpsr = (cpsr.value << 28) | 0xd3 ;
+                instance._status.WriteCPSR(cpsr.value << 28 | 0xd3) ;
 
                 uint32_t inst_hash = hashArm(instruction) ;
                 std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
@@ -194,7 +208,7 @@ namespace {
                                             << Diagnose(instance, egg, errFlag) ;
             };
 
-            TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, shiftAmount, shiftType) ;
+            TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, shiftAmount, shiftType, cpsr) ;
             // fmt::print("[{}] Total performed tests: {}\n", opName[operation], t) ;
             return t ;
         };
@@ -226,7 +240,7 @@ namespace {
             gg_core::GbaInstance instance(std::nullopt);
             ArmAssembler gg_asm ;
 
-            int t = 0 ;
+            unsigned int t = 0 ;
 
             TestField FieldRn(0, 0xffffffff, 0x11111111) ;
             TestField FieldRm(0, 0xffffffff, 0x11111111) ;
@@ -293,7 +307,7 @@ namespace {
             gg_core::GbaInstance instance(std::nullopt);
             ArmAssembler gg_asm ;
 
-            int t = 0 ;
+            unsigned int t = 0 ;
 
             TestField FieldRn(0, 0xffffffff, 0x11111111) ;
             TestField RnNumber(0, 0xf, 1) ;
@@ -357,13 +371,14 @@ namespace {
             gg_core::GbaInstance instance(std::nullopt);
             ArmAssembler gg_asm ;
 
-            int t = 0 ;
+            unsigned int t = 0 ;
 
             TestField FieldRn(0, 0xffffffff, 0x11111111) ;
             TestField RnNumber(0, 0xf, 1) ;
             TestField RdNumber(0, 0xe, 1) ; // 0xe for prevent writing to pc
             TestField imm(0, 0xff, 1) ;
             TestField rotate(0, 0xf, 1) ;
+            TestField cpsr(0, 0xf, 1) ;
 
             auto TestMain = [&]() {
                 ++t ;
@@ -373,6 +388,9 @@ namespace {
 
                 instance._status._regs[ RnNumber.value ] = FieldRn.value ;
                 egg.regs[ RnNumber.value ] = FieldRn.value ;
+
+                egg.cpsr = (cpsr.value << 28) | 0xd3 ;
+                instance._status.WriteCPSR(cpsr.value << 28 | 0xd3) ;
 
                 uint32_t inst_hash = hashArm(instruction) ;
                 std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
@@ -388,7 +406,7 @@ namespace {
                                             << Diagnose(instance, egg, errFlag) ;
             };
 
-            TEST_LOOPS(TestMain, RdNumber, RnNumber, FieldRn, imm, rotate) ;
+            TEST_LOOPS(TestMain, RdNumber, RnNumber, FieldRn, imm, rotate, cpsr) ;
             // fmt::print("[{}] Total performed tests: {}\n", opName[operation], t) ;
             return t ;
         };
