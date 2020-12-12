@@ -15,7 +15,6 @@
 #ifndef GGADV_GBA_INSTANCE_H
 #define GGADV_GBA_INSTANCE_H
 
-
 namespace gg_core {
     class GbaInstance final {
     public :

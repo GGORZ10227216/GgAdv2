@@ -2,16 +2,9 @@
 // Created by jason4_lee on 2020-10-12.
 //
 #include <gg_test.h>
-#include <loop_tool.h>
-
-#include <thread>
-#include <future>
-#include <string>
-#include <utility>
 
 namespace {
     using namespace gg_core::gg_cpu ;
-    using WorkerResult = std::pair<std::string, std::future<unsigned int>> ;
 
     const static std::array<std::string, 16> opName {
             "and", "eor", "sub", "rsb",
@@ -87,12 +80,6 @@ namespace {
 
         for (auto& t : workers)
             fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get()) ;
-//        auto result = std::make_pair(
-//                "movs",
-//                std::async(std::launch::async, task, static_cast<E_DataProcess>(13))
-//        ) ;
-//
-//        result.second.wait();
     }
 
     TEST_F(ggTest, alu_rd_rn_op2ShiftRs_test) {
