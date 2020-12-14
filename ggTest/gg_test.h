@@ -130,7 +130,7 @@ static constexpr std::array<const char *, 4> shiftNames{
 
 enum F_Type {
     Cond, I, OpCode, S, Rn, Rd, ShiftType, ShiftAmount, Rm, Rs, Rotate, Imm,
-    A
+    U, A, RdHi, RdLo
 };
 
 template <F_Type F, typename V>
@@ -245,6 +245,53 @@ template <F_Type... Fs, typename... Vs>
 uint32_t MakeMULInstruction(Vs... values) {
     constexpr uint32_t mulBase = 0xe0000090 ;
     return mulBase | (MULInstruction<Fs>(values) | ...) ;
+}
+
+template <F_Type F, typename V>
+uint32_t MULLInstruction(V value) {
+    uint32_t result = 0 ;
+    if constexpr (F == F_Type::S) {
+        static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
+        result |= value << 20 ;
+    } // if
+    else {
+        if constexpr (F == F_Type::Cond) {
+            static_assert(std::is_same_v<V, gg_core::gg_cpu::E_CondName>) ;
+            result |= value << 28 ;
+        } // else if
+        else if constexpr (F == F_Type::U) {
+            static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
+            result |= value << 22 ;
+        } // else if
+        else if constexpr (F == F_Type::A) {
+            static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
+            result |= value << 21 ;
+        } // else if
+        else if constexpr (F == F_Type::RdHi) {
+            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+            result |= value << 16 ;
+        } // else if
+        else if constexpr (F == F_Type::RdLo) {
+            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+            result |= value << 12 ;
+        } // else if
+        else if constexpr (F == F_Type::Rm) {
+            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+            result |= value ;
+        } // else if
+        else if constexpr (F == F_Type::Rs) {
+            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+            result |= value << 8 ;
+        } // else if
+    } // else
+
+    return result ;
+}
+
+template <F_Type... Fs, typename... Vs>
+uint32_t MakeMULLInstruction(Vs... values) {
+    constexpr uint32_t mullBase = 0xe0800090 ;
+    return mullBase | (MULLInstruction<Fs>(values) | ...) ;
 }
 
 using WorkerResult = std::pair<std::string, std::future<unsigned int>> ;

@@ -58,8 +58,7 @@ namespace gg_core::gg_cpu {
             Mull_t(uint64_t val) {qword = val;}
         };
 
-        uint64_t RdValue = (static_cast<uint64_t>(CPU_REG[RdHiNumber]) << 32) | CPU_REG[RdLoNumber] ;
-        Mull_t result = RdValue + RsVal*RmVal ;
+        Mull_t result = RsVal*RmVal ;
 
         unsigned boothValue = 4;
         for (int i = 1; i < 4; ++i) {
@@ -82,6 +81,7 @@ namespace gg_core::gg_cpu {
         // EMU_CLK += CLK_CONT.S(EMU_CPU.ProgramCounter()) + CLK_CONT.I() * (boothValue + 1);
 
         if constexpr (A) {
+            uint64_t RdValue = (static_cast<uint64_t>(CPU_REG[RdHiNumber]) << 32) | CPU_REG[RdLoNumber] ;
             result.qword += RdValue ;
             // EMU_CLK += CLK_CONT.I() ;
         } // if constexpr

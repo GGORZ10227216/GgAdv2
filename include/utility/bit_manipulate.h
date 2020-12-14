@@ -13,7 +13,7 @@ namespace gg_core {
     } // AddrAlign()
 
     constexpr uint64_t _BV(uint32_t bitNo) {
-        return static_cast<unsigned>(0x1) << bitNo;
+        return static_cast<uint64_t>(0x1) << bitNo;
     } // _BV()
 
     template<typename T>
