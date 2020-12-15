@@ -46,8 +46,8 @@ namespace gg_core::gg_cpu {
 
     template<bool U, bool A, bool S>
     void MultiplyLong_impl(GbaInstance &instance) {
-        uint64_t RsVal = instance._status._regs[BitFieldValue<8, 4>(CURRENT_INSTRUCTION)] ;
-        uint64_t RmVal = instance._status._regs[BitFieldValue<0, 4>(CURRENT_INSTRUCTION)] ;
+        uint32_t RsVal = instance._status._regs[BitFieldValue<8, 4>(CURRENT_INSTRUCTION)] ;
+        uint32_t RmVal = instance._status._regs[BitFieldValue<0, 4>(CURRENT_INSTRUCTION)] ;
 
         uint8_t RdLoNumber = BitFieldValue<12, 4>(CURRENT_INSTRUCTION) ;
         uint8_t RdHiNumber = BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ;
@@ -58,7 +58,14 @@ namespace gg_core::gg_cpu {
             Mull_t(uint64_t val) {qword = val;}
         };
 
-        Mull_t result = RsVal*RmVal ;
+        Mull_t result = 0 ;
+        if constexpr (U) {
+            const int64_t signedRs = (static_cast<int64_t>(RsVal) << 32) >> 32;
+            const int64_t signedRm = (static_cast<int64_t>(RmVal) << 32) >> 32;
+            result = signedRm * signedRs;
+        } // if
+        else
+            result = static_cast<uint64_t>(RsVal)*RmVal ;
 
         unsigned boothValue = 4;
         for (int i = 1; i < 4; ++i) {
