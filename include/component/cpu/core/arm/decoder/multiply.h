@@ -14,17 +14,17 @@ namespace gg_core::gg_cpu {
     static void Multiply_impl(GbaInstance &instance);
 
     template<bool U, bool A, bool S>
-    void MultiplyLong_impl(GbaInstance &instance);
+    static void MultiplyLong_impl(GbaInstance &instance);
 
     template<uint32_t HashCode32>
-    constexpr auto Multiply() {
+    static constexpr auto Multiply() {
         constexpr bool A = TestBit(HashCode32, 21);
         constexpr bool S = TestBit(HashCode32, 20);
         return &Multiply_impl<A, S>;
     }
 
     template <uint32_t HashCode32>
-    constexpr auto MultiplyLong() {
+    static constexpr auto MultiplyLong() {
         constexpr bool U = TestBit(HashCode32, 22);
         constexpr bool A = TestBit(HashCode32, 21);
         constexpr bool S = TestBit(HashCode32, 20);

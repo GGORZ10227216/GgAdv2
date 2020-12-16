@@ -4,13 +4,13 @@
 #define V4_ARM_PSR_TRANSFER
 
 namespace gg_core::gg_cpu {
-    void mrs(GbaInstance& instance) {
+    static void mrs(GbaInstance& instance) {
         const uint32_t RdNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
         uint32_t &Rd = instance._status._regs[RdNumber] ;
         Rd = instance._status.ReadCPSR() ;
     }
 
-    void msr_Rm(GbaInstance& instance) {
+    static void msr_Rm(GbaInstance& instance) {
         const uint32_t RmNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
         uint32_t Rm = instance._status._regs[RmNumber] ;
         if (instance._status.GetOperationMode() == USR || !TestBit(CURRENT_INSTRUCTION, 16)) {
@@ -23,13 +23,13 @@ namespace gg_core::gg_cpu {
         } // else
     }
 
-    void mrsp(GbaInstance& instance) {
+    static void mrsp(GbaInstance& instance) {
         const uint32_t RdNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
         uint32_t &Rd = instance._status._regs[RdNumber] ;
         Rd = instance._status.ReadSPSR() ;
     }
 
-    void msrp_Rm(GbaInstance& instance) {
+    static void msrp_Rm(GbaInstance& instance) {
         const uint32_t RmNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
         uint32_t Rm = instance._status._regs[RmNumber] ;
         if (!TestBit(CURRENT_INSTRUCTION, 16)) {
@@ -42,7 +42,7 @@ namespace gg_core::gg_cpu {
         } // else
     }
 
-    void msr_Imm(GbaInstance& instance) {
+    static void msr_Imm(GbaInstance& instance) {
         const uint32_t imm = CURRENT_INSTRUCTION & 0xff;
         const uint32_t rot = (CURRENT_INSTRUCTION & 0xf00) >> 8;
         const uint32_t immVal = rotr(imm, rot*2) ;
@@ -57,7 +57,7 @@ namespace gg_core::gg_cpu {
         } // else
     }
 
-    void msrp_Imm(GbaInstance& instance) {
+    static void msrp_Imm(GbaInstance& instance) {
         const uint32_t imm = CURRENT_INSTRUCTION & 0xff;
         const uint32_t rot = (CURRENT_INSTRUCTION & 0xf00) >> 8;
         const uint32_t immVal = rotr(imm, rot*2) ;

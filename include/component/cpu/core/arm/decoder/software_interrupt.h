@@ -11,10 +11,10 @@
 
 namespace gg_core::gg_cpu {
     template <E_OperationMode OpMode>
-    void Interrupt_impl(GbaInstance &instance);
+    static void Interrupt_impl(GbaInstance &instance);
 
     template <uint32_t HashCode32>
-    constexpr auto SoftwareInterrupt() {
+    static constexpr auto SoftwareInterrupt() {
         return &Interrupt_impl<SVC> ;
     } // SoftwareInterrupt()
 }

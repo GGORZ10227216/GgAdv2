@@ -1,5 +1,5 @@
 namespace gg_core::gg_cpu {
-    void BranchExchange_impl(GbaInstance& instance) {
+    static void BranchExchange_impl(GbaInstance& instance) {
         const uint32_t RnNumber = instance._status.CurrentInstruction() & 0xf ;
         uint32_t &Rn = instance._status._regs[RnNumber] ;
 
@@ -13,7 +13,7 @@ namespace gg_core::gg_cpu {
     }
 
     template <bool L>
-    void Branch_impl(GbaInstance& instance) {
+    static void Branch_impl(GbaInstance& instance) {
         int32_t offset = (instance._status.CurrentInstruction() & 0x00ffffff) << 2;
 
         if (gg_core::TestBit(offset, 25))

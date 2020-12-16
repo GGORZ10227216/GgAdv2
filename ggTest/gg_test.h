@@ -128,63 +128,6 @@ static constexpr std::array<const char *, 4> shiftNames{
         "lsl", "lsr", "asr", "ror"
 };
 
-enum F_Type {
-    Cond, I, OpCode, S, Rn, Rd, ShiftType, ShiftAmount, Rm, Rs, Rotate, Imm,
-    U, A, RdHi, RdLo
-};
-
-template <F_Type F, typename V>
-uint32_t ALUInstruction(V value) {
-    uint32_t result = 0 ;
-    if constexpr (F == F_Type::S) {
-        static_assert(std::is_same_v<V, bool>, "Type missmatch") ;
-        result |= value << 20 ;
-    } // if
-    else {
-        if constexpr (F == F_Type::Cond) {
-            static_assert(std::is_same_v<V, gg_core::gg_cpu::E_CondName>) ;
-            result |= value << 28 ;
-        } // else if
-        else if constexpr (F == F_Type::OpCode) {
-            static_assert(std::is_same_v<V, gg_core::gg_cpu::E_DataProcess>) ;
-            result |= value << 21 ;
-        } // else if
-        else if constexpr (F == F_Type::Rn) {
-            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
-            result |= value << 16 ;
-        } // else if
-        else if constexpr (F == F_Type::Rd) {
-            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
-            result |= value << 12 ;
-        } // else if
-        else if constexpr (F == F_Type::Rm) {
-            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
-            result |= value ;
-        } // else if
-        else if constexpr (F == F_Type::Imm) {
-            result |= (1 << 25) | value ;
-        } // else if
-        else if constexpr (F == F_Type::Rs) {
-            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
-            result |= (1 << 4) | (value << 8) ;
-        } // else if
-        else if constexpr (F == F_Type::Rotate) {
-            static_assert(std::is_integral_v<V>) ;
-            result |= value << 8 ;
-        } // else if
-        else if constexpr (F == F_Type::ShiftType) {
-            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_ShiftType>) ;
-            result |= value << 5 ;
-        } // else if
-        else if constexpr (F == F_Type::ShiftAmount) {
-            static_assert(std::is_integral_v<V>) ;
-            result |= value << 7 ;
-        } // else if
-    } // else
-
-    return result ;
-}
-
 template <typename A, size_t... Is, typename... RS, typename... VS>
 void FillRegs_Impl(A& regs, std::tuple<RS...>& R, std::tuple<VS...>& V, std::index_sequence<Is...>) {
     ((regs[std::get<Is>(R)] = std::get<Is>(V)), ...) ;
@@ -199,6 +142,63 @@ void FillRegs(A& regs, std::tuple<RS...>& R, std::tuple<VS...>& V) {
     FillRegs_Impl(regs, R, V, std::make_index_sequence<reg_idx_number>{});
 }
 
+enum F_Type {
+    Cond, I, OpCode, S, Rn, Rd, ShiftType, ShiftAmount, Rm, Rs, Rotate, Imm,
+    U, A, RdHi, RdLo, L, Offset
+};
+
+template <F_Type F, typename V>
+uint32_t ALUInstruction(V value) {
+    uint32_t result = 0 ;
+    if constexpr (F == F_Type::S) {
+        static_assert(std::is_same_v<V, bool>, "Type missmatch") ;
+        result |= value << 20 ;
+    } // if
+    else if constexpr (F == F_Type::Cond) {
+        static_assert(std::is_same_v<V, gg_core::gg_cpu::E_CondName>) ;
+        result |= value << 28 ;
+    } // else if
+    else if constexpr (F == F_Type::OpCode) {
+        static_assert(std::is_same_v<V, gg_core::gg_cpu::E_DataProcess>) ;
+        result |= value << 21 ;
+    } // else if
+    else if constexpr (F == F_Type::Rn) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value << 16 ;
+    } // else if
+    else if constexpr (F == F_Type::Rd) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value << 12 ;
+    } // else if
+    else if constexpr (F == F_Type::Rm) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value ;
+    } // else if
+    else if constexpr (F == F_Type::Imm) {
+        result |= (1 << 25) | value ;
+    } // else if
+    else if constexpr (F == F_Type::Rs) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= (1 << 4) | (value << 8) ;
+    } // else if
+    else if constexpr (F == F_Type::Rotate) {
+        static_assert(std::is_integral_v<V>) ;
+        result |= value << 8 ;
+    } // else if
+    else if constexpr (F == F_Type::ShiftType) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_ShiftType>) ;
+        result |= value << 5 ;
+    } // else if
+    else if constexpr (F == F_Type::ShiftAmount) {
+        static_assert(std::is_integral_v<V>) ;
+        result |= value << 7 ;
+    } // else if
+    else
+        gg_core::Unreachable();
+
+    return result ;
+}
+
 template <F_Type... Fs, typename... Vs>
 uint32_t MakeALUInstruction(Vs... values) {
     return (ALUInstruction<Fs>(values) | ...) ;
@@ -211,32 +211,32 @@ uint32_t MULInstruction(V value) {
         static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
         result |= value << 20 ;
     } // if
-    else {
-        if constexpr (F == F_Type::Cond) {
-            static_assert(std::is_same_v<V, gg_core::gg_cpu::E_CondName>) ;
-            result |= value << 28 ;
-        } // else if
-        else if constexpr (F == F_Type::A) {
-            static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
-            result |= value << 21 ;
-        } // else if
-        else if constexpr (F == F_Type::Rn) {
-            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
-            result |= value << 12 ;
-        } // else if
-        else if constexpr (F == F_Type::Rd) {
-            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
-            result |= value << 16 ;
-        } // else if
-        else if constexpr (F == F_Type::Rm) {
-            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
-            result |= value ;
-        } // else if
-        else if constexpr (F == F_Type::Rs) {
-            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
-            result |= value << 8 ;
-        } // else if
-    } // else
+    else if constexpr (F == F_Type::Cond) {
+        static_assert(std::is_same_v<V, gg_core::gg_cpu::E_CondName>) ;
+        result |= value << 28 ;
+    } // else if
+    else if constexpr (F == F_Type::A) {
+        static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
+        result |= value << 21 ;
+    } // else if
+    else if constexpr (F == F_Type::Rn) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value << 12 ;
+    } // else if
+    else if constexpr (F == F_Type::Rd) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value << 16 ;
+    } // else if
+    else if constexpr (F == F_Type::Rm) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value ;
+    } // else if
+    else if constexpr (F == F_Type::Rs) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value << 8 ;
+    } // else if
+    else
+        gg_core::Unreachable();
 
     return result ;
 }
@@ -254,36 +254,36 @@ uint32_t MULLInstruction(V value) {
         static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
         result |= value << 20 ;
     } // if
-    else {
-        if constexpr (F == F_Type::Cond) {
-            static_assert(std::is_same_v<V, gg_core::gg_cpu::E_CondName>) ;
-            result |= value << 28 ;
-        } // else if
-        else if constexpr (F == F_Type::U) {
-            static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
-            result |= value << 22 ;
-        } // else if
-        else if constexpr (F == F_Type::A) {
-            static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
-            result |= value << 21 ;
-        } // else if
-        else if constexpr (F == F_Type::RdHi) {
-            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
-            result |= value << 16 ;
-        } // else if
-        else if constexpr (F == F_Type::RdLo) {
-            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
-            result |= value << 12 ;
-        } // else if
-        else if constexpr (F == F_Type::Rm) {
-            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
-            result |= value ;
-        } // else if
-        else if constexpr (F == F_Type::Rs) {
-            static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
-            result |= value << 8 ;
-        } // else if
-    } // else
+    else if constexpr (F == F_Type::Cond) {
+        static_assert(std::is_same_v<V, gg_core::gg_cpu::E_CondName>) ;
+        result |= value << 28 ;
+    } // else if
+    else if constexpr (F == F_Type::U) {
+        static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
+        result |= value << 22 ;
+    } // else if
+    else if constexpr (F == F_Type::A) {
+        static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
+        result |= value << 21 ;
+    } // else if
+    else if constexpr (F == F_Type::RdHi) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value << 16 ;
+    } // else if
+    else if constexpr (F == F_Type::RdLo) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value << 12 ;
+    } // else if
+    else if constexpr (F == F_Type::Rm) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value ;
+    } // else if
+    else if constexpr (F == F_Type::Rs) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value << 8 ;
+    } // else if
+    else
+        gg_core::Unreachable() ;
 
     return result ;
 }
@@ -292,6 +292,32 @@ template <F_Type... Fs, typename... Vs>
 uint32_t MakeMULLInstruction(Vs... values) {
     constexpr uint32_t mullBase = 0xe0800090 ;
     return mullBase | (MULLInstruction<Fs>(values) | ...) ;
+}
+
+template <F_Type F, typename V>
+uint32_t BranchInstruction(V value) {
+    uint32_t result = 0 ;
+    if constexpr (F == F_Type::Cond) {
+        static_assert(std::is_same_v<V, gg_core::gg_cpu::E_CondName>) ;
+        result |= value << 28 ;
+    } // else if
+    else if constexpr (F == F_Type::L) {
+        static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
+        result |= value << 24 ;
+    } // if
+    else if constexpr (F == F_Type::Offset) {
+        result |= value ;
+    } // else if
+    else
+        gg_core::Unreachable();
+
+    return result ;
+}
+
+template <F_Type... Fs, typename... Vs>
+uint32_t MakeBranchInstruction(Vs... values) {
+    constexpr uint32_t mullBase = 0xea000000 ;
+    return mullBase | (BranchInstruction<Fs>(values) | ...) ;
 }
 
 using WorkerResult = std::pair<std::string, std::future<unsigned int>> ;

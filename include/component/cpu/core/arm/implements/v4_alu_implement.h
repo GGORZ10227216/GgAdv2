@@ -42,7 +42,7 @@ namespace gg_core::gg_cpu {
     }
 
     template<bool I, bool S, bool TEST, SHIFT_BY SHIFT_SRC, SHIFT_TYPE ST, OP_TYPE OT, E_DataProcess opcode>
-    void Alu_impl(GbaInstance &instance) {
+    static void Alu_impl(GbaInstance &instance) {
         const uint32_t curInst = CURRENT_INSTRUCTION ;
         const uint8_t RnNumber = (curInst & 0xf0000) >> 16 ;
 

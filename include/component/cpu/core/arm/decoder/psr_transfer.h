@@ -9,15 +9,15 @@
 #define GGTEST_INTERRUPT_H
 
 namespace gg_core::gg_cpu {
-    void mrs(GbaInstance& instance) ;
-    void msr_Rm(GbaInstance& instance) ;
-    void mrsp(GbaInstance& instance) ;
-    void msrp_Rm(GbaInstance& instance) ;
-    void msr_Imm(GbaInstance& instance) ;
-    void msrp_Imm(GbaInstance& instance) ;
+    static void mrs(GbaInstance& instance) ;
+    static void msr_Rm(GbaInstance& instance) ;
+    static void mrsp(GbaInstance& instance) ;
+    static void msrp_Rm(GbaInstance& instance) ;
+    static void msr_Imm(GbaInstance& instance) ;
+    static void msrp_Imm(GbaInstance& instance) ;
 
     template <uint32_t HashCode32>
-    constexpr auto PSR_Transfer() {
+    static constexpr auto PSR_Transfer() {
         if constexpr (BitFieldValue<20,2>(HashCode32) == 0b00) {
             // MRS
             if constexpr (TestBit(HashCode32, 22))

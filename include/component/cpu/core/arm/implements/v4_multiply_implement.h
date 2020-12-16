@@ -9,7 +9,7 @@
 
 namespace gg_core::gg_cpu {
     template<bool A, bool S>
-    void Multiply_impl(GbaInstance &instance) {
+    static void Multiply_impl(GbaInstance &instance) {
         uint8_t RsNumber = BitFieldValue<8, 4>(CURRENT_INSTRUCTION) ;
         uint8_t RdNumber = BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ;
         uint8_t RmNumber = BitFieldValue<0, 4>(CURRENT_INSTRUCTION) ;
@@ -45,7 +45,7 @@ namespace gg_core::gg_cpu {
     } // Multiply()
 
     template<bool U, bool A, bool S>
-    void MultiplyLong_impl(GbaInstance &instance) {
+    static void MultiplyLong_impl(GbaInstance &instance) {
         uint32_t RsVal = instance._status._regs[BitFieldValue<8, 4>(CURRENT_INSTRUCTION)] ;
         uint32_t RmVal = instance._status._regs[BitFieldValue<0, 4>(CURRENT_INSTRUCTION)] ;
 

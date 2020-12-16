@@ -12,10 +12,10 @@
 
 namespace gg_core::gg_cpu {
     template<bool I, bool S, bool TEST, SHIFT_BY SHIFT_SRC, SHIFT_TYPE ST, OP_TYPE OT, E_DataProcess opcode>
-    void Alu_impl(GbaInstance &instance) ;
+    static void Alu_impl(GbaInstance &instance) ;
 
     template <uint32_t HashCode32>
-    constexpr auto DataProcessing() {
+    static constexpr auto DataProcessing() {
         constexpr auto opcode = static_cast<const E_DataProcess>(BitFieldValue<21, 4>(HashCode32));
         constexpr bool TEST = opcode == TST || opcode == TEQ || opcode == CMP || opcode == CMN ;
         constexpr auto SHIFT_SRC = TestBit(HashCode32, 4) ? SHIFT_BY::RS : SHIFT_BY::IMM ;

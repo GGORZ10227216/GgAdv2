@@ -10,7 +10,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
-    void SingleDataTransfer_impl(GbaInstance &instance) {
+    static void SingleDataTransfer_impl(GbaInstance &instance) {
         // todo: Rd == r15 behavior
         uint32_t immOffset = 0 ;
         uint32_t &Rn = instance._status._regs[ (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ] ;

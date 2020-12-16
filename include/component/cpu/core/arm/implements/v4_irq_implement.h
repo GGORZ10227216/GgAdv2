@@ -9,7 +9,7 @@
 
 namespace gg_core::gg_cpu {
     template <E_OperationMode opMode>
-    void Interrupt_impl(GbaInstance &instance) {
+    static void Interrupt_impl(GbaInstance &instance) {
         instance._status._regs[ lr ] =
                 instance._status.CurrentPC_OnExec() - (instance._status.GetCpuMode() == ARM ? 4 : 2) ;
 
