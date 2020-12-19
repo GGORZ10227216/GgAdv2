@@ -19,12 +19,17 @@ namespace gg_core::gg_mem {
             MemoryRegion(ccRef)
         {
             SRAM.fill(0) ;
-            if (romPath) {
-                // todo: load ROM mechanism
-            } // if
-            else {
-                // Boot BIOS only
-            } // else
+            // todo: open all ROM space(allocated on heap) only for debugging
+            state1 = std::make_unique<uint8_t[]>( state1End - state1Start + 1 ) ;
+            state2 = std::make_unique<uint8_t[]>( state2End - state2Start + 1 ) ;
+            state3 = std::make_unique<uint8_t[]>( state3End - state3Start + 1 ) ;
+
+//            if (romPath) {
+//                // todo: load ROM mechanism
+//            } // if
+//            else {
+//                // Boot BIOS only
+//            } // else
         } // GamepakMemory()
 
         uint8_t &AccessImpl(unsigned addr, E_AccessWidth width) {
@@ -35,7 +40,7 @@ namespace gg_core::gg_mem {
                 return state2[addr - state2Start];
             } // else if()
             else if (addr >= state3Start && addr <= state3End) {
-                return state3[addr - state3End];
+                return state3[addr - state3Start];
             } // else if
             else if (addr >= SRAM_Start && addr <= SRAM_End) {
                 return SRAM[addr - SRAM_Start];
@@ -47,7 +52,8 @@ namespace gg_core::gg_mem {
 
     private :
         // todo: state memory initialize
-        std::vector<uint8_t> state1, state2, state3 ;
+        // std::vector<uint8_t> state1, state2, state3 ;
+        std::unique_ptr<uint8_t[]> state1, state2, state3 ;
         std::array<uint8_t, 0x10000> SRAM ;
     } ;
 }

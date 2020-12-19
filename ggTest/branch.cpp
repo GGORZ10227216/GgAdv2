@@ -15,7 +15,7 @@ namespace {
         ArmAssembler gg_asm;
 
         unsigned int t = 0;
-        TestField offsetValue(0, 0xffffff, 0x111);
+        TestField offsetValue(0, 0xffffff, 1);
 
         auto TestMain = [&]() {
             ++t;

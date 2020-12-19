@@ -43,9 +43,12 @@ namespace gg_core {
                 constexpr unsigned align = 4;
                 const unsigned addrAligned = AddrAlign(addr, align);
                 const unsigned rotate = (addrAligned - addr) * 8;
-                uint32_t result = reinterpret_cast<uint32_t &> (Access(addrAligned, DWORD));
+
+                uint8_t& tmpRef = Access(addrAligned, DWORD) ;
+                uint32_t result = reinterpret_cast<uint32_t &> (tmpRef);
+
                 return rotr(result, rotate);
-            } // Read16()
+            } // Read32()
 
             template<typename T>
             void Write8(unsigned addr, T value) requires std::is_same_v<T, uint8_t> {
