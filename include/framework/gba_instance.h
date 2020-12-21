@@ -32,7 +32,6 @@ namespace gg_core {
             _isRunning = true ;
 
             RefillPipeline();
-            Fetch() ;
 
             while (_isRunning) {
                 CPUTick();
@@ -48,11 +47,12 @@ namespace gg_core {
         std::thread _worker;
 
         void CPUTick() {
-            uint32_t i = _status.CurrentInstruction() ;
-            uint32_t hash = ((i & 0x0ff00000) >> 16) | ((i & 0xf0) >> 4) ;
-
-            gg_cpu::armHandlers[ hash ](*this) ;
+            using namespace gg_cpu ;
+            uint32_t i = _status.fetchedBuffer[ _status.pipelineCnt ] ;
             Fetch() ;
+
+            uint32_t hash = ((i & 0x0ff00000) >> 16) | ((i & 0xf0) >> 4) ;
+            gg_cpu::armHandlers[ hash ](*this) ;
         } // Tick()
 
         void CPUTick_Debug(uint32_t inst) {
