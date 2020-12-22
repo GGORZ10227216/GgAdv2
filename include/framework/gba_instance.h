@@ -48,10 +48,10 @@ namespace gg_core {
 
         void CPUTick() {
             using namespace gg_cpu ;
-            uint32_t i = _status.fetchedBuffer[ _status.pipelineCnt ] ;
+            _status.currentInstruction = _status.fetchedBuffer[ _status.pipelineCnt ] ;
             Fetch() ;
 
-            uint32_t hash = ((i & 0x0ff00000) >> 16) | ((i & 0xf0) >> 4) ;
+            uint32_t hash = ((_status.currentInstruction & 0x0ff00000) >> 16) | ((_status.currentInstruction & 0xf0) >> 4) ;
             gg_cpu::armHandlers[ hash ](*this) ;
         } // Tick()
 

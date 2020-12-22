@@ -28,7 +28,7 @@ namespace gg_core {
             }
 
             uint32_t CurrentInstruction() {
-                return fetchedBuffer[pipelineCnt] ;
+                return currentInstruction ;
             } // CurrentInstruction()
 
             uint32_t CurrentPC_OnExec() {
@@ -162,7 +162,7 @@ namespace gg_core {
         private :
             std::array<uint32_t, 2> fetchedBuffer;
             uint8_t pipelineCnt = 0;
-
+            uint32_t currentInstruction = 0x00 ;
             uint32_t _cpsr = 0xd3;
 
             std::array<unsigned, 7> _registers_usrsys{};
