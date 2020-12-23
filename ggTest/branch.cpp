@@ -11,7 +11,7 @@ namespace {
         using namespace gg_core;
 
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        GbaInstance instance(std::nullopt);
         ArmAssembler gg_asm;
 
         unsigned int t = 0;

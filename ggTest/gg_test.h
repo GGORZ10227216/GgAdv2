@@ -144,7 +144,7 @@ void FillRegs(A& regs, std::tuple<RS...>& R, std::tuple<VS...>& V) {
 
 enum F_Type {
     Cond, I, OpCode, S, Rn, Rd, ShiftType, ShiftAmount, Rm, Rs, Rotate, Imm,
-    U, A, RdHi, RdLo, L, Offset
+    U, A, RdHi, RdLo, L, Offset, B
 };
 
 template <F_Type F, typename V>
@@ -318,6 +318,41 @@ template <F_Type... Fs, typename... Vs>
 uint32_t MakeBranchInstruction(Vs... values) {
     constexpr uint32_t mullBase = 0xea000000 ;
     return mullBase | (BranchInstruction<Fs>(values) | ...) ;
+}
+
+template <F_Type F, typename V>
+uint32_t SwpInstruction(V value) {
+    uint32_t result = 0 ;
+    if constexpr (F == F_Type::Cond) {
+        static_assert(std::is_same_v<V, gg_core::gg_cpu::E_CondName>) ;
+        result |= value << 28 ;
+    } // else if
+    else if constexpr (F == F_Type::B) {
+        static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
+        result |= value << 22 ;
+    } // if
+    else if constexpr (F == F_Type::Rn) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value << 16;
+    } // else if
+    else if constexpr (F == F_Type::Rd) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value << 12;
+    } // else if
+    else if constexpr (F == F_Type::Rm) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value ;
+    } // else if
+    else
+        gg_core::Unreachable();
+
+    return result ;
+}
+
+template <F_Type... Fs, typename... Vs>
+uint32_t MakeSwapInstruction(Vs... values) {
+    constexpr uint32_t swpBase = 0xe1000090 ;
+    return swpBase | (SwpInstruction<Fs>(values) | ...) ;
 }
 
 using WorkerResult = std::pair<std::string, std::future<unsigned int>> ;
