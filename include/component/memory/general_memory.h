@@ -14,14 +14,16 @@ namespace gg_core::gg_mem {
     struct GeneralMemory : public MemoryRegion<GeneralMemory> {
         GeneralMemory(unsigned& ccRef) : MemoryRegion(ccRef) {
             // memcpy( BIOS.data(), biosData.data(), BIOS.size() ) ;
-            std::array<uint8_t, 36> testProg {
-                    0x12, 0x03, 0x81, 0xe0, 0x32, 0x03, 0x81, 0xe0, 0x52,
-                    0x03, 0x81, 0xe0, 0x72, 0x03, 0x81, 0xe0, 0x02, 0x01,
-                    0x41, 0xe0, 0x22, 0x01, 0x41, 0xe0, 0x42, 0x01, 0x41,
-                    0xe0, 0x62, 0x01, 0x41, 0xe0, 0xf6, 0xff, 0xff, 0xea
-            } ;
-
-            memcpy( BIOS.data(), testProg.data(), testProg.size() ) ;
+            // fixme: leave bios data to all zero for debugging
+            BIOS.fill(0) ;
+//            std::array<uint8_t, 36> testProg {
+//                    0x12, 0x03, 0x81, 0xe0, 0x32, 0x03, 0x81, 0xe0, 0x52,
+//                    0x03, 0x81, 0xe0, 0x72, 0x03, 0x81, 0xe0, 0x02, 0x01,
+//                    0x41, 0xe0, 0x22, 0x01, 0x41, 0xe0, 0x42, 0x01, 0x41,
+//                    0xe0, 0x62, 0x01, 0x41, 0xe0, 0xf6, 0xff, 0xff, 0xea
+//            } ;
+//
+//            memcpy( BIOS.data(), testProg.data(), testProg.size() ) ;
         } // GeneralMemory()
 
         uint8_t &AccessImpl(unsigned addr, E_AccessWidth width) {
@@ -32,7 +34,7 @@ namespace gg_core::gg_mem {
                 return WRAM_Onboard[addr - onboardStart];
             } // else if()
             else if (addr >= onchipStart && addr <= onchipEnd) {
-                return WRAM_Onchip[addr - onboardStart];
+                return WRAM_Onchip[addr - onchipStart];
             } // else if
             else if (addr >= ioStart && addr <= ioEnd) {
                 return IOReg[ addr - ioStart ] ;

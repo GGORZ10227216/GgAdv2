@@ -56,7 +56,7 @@ namespace gg_core {
         } // Tick()
 
         void CPUTick_Debug(uint32_t inst) {
-            _status.fetchedBuffer[ _status.pipelineCnt ] = inst ;
+            _status.currentInstruction = inst ;
             uint32_t hash = ((inst & 0x0ff00000) >> 16) | ((inst & 0xf0) >> 4) ;
 
             gg_cpu::armHandlers[ hash ](*this) ;

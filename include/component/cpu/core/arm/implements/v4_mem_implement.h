@@ -205,9 +205,9 @@ namespace gg_core::gg_cpu {
 
     template <bool B>
     void Swap_impl(GbaInstance &instance) {
-        uint32_t &Rn = instance._status._regs[ (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ] ;
+        uint32_t Rn = instance._status._regs[ (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ] ;
         uint32_t &Rd = instance._status._regs[ (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ] ;
-        uint32_t &Rm = instance._status._regs[ CURRENT_INSTRUCTION & 0xf ] ;
+        uint32_t Rm = instance._status._regs[ CURRENT_INSTRUCTION & 0xf ] ;
 
         if constexpr (B) {
             Rd = instance._mem.Read8(Rn) ;
