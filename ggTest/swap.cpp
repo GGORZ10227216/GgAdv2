@@ -7,6 +7,13 @@
 namespace {
     using namespace gg_core::gg_cpu;
 
+    static constexpr std::array<uint32_t, 4> testValue {
+        0xdeadbeef,
+        0xa0b1c2d4,
+        0x0c0011ab,
+        0xffffffff
+    };
+
     TEST_F(ggTest, swp_test) {
         using namespace gg_core;
 
@@ -19,8 +26,8 @@ namespace {
         TestField targetRn(0, 0xe, 1) ;
         TestField RnValue(0x3000000, 0x3007fff, 1) ;
         TestField targetRm(0, 0xe, 1) ;
-        TestField RmValue(0, 0xffffffff, 0x11111111) ;
-        TestField memValue(0, 0xffffffff, 0x11111111) ;
+        TestField RmValue(0, 3, 1) ;
+        TestField memValue(0, 3, 1) ;
 
         auto TestMain = [&]() {
             ++ t ;
@@ -32,15 +39,12 @@ namespace {
             ) ;
 
             auto idx = std::make_tuple(targetRn.value, targetRm.value) ;
-            auto val = std::make_tuple(RnValue.value, RmValue.value);
+            auto val = std::make_tuple(RnValue.value, testValue[ RmValue.value ] );
             FillRegs(instance._status._regs, idx, val) ;
             FillRegs(egg.regs, idx, val) ;
 
-            instance._mem.Write32((uint32_t)RnValue.value, (uint32_t)memValue.value) ;
-            egg.writeWord((uint32_t)RnValue.value, (uint32_t)memValue.value) ;
-
-            if (t == 125829122)
-                std::cout << "stop" << std::endl ;
+            instance._mem.Write32((uint32_t)RnValue.value, testValue[ memValue.value ]) ;
+            egg.writeWord((uint32_t)RnValue.value, testValue[ memValue.value ]) ;
 
             uint32_t inst_hash = hashArm(instruction) ;
 
@@ -54,6 +58,7 @@ namespace {
                 << fmt::format( "Rn: {:x}, Rm: {:x}, mem: {:x}\n", RnValue.value, RmValue.value, memValue.value )
                 << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                 << Diagnose(instance, egg, errFlag) ;
+            ASSERT_TRUE(instance._mem.Read32(RnValue.value) == egg.readWord(RnValue.value)) ;
         };
 
         TEST_LOOPS(TestMain, targetRd, targetRn, targetRm, RnValue, RmValue, memValue) ;
