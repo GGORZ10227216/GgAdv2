@@ -42,7 +42,7 @@ namespace gg_core {
             uint32_t Read32(unsigned addr) {
                 constexpr unsigned align = 4;
                 const unsigned addrAligned = AddrAlign(addr, align);
-                const unsigned rotate = (addrAligned - addr) * 8;
+                const unsigned rotate = (addr - addrAligned) * 8;
 
                 uint8_t& tmpRef = Access(addrAligned, DWORD) ;
                 uint32_t result = reinterpret_cast<uint32_t &> (tmpRef);

@@ -43,13 +43,10 @@ namespace {
             FillRegs(instance._status._regs, idx, val) ;
             FillRegs(egg.regs, idx, val) ;
 
-            if (t == 524305)
-                std::cout << "stop" << std::endl ;
-
             instance._mem.Write32((uint32_t)RnValue.value, testValue[ memValue.value ]) ;
             egg.writeWord((uint32_t)RnValue.value, testValue[ memValue.value ]) ;
 
-            ASSERT_EQ(instance._mem.Read32(RnValue.value), egg.readWord(RnValue.value)) ;
+            // ASSERT_EQ(instance._mem.Read32(RnValue.value), egg.readWord(RnValue.value)) ;
 
             uint32_t inst_hash = hashArm(instruction) ;
 
@@ -63,7 +60,7 @@ namespace {
                 << fmt::format( "Rn: {:x}, Rm: {:x}, mem: {:x}\n", RnValue.value, RmValue.value, memValue.value )
                 << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                 << Diagnose(instance, egg, errFlag) ;
-            ASSERT_TRUE(instance._mem.Read32(RnValue.value) == egg.readWord(RnValue.value)) ;
+            ASSERT_TRUE(instance._mem.Read32(RnValue.value) == egg.readWordRotate(RnValue.value)) ;
         };
 
         TEST_LOOPS(TestMain, targetRd, targetRn, targetRm, RnValue, RmValue, memValue) ;
