@@ -9,6 +9,7 @@
 #include <display_memory.h>
 #include <gamepak_memory.h>
 #include <general_memory.h>
+#include <gg_utility.h>
 #include <mem_enum.h>
 
 #ifndef GGADV_MMU_H
@@ -18,13 +19,37 @@ namespace gg_core {
     class GbaInstance;
 
     namespace gg_mem {
+        template <E_AccessWidth W>
+        inline unsigned AddrAlign(uint32_t addr) {
+            if constexpr (W == BYTE)
+                return addr ;
+            else if constexpr (W == WORD)
+                return addr & ~0x1 ;
+            else if constexpr (W == DWORD)
+                return addr & ~0x3 ;
+            else
+                gg_core::Unreachable() ;
+        } // AddrAlign()
+
+        template <E_AccessWidth W>
+        inline unsigned CountAccessRotate(uint32_t addr) {
+            if constexpr (W == BYTE)
+                return 0 ;
+            else if constexpr (W == WORD)
+                return (addr & 0x1) << 3 ;
+            else if constexpr (W == DWORD)
+                return (addr & 0x3) << 3 ;
+            else
+                gg_core::Unreachable() ;
+        } // AddrAlign()
+
         class MMU {
         public :
             MMU(const std::optional<std::filesystem::path> &romPath) :
                     general(_cycleCounter),
                     display(_cycleCounter),
-                    gamepak(romPath, _cycleCounter) {
-                general.Access(0, BYTE);
+                    gamepak(romPath, _cycleCounter)
+            {
             }
 
             uint8_t Read8(unsigned addr) {
@@ -32,17 +57,15 @@ namespace gg_core {
             } // Read8()
 
             uint16_t Read16(unsigned addr) {
-                constexpr unsigned align = 2;
-                const unsigned addrAligned = AddrAlign(addr, align);
-                const unsigned rotate = (addrAligned - addr) * 8;
+                const unsigned addrAligned = AddrAlign<WORD>(addr);
+                const unsigned rotate = CountAccessRotate<WORD>(addr);
                 uint16_t result = reinterpret_cast<uint16_t &> (Access(addrAligned, WORD));
                 return rotr(result, rotate);
             } // Read16()
 
             uint32_t Read32(unsigned addr) {
-                constexpr unsigned align = 4;
-                const unsigned addrAligned = AddrAlign(addr, align);
-                const unsigned rotate = (addr - addrAligned) * 8;
+                const unsigned addrAligned = AddrAlign<DWORD>(addr);
+                const unsigned rotate = CountAccessRotate<DWORD>(addr);
 
                 uint8_t& tmpRef = Access(addrAligned, DWORD) ;
                 uint32_t result = reinterpret_cast<uint32_t &> (tmpRef);
@@ -57,20 +80,20 @@ namespace gg_core {
 
             template<typename T>
             void Write16(unsigned addr, T value) requires std::is_same_v<T, uint16_t> {
-                if (addr % 2 != 0) {
-                    // todo: log warning msg
-                } // if
+//                if (addr % 2 != 0) {
+//                    // todo: log warning msg
+//                } // if
 
-                reinterpret_cast<uint16_t &> (Access(AddrAlign(addr, 2), WORD)) = value;
+                reinterpret_cast<uint16_t &> (Access(AddrAlign<WORD>(addr), WORD)) = value;
             } // Write()
 
             template<typename T>
             void Write32(unsigned addr, T value) requires std::is_same_v<T, uint32_t> {
-                if (addr % 4 != 0) {
-                    // todo: log warning msg
-                } // if
+//                if (addr % 4 != 0) {
+//                    // todo: log warning msg
+//                } // if
 
-                reinterpret_cast<uint32_t &> (Access(AddrAlign(addr, 4), DWORD)) = value;
+                reinterpret_cast<uint32_t &> (Access(AddrAlign<DWORD>(addr), DWORD)) = value;
             } // Write()
 
         private :

@@ -8,10 +8,6 @@
 #define GGADV_BIT_MANIPULATE_H
 
 namespace gg_core {
-    inline unsigned AddrAlign(uint32_t addr, uint32_t align) {
-        return ((addr + align) & ~(align - 1)) - align ;
-    } // AddrAlign()
-
     constexpr uint64_t _BV(uint32_t bitNo) {
         return static_cast<uint64_t>(0x1) << bitNo;
     } // _BV()

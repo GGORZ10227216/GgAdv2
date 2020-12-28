@@ -46,8 +46,6 @@ namespace {
             instance._mem.Write32((uint32_t)RnValue.value, testValue[ memValue.value ]) ;
             egg.writeWord((uint32_t)RnValue.value, testValue[ memValue.value ]) ;
 
-            // ASSERT_EQ(instance._mem.Read32(RnValue.value), egg.readWord(RnValue.value)) ;
-
             uint32_t inst_hash = hashArm(instruction) ;
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
@@ -66,4 +64,59 @@ namespace {
         TEST_LOOPS(TestMain, targetRd, targetRn, targetRm, RnValue, RmValue, memValue) ;
         fmt::print("Total performed tests: {}\n", t);
     }
+
+    TEST_F(ggTest, swpb_test) {
+        using namespace gg_core;
+
+        Arm egg;
+        GbaInstance instance(std::nullopt);
+        ArmAssembler gg_asm;
+
+        uint64_t t = 0 ;
+        TestField targetRd(0, 0xe, 1) ;
+        TestField targetRn(0, 0xe, 1) ;
+        TestField RnValue(0x3000000, 0x3007fff, 1) ;
+        TestField targetRm(0, 0xe, 1) ;
+        TestField RmValue(0, 3, 1) ;
+        TestField memValue(0, 3, 1) ;
+
+        auto TestMain = [&]() {
+            ++ t ;
+            if (targetRn.value == targetRm.value)
+                return ;
+
+            uint32_t instruction = MakeSwapInstruction<Cond, B, Rn, Rd, Rm>(
+                    AL, true, targetRn.value, targetRd.value, targetRm.value
+            ) ;
+
+            auto idx = std::make_tuple(targetRn.value, targetRm.value) ;
+            auto val = std::make_tuple(RnValue.value, testValue[ RmValue.value ] );
+            FillRegs(instance._status._regs, idx, val) ;
+            FillRegs(egg.regs, idx, val) ;
+
+            instance._mem.Write8((uint32_t)RnValue.value, (uint8_t)testValue[ memValue.value ]) ;
+            egg.writeByte((uint32_t)RnValue.value, testValue[ memValue.value ]) ;
+
+            uint32_t inst_hash = hashArm(instruction) ;
+
+            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            instance.CPUTick_Debug(instruction);
+
+            uint32_t errFlag = CheckStatus(instance, egg) ;
+            // remain 32bit read check to make sure we don't touch any memory address which is not our access target.
+            bool memChk = instance._mem.Read32(RnValue.value) == egg.readWordRotate(RnValue.value) ;
+
+            ASSERT_TRUE(errFlag == 0 && memChk)
+                                        << "#" << t << " of test" << '\n'
+                                        << "memory check:" << memChk << '\n'
+                                        << std::hex << "Errflag: " << errFlag << '\n'
+                                        << fmt::format( "Rn: {:x}, Rm: {:x}, mem: {:x}\n", RnValue.value, RmValue.value, memValue.value )
+                                        << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                        << Diagnose(instance, egg, errFlag) ;
+        };
+
+        TEST_LOOPS(TestMain, targetRd, targetRn, targetRm, RnValue, RmValue, memValue) ;
+        fmt::print("Total performed tests: {}\n", t);
+    }
 }
+
