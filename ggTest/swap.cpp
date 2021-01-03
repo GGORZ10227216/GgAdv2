@@ -103,8 +103,8 @@ namespace {
             instance.CPUTick_Debug(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
-            // remain 32bit read check to make sure we don't touch any memory address which is not our access target.
-            bool memChk = instance._mem.Read32(RnValue.value) == egg.readWordRotate(RnValue.value) ;
+
+            bool memChk = instance._mem.Read8(RnValue.value) == egg.readByte(RnValue.value) ;
 
             ASSERT_TRUE(errFlag == 0 && memChk)
                                         << "#" << t << " of test" << '\n'
