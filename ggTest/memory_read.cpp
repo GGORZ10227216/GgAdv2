@@ -38,10 +38,6 @@ namespace {
                 return ;
 
             uint32_t targetAddr = baseAddr ;
-//            if (uFlag.value)
-//                targetAddr += immOffset.value ;
-//            else
-//                targetAddr -= immOffset.value ;
 
             uint32_t instruction = MakeSingleTransferInstruction<Cond, F_Type::I, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
                     AL, false, false, uFlag.value, false, wFlag.value, true,
@@ -79,8 +75,8 @@ namespace {
         ArmAssembler gg_asm ;
 
         unsigned int t = 0 ;
-        TestField targetRn(0, 0xe, 1) ;
-        TestField targetRd(0, 0xe, 1) ;
+        TestField targetRn(0, 0xf, 1) ;
+        TestField targetRd(0, 0xf, 1) ;
         TestField immOffset(0, 0xfff, 1) ;
         TestField memValueidx(0, 3, 1) ;
 
@@ -94,13 +90,13 @@ namespace {
                 return ;
 
             uint32_t targetAddr = baseAddr ;
-//            if (uFlag.value)
-//                targetAddr += immOffset.value ;
-//            else
-//                targetAddr -= immOffset.value ;
+            if (uFlag.value)
+                targetAddr += immOffset.value ;
+            else
+                targetAddr -= immOffset.value ;
 
             uint32_t instruction = MakeSingleTransferInstruction<Cond, F_Type::I, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
-                    AL, false, false, uFlag.value, false, wFlag.value, true,
+                    AL, false, true, uFlag.value, false, wFlag.value, true,
                     targetRn.value, targetRd.value, immOffset.value
             ) ;
 
