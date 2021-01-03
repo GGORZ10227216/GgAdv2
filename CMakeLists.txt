@@ -109,7 +109,7 @@ file(GLOB_RECURSE SOURCE_FILES
         ./eggvance/eggvance/src/*.cpp
         )
 
-add_executable(ggTest ${SOURCE_FILES} ${header_core} ${header_arm_implement} ${src_core} ggTest/gg_test.h ggTest/include/loop_tool.h ggTest/alu.cpp ggTest/multiply.cpp ggTest/mul_long.cpp ggTest/branch.cpp ggTest/swap.cpp)
+add_executable(ggTest ${SOURCE_FILES} ${header_core} ${header_arm_implement} ${src_core} ggTest/gg_test.h ggTest/include/loop_tool.h ggTest/alu.cpp ggTest/multiply.cpp ggTest/mul_long.cpp ggTest/branch.cpp ggTest/swap.cpp ggTest/memory_read.cpp)
 
 target_include_directories(ggTest PUBLIC
         include
