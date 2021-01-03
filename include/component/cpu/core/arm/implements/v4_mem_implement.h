@@ -12,56 +12,56 @@ namespace gg_core::gg_cpu {
     template <bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
     static void SingleDataTransfer_impl(GbaInstance &instance) {
         // todo: Rd == r15 behavior
-        uint32_t immOffset = 0 ;
         uint8_t RnNumber = (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ;
         uint8_t RdNumber = (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ;
 
         uint32_t &Rn = instance._status._regs[ RnNumber ] ;
         uint32_t &Rd = instance._status._regs[ RdNumber ] ;
+        uint32_t offset = 0, targetAddr = Rn ;
 
-        auto writeBack = [&]() {
-            // Info from heyrick.eu:
-            //      Pre-indexed (any) / Post-indexed (any): Using the same register as Rd and Rn is unpredictable.
-            if (RnNumber == RdNumber)
-                return ;
+        auto calculateTargetAddr = [&]() {
+            if constexpr (I) {
+                ParseOp2_Shift_Imm<ST>(instance, offset) ;
+            } // constexpr()
+            else {
+                offset = CURRENT_INSTRUCTION & 0xfff ;
+            } // else
 
             if constexpr (U)
-                Rn += immOffset ;
+                targetAddr += offset ;
             else
-                Rn -= immOffset ;
+                targetAddr -= offset ;
         };
-
-        if constexpr (I) {
-            ParseOp2_Shift_Imm<ST>(instance, immOffset) ;
-        } // constexpr()
-        else {
-            immOffset = CURRENT_INSTRUCTION & 0xfff ;
-        } // else
 
         if constexpr (L) {
             // ldr
-            if constexpr (P && W) {
-                writeBack() ;
-            } // if
+            if constexpr (P)
+                calculateTargetAddr() ;
 
             if constexpr (B) {
-                Rd = instance._mem.Read8(Rn) ;
+                Rd = instance._mem.Read8(targetAddr) ;
             } // if
             else {
-                Rd = instance._mem.Read32(Rn) ;
+                Rd = instance._mem.Read32(targetAddr) ;
             } // else
 
             if (RdNumber == pc)
                 instance.RefillPipeline() ;
 
-            if constexpr (!P) {
-                writeBack() ;
+            if constexpr (!P || W) {
+                // Info from heyrick.eu:
+                //      Pre-indexed (any) / Post-indexed (any): Using the same register as Rd and Rn is unpredictable.
+                if (RnNumber != RdNumber) {
+                    if constexpr (!P)
+                        calculateTargetAddr() ;
+                    Rn = targetAddr ;
+                } // if
             } // if
         } // if
         else {
             // str
             if constexpr (P && W) {
-                writeBack() ;
+                calculateTargetAddr() ;
             } // if
 
             if constexpr (B) {
@@ -72,7 +72,7 @@ namespace gg_core::gg_cpu {
             } // else
 
             if constexpr (!P) {
-                writeBack() ;
+                calculateTargetAddr() ;
             } // if
         } // else
     } // MemAccess_impl()
