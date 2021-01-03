@@ -13,9 +13,18 @@ namespace gg_core::gg_cpu {
     static void SingleDataTransfer_impl(GbaInstance &instance) {
         // todo: Rd == r15 behavior
         uint32_t immOffset = 0 ;
-        uint32_t &Rn = instance._status._regs[ (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ] ;
-        uint32_t &Rd = instance._status._regs[ (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ] ;
+        uint8_t RnNumber = (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ;
+        uint8_t RdNumber = (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ;
+
+        uint32_t &Rn = instance._status._regs[ RnNumber ] ;
+        uint32_t &Rd = instance._status._regs[ RdNumber ] ;
+
         auto writeBack = [&]() {
+            // Info from heyrick.eu:
+            //      Pre-indexed (any) / Post-indexed (any): Using the same register as Rd and Rn is unpredictable.
+            if (RnNumber == RdNumber)
+                return ;
+
             if constexpr (U)
                 Rn += immOffset ;
             else
@@ -23,10 +32,10 @@ namespace gg_core::gg_cpu {
         };
 
         if constexpr (I) {
-            immOffset = CURRENT_INSTRUCTION & 0xfff ;
+            ParseOp2_Shift_Imm<ST>(instance, immOffset) ;
         } // constexpr()
         else {
-            ParseOp2_Shift_Imm<ST>(instance, immOffset) ;
+            immOffset = CURRENT_INSTRUCTION & 0xfff ;
         } // else
 
         if constexpr (L) {
@@ -42,7 +51,10 @@ namespace gg_core::gg_cpu {
                 Rd = instance._mem.Read32(Rn) ;
             } // else
 
-            if constexpr (!P && W) {
+            if (RdNumber == pc)
+                instance.RefillPipeline() ;
+
+            if constexpr (!P) {
                 writeBack() ;
             } // if
         } // if
@@ -59,7 +71,7 @@ namespace gg_core::gg_cpu {
                 instance._mem.Write32(Rn, Rd) ;
             } // else
 
-            if constexpr (!P && W) {
+            if constexpr (!P) {
                 writeBack() ;
             } // if
         } // else
