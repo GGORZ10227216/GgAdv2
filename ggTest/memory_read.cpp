@@ -69,6 +69,87 @@ namespace {
         std::cout << "Test performed: " << t << std::endl ;
     }
 
+    TEST_F(ggTest, ldr_post_reg_offset_test) {
+        Arm egg;
+        gg_core::GbaInstance instance(std::nullopt);
+        ArmAssembler gg_asm ;
+
+        unsigned int t = 0 ;
+        TestField targetRn(0, 0xf, 1) ;
+        TestField targetRd(0, 0xf, 1) ;
+
+        TestField shiftType(0, 3, 1) ;
+        TestField shiftAmount(0, 0x1f, 1) ;
+        TestField RmValue(0, 0xf, 1) ;
+
+        TestField uFlag(0, 1, 1) ;
+        TestField wFlag(0, 1, 1) ;
+
+        for (int i = 0x2000000, j = 0 ; i <= 0x203ffff ; i += 4) {
+            instance._mem.Write32(i, testValue[ j ]) ;
+            egg.writeWord(i, testValue[ j ]) ;
+
+            j = (j + 1) & 0b11 ;
+        } // for
+
+        auto TestMain = [&]() {
+            ++t ;
+
+            if (wFlag.value && targetRn.value == pc)
+                return ;
+            if (targetRd.value == targetRn.value || r4 == targetRn.value)
+                return ;
+
+            uint32_t offset = RmValue.value ;
+            switch (shiftType.value) {
+                case LSL:
+                    offset <<= shiftAmount.value ;
+                    break;
+                case LSR:
+                    offset >>= shiftAmount.value ;
+                    break ;
+                case ASR:
+                    offset = static_cast<int32_t>(offset) >> shiftAmount.value ;
+                    break ;
+                case ROR:
+                    offset = rotr(offset, shiftAmount.value);
+                    break ;
+            }
+
+            if (uFlag.value && (baseAddr + offset < 0x2000000 || baseAddr + offset > 0x203ffff))
+                return ;
+            if (!uFlag.value && (baseAddr - offset < 0x2000000 || baseAddr - offset > 0x203ffff))
+                return ;
+
+            uint32_t instruction = MakeSingleTransferInstruction
+                    <Cond, F_Type::I, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
+                    AL, true, false, uFlag.value, false, wFlag.value, true,
+                    targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
+            ) ;
+
+            instance._status._regs[ targetRn.value ] = baseAddr ;
+            egg.regs[ targetRn.value ] = baseAddr ;
+
+            instance._status._regs[ r4 ] = RmValue.value ;
+            egg.regs[ r4 ] = RmValue.value ;
+
+            uint32_t inst_hash = hashArm(instruction) ;
+
+            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            instance.CPUTick_Debug(instruction);
+
+            uint32_t errFlag = CheckStatus(instance, egg) ;
+            ASSERT_TRUE(errFlag == 0)
+                                        << "#" << t << '\n'
+                                        << std::hex << "Errflag: " << errFlag << '\n'
+                                        << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                        << Diagnose(instance, egg, errFlag) ;
+        };
+
+        TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue) ;
+        std::cout << "Test performed: " << t << std::endl ;
+    }
+
     TEST_F(ggTest, ldrb_post_imm_offset_test) {
         Arm egg;
         gg_core::GbaInstance instance(std::nullopt);
