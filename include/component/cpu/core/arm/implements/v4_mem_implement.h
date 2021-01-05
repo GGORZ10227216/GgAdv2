@@ -19,14 +19,14 @@ namespace gg_core::gg_cpu {
         uint32_t &Rd = instance._status._regs[ RdNumber ] ;
         uint32_t offset = 0, targetAddr = Rn ;
 
-        auto calculateTargetAddr = [&]() {
-            if constexpr (I) {
-                ParseOp2_Shift_Imm<ST>(instance, offset) ;
-            } // constexpr()
-            else {
-                offset = CURRENT_INSTRUCTION & 0xfff ;
-            } // else
+        if constexpr (I) {
+            ParseOp2_Shift_Imm<ST>(instance, offset) ;
+        } // constexpr()
+        else {
+            offset = CURRENT_INSTRUCTION & 0xfff ;
+        } // else
 
+        auto calculateTargetAddr = [&]() {
             if constexpr (U)
                 targetAddr += offset ;
             else
