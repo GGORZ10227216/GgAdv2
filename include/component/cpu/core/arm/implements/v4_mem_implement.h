@@ -12,72 +12,81 @@ namespace gg_core::gg_cpu {
     template <bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
     static void SingleDataTransfer_impl(GbaInstance &instance) {
         // todo: Rd == r15 behavior
+        // todo: LDRT support?
+
+        constexpr bool translation = !P && W ;
+
         uint8_t RnNumber = (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ;
         uint8_t RdNumber = (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ;
 
-        uint32_t &Rn = instance._status._regs[ RnNumber ] ;
-        uint32_t &Rd = instance._status._regs[ RdNumber ] ;
-        uint32_t offset = 0, targetAddr = Rn ;
+        auto Access = [&]() {
+            uint32_t &Rn = instance._status._regs[ RnNumber ] ;
+            uint32_t &Rd = instance._status._regs[ RdNumber ] ;
+            uint32_t offset = 0, targetAddr = Rn ;
 
-        if constexpr (I) {
-            ParseOp2_Shift_Imm<ST>(instance, offset) ;
-        } // constexpr()
-        else {
-            offset = CURRENT_INSTRUCTION & 0xfff ;
-        } // else
-
-        auto calculateTargetAddr = [&]() {
-            if constexpr (U)
-                targetAddr += offset ;
-            else
-                targetAddr -= offset ;
-        };
-
-        if constexpr (L) {
-            // ldr
-            if constexpr (P)
-                calculateTargetAddr() ;
-
-            if constexpr (B) {
-                Rd = instance._mem.Read8(targetAddr) ;
-            } // if
+            if constexpr (I) {
+                ParseOp2_Shift_Imm<ST>(instance, offset) ;
+            } // constexpr()
             else {
-                Rd = instance._mem.Read32(targetAddr) ;
+                offset = CURRENT_INSTRUCTION & 0xfff ;
             } // else
 
-            if (RdNumber == pc)
-                instance.RefillPipeline() ;
+            auto calculateTargetAddr = [&]() {
+                if constexpr (U)
+                    targetAddr += offset ;
+                else
+                    targetAddr -= offset ;
+            };
 
-            if constexpr (!P || W) {
-                // Info from heyrick.eu:
-                //      Pre-indexed (any) / Post-indexed (any): Using the same register as Rd and Rn is unpredictable.
-                if (RnNumber != RdNumber) {
-                    if constexpr (!P)
-                        calculateTargetAddr() ;
-                    Rn = targetAddr ;
+            if constexpr (L) {
+                // ldr
+                if constexpr (P)
+                    calculateTargetAddr() ;
+
+                if constexpr (B) {
+                    Rd = instance._mem.Read8(targetAddr) ;
+                } // if
+                else {
+                    Rd = instance._mem.Read32(targetAddr) ;
+                } // else
+
+                if (RdNumber == pc)
+                    instance.RefillPipeline() ;
+
+                if constexpr (!P || W) {
+                    // Info from heyrick.eu:
+                    //      Pre-indexed (any) / Post-indexed (any): Using the same register as Rd and Rn is unpredictable.
+                    if (RnNumber != RdNumber) {
+                        if constexpr (!P)
+                            calculateTargetAddr() ;
+                        Rn = targetAddr ;
+                    } // if
                 } // if
             } // if
-        } // if
-        else {
-            // str
-            if constexpr (P && W) {
-                calculateTargetAddr() ;
-            } // if
-
-            if constexpr (B) {
-                instance._mem.Write8(Rn, static_cast<uint8_t>(Rd)) ;
-            } // if
             else {
-                instance._mem.Write32(Rn, Rd) ;
+                // str
+                if constexpr (P && W) {
+                    calculateTargetAddr() ;
+                } // if
+
+                if constexpr (B) {
+                    instance._mem.Write8(Rn, static_cast<uint8_t>(Rd)) ;
+                } // if
+                else {
+                    instance._mem.Write32(Rn, Rd) ;
+                } // else
+
+                if constexpr (!P) {
+                    calculateTargetAddr() ;
+                } // if
             } // else
+        };
 
-            if constexpr (!P) {
-                calculateTargetAddr() ;
-            } // if
-        } // else
+        if constexpr (translation)
+            instance._status.AccessUsrRegBankInPrivilege(Access) ;
+        else
+            Access() ;
     } // MemAccess_impl()
-
-
 
     template <bool P, bool U, bool W, bool L, bool S, bool H,  OFFSET_TYPE OT>
     void HalfMemAccess_impl(GbaInstance &instance) {

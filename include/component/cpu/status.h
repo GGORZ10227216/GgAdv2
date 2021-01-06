@@ -74,6 +74,19 @@ namespace gg_core {
                 } // switch()
             }
 
+            void ChangeOperationMode(E_OperationMode newMode) {
+                uint32_t oldStatus = _cpsr & ~0x1f ;
+                WriteCPSR(oldStatus | newMode) ;
+            }
+
+            template <typename T>
+            void AccessUsrRegBankInPrivilege(T Action) {
+                uint32_t originalOpMode = _cpsr & 0x1f ;
+                ChangeOperationMode(USR) ;
+                Action() ;
+                ChangeOperationMode(static_cast<E_OperationMode>(originalOpMode)) ;
+            }
+
             void WriteCPSR(uint32_t newCPSR) {
                 /// todo: test
                 E_OperationMode originalMode = static_cast<E_OperationMode>(_cpsr & 0x1fu);
