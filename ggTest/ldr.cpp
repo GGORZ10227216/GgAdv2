@@ -29,18 +29,17 @@ namespace {
         TestField memValueidx(0, 3, 1) ;
 
         TestField uFlag(0, 1, 1) ;
-        TestField wFlag(0, 1, 1) ;
 
         auto TestMain = [&]() {
             ++t ;
 
-            if (wFlag.value && targetRn.value == pc)
+            if (targetRn.value == pc)
                 return ;
 
             uint32_t targetAddr = baseAddr ;
 
             uint32_t instruction = MakeSingleTransferInstruction<Cond, F_Type::I, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
-                    AL, false, false, uFlag.value, false, wFlag.value, true,
+                    AL, false, false, uFlag.value, false, false, true,
                     targetRn.value, targetRd.value, immOffset.value
             ) ;
 
@@ -65,7 +64,7 @@ namespace {
                 << Diagnose(instance, egg, errFlag) ;
         };
 
-        TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, immOffset, memValueidx) ;
+        TEST_LOOPS(TestMain, uFlag,targetRn, targetRd, immOffset, memValueidx) ;
         std::cout << "Test performed: " << t << std::endl ;
     }
 
@@ -83,7 +82,6 @@ namespace {
         TestField RmValue(0, 0xff, 1) ;
 
         TestField uFlag(0, 1, 1) ;
-        TestField wFlag(0, 1, 1) ;
 
         for (int i = 0x2000000, j = 0 ; i <= 0x203ffff ; i += 4) {
             instance._mem.Write32(i, testValue[ j ]) ;
@@ -95,7 +93,7 @@ namespace {
         auto TestMain = [&]() {
             ++t ;
 
-            if (wFlag.value && targetRn.value == pc)
+            if (targetRn.value == pc)
                 return ;
             if (targetRd.value == targetRn.value || r4 == targetRn.value)
                 return ;
@@ -123,7 +121,7 @@ namespace {
 
             uint32_t instruction = MakeSingleTransferInstruction
                     <Cond, F_Type::I, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
-                    AL, true, false, uFlag.value, false, wFlag.value, true,
+                    AL, true, false, uFlag.value, false, false, true,
                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
             ) ;
 
@@ -146,7 +144,7 @@ namespace {
                                         << Diagnose(instance, egg, errFlag) ;
         };
 
-        TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue) ;
+        TEST_LOOPS(TestMain, uFlag,targetRn, targetRd, shiftType, shiftAmount, RmValue) ;
         std::cout << "Test performed: " << t << std::endl ;
     }
 
@@ -162,18 +160,17 @@ namespace {
         TestField memValueidx(0, 3, 1) ;
 
         TestField uFlag(0, 1, 1) ;
-        TestField wFlag(0, 1, 1) ;
 
         auto TestMain = [&]() {
             ++t ;
 
-            if (wFlag.value && targetRn.value == pc)
+            if (targetRn.value == pc)
                 return ;
 
             uint32_t targetAddr = baseAddr ;
 
             uint32_t instruction = MakeSingleTransferInstruction<Cond, F_Type::I, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
-                    AL, false, false, uFlag.value, true, wFlag.value, true,
+                    AL, false, false, uFlag.value, true, false, true,
                     targetRn.value, targetRd.value, immOffset.value
             ) ;
 
@@ -198,7 +195,7 @@ namespace {
                                         << Diagnose(instance, egg, errFlag) ;
         };
 
-        TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, immOffset, memValueidx) ;
+        TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, immOffset, memValueidx) ;
         std::cout << "Test performed: " << t << std::endl ;
     }
 
@@ -216,7 +213,6 @@ namespace {
         TestField RmValue(0, 0xff, 1) ;
 
         TestField uFlag(0, 1, 1) ;
-        TestField wFlag(0, 1, 1) ;
 
         for (int i = 0x2000000, j = 0 ; i <= 0x203ffff ; i += 4) {
             instance._mem.Write32(i, testValue[ j ]) ;
@@ -228,7 +224,7 @@ namespace {
         auto TestMain = [&]() {
             ++t ;
 
-            if (wFlag.value && targetRn.value == pc)
+            if (targetRn.value == pc)
                 return ;
             if (targetRd.value == targetRn.value || r4 == targetRn.value)
                 return ;
@@ -256,7 +252,7 @@ namespace {
 
             uint32_t instruction = MakeSingleTransferInstruction
                     <Cond, F_Type::I, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
-                    AL, true, false, uFlag.value, true, wFlag.value, true,
+                    AL, true, false, uFlag.value, true, false, true,
                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
             ) ;
 
@@ -279,7 +275,7 @@ namespace {
                                         << Diagnose(instance, egg, errFlag) ;
         };
 
-        TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue) ;
+        TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue) ;
         std::cout << "Test performed: " << t << std::endl ;
     }
 
