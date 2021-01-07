@@ -65,19 +65,28 @@ namespace gg_core::gg_cpu {
             } // if
             else {
                 // str
-                if constexpr (P && W) {
+                if constexpr (P)
                     calculateTargetAddr() ;
-                } // if
 
                 if constexpr (B) {
-                    instance._mem.Write8(Rn, static_cast<uint8_t>(Rd)) ;
+                    if (RdNumber == pc)
+                        instance._mem.Write8(Rn, static_cast<uint8_t>(Rd + 4)) ;
+                    else
+                        instance._mem.Write8(Rn, static_cast<uint8_t>(Rd)) ;
                 } // if
                 else {
-                    instance._mem.Write32(Rn, Rd) ;
+                    if (RdNumber == pc)
+                        instance._mem.Write32(Rn, Rd + 4) ;
+                    else
+                        instance._mem.Write32(Rn, Rd) ;
                 } // else
 
-                if constexpr (!P) {
-                    calculateTargetAddr() ;
+                if constexpr (!P || W) {
+                    // Info from heyrick.eu:
+                    //      Pre-indexed (any) / Post-indexed (any): Using the same register as Rd and Rn is unpredictable.
+                    if constexpr (!P)
+                        calculateTargetAddr() ;
+                    Rn = targetAddr ;
                 } // if
             } // else
         };
