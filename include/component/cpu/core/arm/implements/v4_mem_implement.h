@@ -12,7 +12,7 @@ namespace gg_core::gg_cpu {
     template <bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
     static void SingleDataTransfer_impl(GbaInstance &instance) {
         // todo: Rd == r15 behavior
-        // todo: LDRT support?
+        // todo: LDRT support is done, but still not tested.
 
         constexpr bool translation = !P && W ;
 
@@ -70,15 +70,15 @@ namespace gg_core::gg_cpu {
 
                 if constexpr (B) {
                     if (RdNumber == pc)
-                        instance._mem.Write8(Rn, static_cast<uint8_t>(Rd + 4)) ;
+                        instance._mem.Write8(targetAddr, static_cast<uint8_t>(Rd + 4)) ;
                     else
-                        instance._mem.Write8(Rn, static_cast<uint8_t>(Rd)) ;
+                        instance._mem.Write8(targetAddr, static_cast<uint8_t>(Rd)) ;
                 } // if
                 else {
                     if (RdNumber == pc)
-                        instance._mem.Write32(Rn, Rd + 4) ;
+                        instance._mem.Write32(targetAddr, Rd + 4) ;
                     else
-                        instance._mem.Write32(Rn, Rd) ;
+                        instance._mem.Write32(targetAddr, Rd) ;
                 } // else
 
                 if constexpr (!P || W) {
