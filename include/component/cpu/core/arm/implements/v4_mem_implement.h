@@ -100,15 +100,11 @@ namespace gg_core::gg_cpu {
     template <bool P, bool U, bool W, bool L, bool S, bool H,  OFFSET_TYPE OT>
     void HalfMemAccess_impl(GbaInstance &instance) {
         // todo: Rd == r15 behavior
-        uint32_t offset = 0 ;
-        uint32_t &Rn = instance._status._regs[ (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ] ;
-        uint32_t &Rd = instance._status._regs[ (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ] ;
-        auto writeBack = [&]() {
-            if constexpr (U)
-                Rn += offset ;
-            else
-                Rn -= offset ;
-        };
+        unsigned int RnNumber = (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ;
+        unsigned int RdNumber = (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ;
+        uint32_t &Rn = instance._status._regs[ RnNumber ] ;
+        uint32_t &Rd = instance._status._regs[ RdNumber ] ;
+        uint32_t offset = 0, targetAddr = Rn ;
 
         if constexpr (OT == OFFSET_TYPE::RM) {
             offset = instance._status._regs[ CURRENT_INSTRUCTION & 0xf ] ;
@@ -117,49 +113,59 @@ namespace gg_core::gg_cpu {
             offset = ((CURRENT_INSTRUCTION & 0xf00) >> 4) | (CURRENT_INSTRUCTION & 0xf) ;
         } // else
 
+        auto calculateTargetAddr = [&]() {
+            if constexpr (U)
+                targetAddr += offset ;
+            else
+                targetAddr -= offset ;
+        };
+
         if constexpr (L) {
             // ldr
-            if constexpr (P && W) {
-                writeBack() ;
-            } // if
+            if constexpr (P)
+                calculateTargetAddr() ;
 
-            if constexpr (!S && H) {
+            if constexpr (!S && !H)
+                gg_core::Unreachable() ;
+            else if constexpr (!S && H) {
                 // LDRH
-                Rd = instance._mem.Read16(Rn) ;
+                Rd = instance._mem.Read16(targetAddr) ;
             } // else if
             else if constexpr (S && !H) {
                 // LDRSB
-                Rd = instance._mem.Read8(Rn) ;
-                if (TestBit(Rd, 7))
-                    Rd |= 0xffffff00 ; // sign extend
+                Rd = (static_cast<int32_t>(instance._mem.Read8(targetAddr)) << 24) >> 24 ; // sign extend
             } // else if
             else {
                 // LDRSH
-                Rd = instance._mem.Read16(Rn) ;
-                if (TestBit(Rd, 15))
-                    Rd |= 0xffff0000 ; // sign extend
+                Rd = (static_cast<int32_t>(instance._mem.Read16(targetAddr)) << 16) >> 16 ; // sign extend
             } // else
 
-            if constexpr (!P && W) {
-                writeBack() ;
+            if constexpr (!P || W) {
+                if constexpr (!P)
+                    calculateTargetAddr() ;
+                if (RdNumber != RnNumber)
+                    Rn = targetAddr ;
             } // if
         } // if
         else {
             // str
-            if constexpr (P && W) {
-                writeBack() ;
-            } // if
+            if constexpr (P)
+                calculateTargetAddr() ;
 
             if constexpr (!S && H) {
                 // STRH
-                instance._mem.Write16(Rn, static_cast<uint16_t>(Rd)) ;
+                if (RdNumber == gg_cpu::pc)
+                    instance._mem.Write16(targetAddr, static_cast<uint16_t>(Rd + 4)) ;
+                else
+                    instance._mem.Write16(targetAddr, static_cast<uint16_t>(Rd)) ;
             } // else if
-            else {
-                static_assert( true, "unknown parameters" );
-            }
+            else
+                gg_core::Unreachable();
 
-            if constexpr (!P && W) {
-                writeBack() ;
+            if constexpr (!P || W) {
+                if constexpr (!P)
+                    calculateTargetAddr() ;
+                Rn = targetAddr ;
             } // if
         } // else
     } // HalfMemAccess_impl()
