@@ -144,7 +144,7 @@ void FillRegs(A& regs, std::tuple<RS...>& R, std::tuple<VS...>& V) {
 
 enum F_Type {
     Cond, I, OpCode, S, Rn, Rd, ShiftType, ShiftAmount, Rm, Rs, Rotate, Imm,
-    U, A, RdHi, RdLo, L, Offset, B, P, W
+    U, A, RdHi, RdLo, L, Offset, B, P, W, H
 };
 
 template <F_Type F, typename V>
@@ -409,6 +409,65 @@ template <F_Type... Fs, typename... Vs>
 uint32_t MakeSingleTransferInstruction(Vs... values) {
     constexpr uint32_t instrBase = 0x04000000 ;
     return instrBase | (SingleTransferInstruction<Fs>(values) | ...) ;
+}
+
+template <F_Type F, typename V>
+uint32_t HalfTransferInstruction(V value) {
+    uint32_t result = 0 ;
+    if constexpr (F == F_Type::Cond) {
+        static_assert(std::is_same_v<V, gg_core::gg_cpu::E_CondName>) ;
+        result |= value << 28 ;
+    } // else if
+    else if constexpr (F == F_Type::P) {
+        result |= (value & 0x1) << 24 ;
+    } // if
+    else if constexpr (F == F_Type::U) {
+        result |= (value & 0x1) << 23;
+    } // else if
+    else if constexpr (F == F_Type::I) {
+        static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
+        result |= value << 22 ;
+    } // else if
+    else if constexpr (F == F_Type::W) {
+        result |= (value & 0x1) << 21;
+    } // else if
+    else if constexpr (F == F_Type::L) {
+        static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
+        result |= value << 20;
+    } // else if
+    else if constexpr (F == F_Type::Rn) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value << 16;
+    } // else if
+    else if constexpr (F == F_Type::Rd) {
+        static_assert(std::is_integral_v<V> || std::is_same_v<V, gg_core::gg_cpu::E_RegName>) ;
+        result |= value << 12;
+    } // else if
+    else if constexpr (F == F_Type::S) {
+        static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
+        result |= value << 6;
+    } // else if
+    else if constexpr (F == F_Type::H) {
+        static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
+        result |= value << 5;
+    } // else if
+    else if constexpr (F == F_Type::Rm) {
+        result |= value ;
+    } // else if
+    else if constexpr (F == F_Type::Offset) {
+        result |= (value >> 4) << 8 ;
+        result |= (value & 0xf) ;
+    } // else if
+    else
+        gg_core::Unreachable();
+
+    return result ;
+}
+
+template <F_Type... Fs, typename... Vs>
+uint32_t MakeHalfTransferInstruction(Vs... values) {
+    constexpr uint32_t instrBase = 0x90 ;
+    return instrBase | (HalfTransferInstruction<Fs>(values) | ...) ;
 }
 
 using WorkerResult = std::pair<std::string, std::future<unsigned int>> ;

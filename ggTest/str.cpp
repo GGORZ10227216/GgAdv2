@@ -2,10 +2,6 @@
 // Created by buildmachine on 2021-01-07.
 //
 
-//
-// Created by orzgg on 2021-01-02.
-//
-
 #include <gg_test.h>
 
 namespace {
