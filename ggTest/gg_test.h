@@ -457,6 +457,7 @@ uint32_t HalfTransferInstruction(V value) {
     else if constexpr (F == F_Type::Offset) {
         result |= (value >> 4) << 8 ;
         result |= (value & 0xf) ;
+        result |= (1 << 22) ;
     } // else if
     else
         gg_core::Unreachable();
