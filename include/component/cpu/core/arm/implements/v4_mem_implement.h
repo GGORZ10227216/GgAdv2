@@ -130,14 +130,20 @@ namespace gg_core::gg_cpu {
             else if constexpr (!S && H) {
                 // LDRH
                 Rd = instance._mem.Read16(targetAddr) ;
+                if (RdNumber == pc)
+                    instance.RefillPipeline() ;
             } // else if
             else if constexpr (S && !H) {
                 // LDRSB
                 Rd = (static_cast<int32_t>(instance._mem.Read8(targetAddr)) << 24) >> 24 ; // sign extend
+                if (RdNumber == pc)
+                    instance.RefillPipeline() ;
             } // else if
             else {
                 // LDRSH
                 Rd = (static_cast<int32_t>(instance._mem.Read16(targetAddr)) << 16) >> 16 ; // sign extend
+                if (RdNumber == pc)
+                    instance.RefillPipeline() ;
             } // else
 
             if constexpr (!P || W) {
