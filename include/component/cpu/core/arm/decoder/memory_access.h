@@ -41,7 +41,7 @@ namespace gg_core::gg_cpu {
     template<uint32_t HashCode32>
     static constexpr auto HalfDataTransfer() {
         constexpr enum OFFSET_TYPE OT = TestBit(HashCode32, 22) ?
-                                        OFFSET_TYPE::RM : OFFSET_TYPE::IMM;
+                                        OFFSET_TYPE::IMM : OFFSET_TYPE::RM;
         return &HalfMemAccess_impl<
                 TestBit(HashCode32, 24),
                 TestBit(HashCode32, 23),

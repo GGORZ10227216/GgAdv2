@@ -67,8 +67,14 @@ namespace gg_core {
             if constexpr ((HashCode12 & 0b1111'1011'1111) == 0b0001'0000'1001)
                 return Swap<HashCode32>();
             if constexpr ((HashCode12 & 0b1110'0000'1001) == 0b0000'0000'1001) {
-                uint32_t opcode = (HashCode12 & 0b110) >> 1 ;
-                return opcode == 0b00 ? UndefinedHandler : HalfDataTransfer<HashCode32>();
+                constexpr uint32_t SH_Bit = (HashCode12 & 0b110) >> 1 ;
+                constexpr bool isLDR = HashCode12 & gg_core::_BV(4) ;
+                constexpr bool isUndefined = isLDR ? (SH_Bit == 0b00) : (SH_Bit != 0b01) ;
+
+                if constexpr (isUndefined)
+                    return UndefinedHandler ;
+                else
+                    return HalfDataTransfer<HashCode32>() ;
             } // if constexpr
             if constexpr ((HashCode12 & 0b1101'1001'0000) == 0b0001'0000'0000)
                 return PSR_Transfer<HashCode32>();
