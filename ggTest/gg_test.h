@@ -444,7 +444,6 @@ uint32_t HalfTransferInstruction(V value) {
         result |= value << 12;
     } // else if
     else if constexpr (F == F_Type::S) {
-        static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
         result |= value << 6;
     } // else if
     else if constexpr (F == F_Type::H) {
