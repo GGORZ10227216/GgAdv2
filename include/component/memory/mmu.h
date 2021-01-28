@@ -58,9 +58,9 @@ namespace gg_core {
 
             uint16_t Read16(unsigned addr) {
                 const unsigned addrAligned = AddrAlign<WORD>(addr);
-                const unsigned rotate = CountAccessRotate<WORD>(addr);
+//                const unsigned rotate = CountAccessRotate<WORD>(addr);
                 uint16_t result = reinterpret_cast<uint16_t &> (Access(addrAligned, WORD));
-                return rotr(result, rotate);
+                return result;
             } // Read16()
 
             uint32_t Read32(unsigned addr) {
