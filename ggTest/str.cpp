@@ -269,10 +269,10 @@ namespace {
             uint32_t errFlag = CheckStatus(instance, egg);
             uint32_t memChk = instance._mem.Read32(baseAddr) == egg.readWordRotate(baseAddr);
             ASSERT_TRUE(errFlag == 0 && memChk )
-                                        << "#" << t << '\n'
-                                        << std::hex << "Errflag: " << errFlag << " memChk: " << std::boolalpha << memChk << '\n'
-                                        << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
-                                        << Diagnose(instance, egg, errFlag);
+                << "#" << t << '\n'
+                << std::hex << "Errflag: " << errFlag << " memChk: " << std::boolalpha << memChk << '\n'
+                << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                << Diagnose(instance, egg, errFlag);
         };
 
         TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue, memValueidx);
