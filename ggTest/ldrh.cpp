@@ -4,6 +4,8 @@
 
 #include <gg_test.h>
 
+// TODO: ldrsb test
+
 namespace {
     using namespace gg_core;
     using namespace gg_core::gg_cpu;
