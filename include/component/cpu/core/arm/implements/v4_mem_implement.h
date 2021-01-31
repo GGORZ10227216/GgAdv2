@@ -183,7 +183,13 @@ namespace gg_core::gg_cpu {
         uint32_t &Rn = instance._status._regs[ BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ] ;
 
         uint32_t base = 0 ;
-        uint32_t offset = PopCount32(regList)*4 ;
+        unsigned int registerCnt = PopCount32(regList) ;
+        uint32_t offset = registerCnt * 4 ;
+
+        if (registerCnt == 0) {
+            regList = 0x8000 ; // pc only
+            offset = 0x40 ;
+        } // if
 
         uint32_t originalCPSR = instance._status.ReadCPSR() ;
         uint32_t originalMode = instance._status.GetOperationMode() ;
@@ -216,11 +222,15 @@ namespace gg_core::gg_cpu {
             if (TestBit(regList, idx)) {
                 if constexpr (L) {
                     CPU_REG[ idx ] = instance._mem.Read32(base) ;
+                    if (idx == pc) {
+                        CPU_REG[ pc ] &= ~0x3 ;
+                        instance.RefillPipeline() ;
+                    } // if
                 } // if
                 else {
                     uint32_t regVal = CPU_REG[ idx ] ;
                     if (idx == 15)
-                        regVal += 4 ;
+                        regVal = (regVal + 4) & ~0x3 ;
                     instance._mem.Write32(base, regVal) ;
                 } // else
 

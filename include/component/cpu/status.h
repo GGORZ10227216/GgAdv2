@@ -21,7 +21,7 @@ namespace gg_core {
             friend class gg_core::GbaInstance;
             friend class ::ggTest ;
         public :
-            Regs _regs;
+            std::array<unsigned, 16> _regs;
 
             Status() {
                 _regs.fill(0) ;

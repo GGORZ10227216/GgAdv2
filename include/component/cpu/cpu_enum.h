@@ -6,7 +6,7 @@
 #define GGADV_CPU_ENUM_H
 
 namespace gg_core::gg_cpu {
-    using Regs = std::array<unsigned, 16>;
+//    using Regs = std::array<unsigned, 16>;
 
     enum E_OperationMode {
         USR = 0b10000, FIQ = 0b10001,
