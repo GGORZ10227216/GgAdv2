@@ -509,7 +509,7 @@ uint32_t BlockTransferInstruction(V value) {
 
 template <F_Type... Fs, typename... Vs>
 uint32_t MakeBlockTransferInstruction(Vs... values) {
-    constexpr uint32_t instrBase = 0x09000000 ;
+    constexpr uint32_t instrBase = 0x08000000 ;
     return instrBase | (BlockTransferInstruction<Fs>(values) | ...) ;
 }
 
