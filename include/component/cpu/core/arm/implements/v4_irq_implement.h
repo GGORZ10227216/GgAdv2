@@ -10,13 +10,13 @@
 namespace gg_core::gg_cpu {
     template <E_OperationMode opMode>
     static void Interrupt_impl(GbaInstance &instance) {
-        instance._status._regs[ lr ] =
-                instance._status.CurrentPC_OnExec() - (instance._status.GetCpuMode() == ARM ? 4 : 2) ;
-
         const uint32_t preCPSR = instance._status.ReadCPSR() ;
 
         instance._status.WriteCPSR((preCPSR & ~0b11111u) | static_cast<uint8_t>(opMode)) ;
         instance._status.WriteSPSR(preCPSR) ;
+
+        // both SVC & IRQ have same offset(4) in ARM mode
+        instance._status._regs[ lr ] = instance._status._regs[ pc ] - 4 ;
 
         if constexpr (opMode == SVC)
             instance._status._regs[ pc ] = SW_IRQ ;
