@@ -11,9 +11,6 @@
 namespace gg_core::gg_cpu {
     template <bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
     static void SingleDataTransfer_impl(GbaInstance &instance) {
-        // todo: Rd == r15 behavior
-        // todo: LDRT support is done, but still not tested.
-
         constexpr bool translation = !P && W ;
 
         uint8_t RnNumber = (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ;
@@ -99,7 +96,6 @@ namespace gg_core::gg_cpu {
 
     template <bool P, bool U, bool W, bool L, bool S, bool H,  OFFSET_TYPE OT>
     void HalfMemAccess_impl(GbaInstance &instance) {
-        // todo: Rd == r15 behavior
         unsigned int RnNumber = (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ;
         unsigned int RdNumber = (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ;
         uint32_t &Rn = instance._status._regs[ RnNumber ] ;
