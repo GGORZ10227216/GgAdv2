@@ -18,10 +18,10 @@
 #define GGTEST_ARM_HANDLER_H
 
 namespace gg_core {
-    class GbaInstance ;
-
     namespace gg_cpu {
-        static void UndefinedHandler(GbaInstance &instance) {
+        class CPUCore ;
+
+        static void UndefinedHandler(CPUCore &instance) {
             std::cout << "Execute a undefined instruction." << std::endl ;
             exit(-2) ;
         }

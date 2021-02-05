@@ -62,7 +62,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPUStep(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint16_t memValueMine = instance._mem.Read16(addrPair[ writeMode.value ].first) ;
@@ -123,7 +123,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPUStep(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint16_t memValueMine = instance._mem.Read16(addrPair[ writeMode.value ].first) ;
@@ -195,7 +195,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPUStep(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint16_t memValueMine = instance._mem.Read16(targetAddr) ;
@@ -263,7 +263,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPUStep(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint16_t memValueMine = instance._mem.Read16(targetAddr) ;

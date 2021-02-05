@@ -41,7 +41,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction);
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPUStep(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             for (unsigned i = 0, offsetCnt = 1; i < 16 ; ++i) {
@@ -101,7 +101,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction);
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPUStep(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             for (unsigned i = 0, offsetCnt = 0; i < 16 ; ++i) {
@@ -161,7 +161,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction);
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPUStep(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
 
@@ -224,7 +224,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction);
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPUStep(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
 

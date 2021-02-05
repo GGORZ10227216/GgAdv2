@@ -1,28 +1,26 @@
 namespace gg_core::gg_cpu {
-    static void BranchExchange_impl(GbaInstance& instance) {
-        const uint32_t RnNumber = instance._status.CurrentInstruction() & 0xf ;
-        uint32_t &Rn = instance._status._regs[RnNumber] ;
+    static void BranchExchange_impl(CPUCore& self) {
+        const uint32_t RnNumber = self.CurrentInstruction() & 0xf ;
+        uint32_t &Rn = self._regs[RnNumber] ;
 
         if (Rn & 0x1)
-            instance._status.ChangeCpuMode(THUMB) ;
-        else
-            instance._status.ChangeCpuMode(ARM) ;
+            self.ChangeCpuMode(THUMB) ;
 
-        instance._status._regs[pc] = Rn ;
-        instance.RefillPipeline() ;
+        self._regs[pc] = Rn ;
+        self.RefillPipeline<ARM>() ;
     }
 
     template <bool L>
-    static void Branch_impl(GbaInstance& instance) {
-        int32_t offset = (instance._status.CurrentInstruction() & 0x00ffffff) << 2;
+    static void Branch_impl(CPUCore& self) {
+        int32_t offset = (self.CurrentInstruction() & 0x00ffffff) << 2;
 
         if (gg_core::TestBit(offset, 25))
             offset |= 0xfc000000 ; // sign extend
 
         if constexpr (L)
-            instance._status._regs[lr] = instance._status._regs[pc] - 4 ;
+            self._regs[lr] = self._regs[pc] - 4 ;
 
-        instance._status._regs[pc] += offset ;
-        instance.RefillPipeline() ;
+        self._regs[pc] += offset ;
+        self.RefillPipeline<ARM>() ;
     }
 } // gg_core::gg_cpu

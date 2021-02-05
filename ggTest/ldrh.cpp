@@ -65,7 +65,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPUStep(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             // uint32_t memChk = instance._status._regs[targetRd.value] == egg.readHalfRotate(RmValue.value);
@@ -124,7 +124,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPUStep(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             // uint32_t memChk = instance._status._regs[targetRd.value] == egg.readHalfRotate(RmValue.value);
@@ -193,7 +193,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPUStep(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             // uint32_t memChk = instance._status._regs[targetRd.value] == egg.readHalfRotate(RmValue.value);
@@ -258,7 +258,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPUStep(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             // uint32_t memChk = instance._status._regs[targetRd.value] == egg.readHalfRotate(RmValue.value);

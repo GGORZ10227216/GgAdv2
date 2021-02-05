@@ -7,10 +7,9 @@
 #include <filesystem>
 #include <iostream>
 
-#include <status.h>
 #include <mmu.h>
 #include <io.h>
-#include <arm_decoder.h>
+#include <cpu.h>
 
 #ifndef GGADV_GBA_INSTANCE_H
 #define GGADV_GBA_INSTANCE_H
@@ -18,23 +17,24 @@
 namespace gg_core {
     class GbaInstance final {
     public :
-        gg_cpu::Status _status;
+        gg_cpu::CPUCore _cpu ;
         gg_mem::MMU _mem;
         gg_io::IOReg _io;
 
         GbaInstance(const std::optional<std::filesystem::path> &romPath) :
-                _mem(romPath), _io() {
+                _cpu(this->_mem), _mem(romPath), _io() {
             // _worker = std::thread(&GbaInstance::Run, this);
-            // Run() ;
+            Run() ;
         } // GbaInstance()
 
         void Run() {
             _isRunning = true ;
 
-            RefillPipeline();
+            _cpu.RefillPipeline<gg_cpu::E_CpuMode::ARM>();
 
             while (_isRunning) {
-                CPUTick();
+                // Main loop of our emulator
+                _cpu.Tick();
             } // while
         } // Run()
 
@@ -46,54 +46,54 @@ namespace gg_core {
         bool _isRunning;
         std::thread _worker;
 
-        void CPUTick() {
-            using namespace gg_cpu ;
-            _status.currentInstruction = _status.fetchedBuffer[ _status.pipelineCnt ] ;
-            Fetch() ;
-
-            uint32_t hash = ((_status.currentInstruction & 0x0ff00000) >> 16) | ((_status.currentInstruction & 0xf0) >> 4) ;
-            gg_cpu::armHandlers[ hash ](*this) ;
-        } // Tick()
-
-        void CPUTick_Debug(uint32_t inst) {
-            _status.currentInstruction = inst ;
-            uint32_t hash = ((inst & 0x0ff00000) >> 16) | ((inst & 0xf0) >> 4) ;
-
-            gg_cpu::armHandlers[ hash ](*this) ;
-            // Fetch() ;
-        } // Tick()
-
-        void RefillPipeline() {
-            using namespace gg_cpu;
-            unsigned pcOffset = _status.GetCpuMode() == ARM ? 4 : 2;
-            unsigned pcBase ;
-
-            if (_status.GetCpuMode() == ARM) {
-                pcBase = (_status._regs[pc] & ~0x3) ;
-                _status.fetchedBuffer[0] = _mem.Read32(pcBase);
-                _status.fetchedBuffer[1] = _mem.Read32(pcBase + pcOffset);
-            } // if
-            else {
-                pcBase = (_status._regs[pc] & ~0x1) ;
-                _status.fetchedBuffer[0] = _mem.Read16(pcBase);
-                _status.fetchedBuffer[1] = _mem.Read16(pcBase + pcOffset);
-            } // else
-
-            _status._regs[pc] = pcBase + pcOffset;
-            _status.pipelineCnt = 0;
-        } // RefillPipeline()
-
-        void Fetch() {
-            using namespace gg_cpu;
-            unsigned pcOffset = _status.GetCpuMode() == ARM ? 4 : 2;
-
-            _status._regs[pc] += pcOffset;
-            _status.pipelineCnt = (_status.pipelineCnt + 1) % _status.fetchedBuffer.size();
-            if (_status.GetCpuMode() == ARM)
-                _status.fetchedBuffer[_status.pipelineCnt] = _mem.Read32(_status._regs[pc]);
-            else
-                _status.fetchedBuffer[_status.pipelineCnt] = _mem.Read16(_status._regs[pc]);
-        } // Fetch()
+//        void CPUTick() {
+//            using namespace gg_cpu ;
+//            _status.currentInstruction = _status.fetchedBuffer[ _status.pipelineCnt ] ;
+//            Fetch() ;
+//
+//            uint32_t hash = ((_status.currentInstruction & 0x0ff00000) >> 16) | ((_status.currentInstruction & 0xf0) >> 4) ;
+//            gg_cpu::armHandlers[ hash ](*this) ;
+//        } // Tick()
+//
+//        void CPUStep(uint32_t inst) {
+//            _status.currentInstruction = inst ;
+//            uint32_t hash = ((inst & 0x0ff00000) >> 16) | ((inst & 0xf0) >> 4) ;
+//
+//            gg_cpu::armHandlers[ hash ](*this) ;
+//            // Fetch() ;
+//        } // Tick()
+//
+//        void RefillPipeline() {
+//            using namespace gg_cpu;
+//            unsigned pcOffset = _status.GetCpuMode() == ARM ? 4 : 2;
+//            unsigned pcBase ;
+//
+//            if (_status.GetCpuMode() == ARM) {
+//                pcBase = (_status._regs[pc] & ~0x3) ;
+//                _status.fetchedBuffer[0] = _mem.Read32(pcBase);
+//                _status.fetchedBuffer[1] = _mem.Read32(pcBase + pcOffset);
+//            } // if
+//            else {
+//                pcBase = (_status._regs[pc] & ~0x1) ;
+//                _status.fetchedBuffer[0] = _mem.Read16(pcBase);
+//                _status.fetchedBuffer[1] = _mem.Read16(pcBase + pcOffset);
+//            } // else
+//
+//            _status._regs[pc] = pcBase + pcOffset;
+//            _status.pipelineCnt = 0;
+//        } // RefillPipeline()
+//
+//        void Fetch() {
+//            using namespace gg_cpu;
+//            unsigned pcOffset = _status.GetCpuMode() == ARM ? 4 : 2;
+//
+//            _status._regs[pc] += pcOffset;
+//            _status.pipelineCnt = (_status.pipelineCnt + 1) % _status.fetchedBuffer.size();
+//            if (_status.GetCpuMode() == ARM)
+//                _status.fetchedBuffer[_status.pipelineCnt] = _mem.Read32(_status._regs[pc]);
+//            else
+//                _status.fetchedBuffer[_status.pipelineCnt] = _mem.Read16(_status._regs[pc]);
+//        } // Fetch()
 
     private:
         bool pipelineFilled = false ;

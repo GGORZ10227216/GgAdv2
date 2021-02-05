@@ -49,7 +49,7 @@ namespace {
             uint32_t inst_hash = hashArm(instruction) ;
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPUStep(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
             ASSERT_TRUE(errFlag == 0)
@@ -100,7 +100,7 @@ namespace {
             uint32_t inst_hash = hashArm(instruction) ;
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPUStep(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
 

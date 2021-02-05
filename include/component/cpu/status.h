@@ -172,7 +172,7 @@ namespace gg_core {
             void SetN() { _cpsr |= (1 << 31); } // SetN()
             void ClearN() { _cpsr &= ~(1 << 31); } // ClearN()
 
-        private :
+        protected :
             std::array<uint32_t, 2> fetchedBuffer;
             uint8_t pipelineCnt = 0;
             uint32_t currentInstruction = 0x00 ;
