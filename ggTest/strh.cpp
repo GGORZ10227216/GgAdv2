@@ -67,7 +67,7 @@ namespace {
             uint32_t errFlag = CheckStatus(instance, egg);
             uint16_t memValueMine = instance._mem.Read16(addrPair[ writeMode.value ].first) ;
             uint16_t memValueRef = egg.readHalfRotate(addrPair[ writeMode.value ].first) ;
-            uint32_t memChk = memValueMine == memValueRef ;
+            uint32_t memChk = memValueMine == memValueRef && memValueMine != 0 ;
             ASSERT_TRUE(errFlag == 0 && memChk)
                 << "#" << t << '\n'
                 << std::hex << "Errflag: " << errFlag << '\n'
@@ -128,7 +128,7 @@ namespace {
             uint32_t errFlag = CheckStatus(instance, egg);
             uint16_t memValueMine = instance._mem.Read16(addrPair[ writeMode.value ].first) ;
             uint16_t memValueRef = egg.readHalfRotate(addrPair[ writeMode.value ].first) ;
-            uint32_t memChk = memValueMine == memValueRef ;
+            uint32_t memChk = memValueMine == memValueRef && memValueMine != 0 ;
 
             ASSERT_TRUE(errFlag == 0 && memChk)
                 << "#" << t << '\n'
@@ -201,7 +201,7 @@ namespace {
             uint16_t memValueMine = instance._mem.Read16(targetAddr) ;
             uint16_t memValueRef = egg.readHalf(targetAddr) ;
 
-            uint32_t memChk = memValueMine == memValueRef ;
+            uint32_t memChk = memValueMine == memValueRef && memValueMine != 0 ;
             ASSERT_TRUE(errFlag == 0 && memChk)
                 << "#" << t << '\n'
                 << std::hex << "Errflag: " << errFlag << '\n'
@@ -258,8 +258,6 @@ namespace {
 
             uint32_t targetAddr = addrPair[ writeMode.value ].first ;
             targetAddr = addrPair[ writeMode.value ].second ? targetAddr + immOffset.value : targetAddr - immOffset.value ;
-            if (targetRn.value == gg_cpu::pc)
-                targetAddr = addrPair[ writeMode.value ].second ? targetAddr + 4 : targetAddr - 4 ;
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
@@ -269,7 +267,7 @@ namespace {
             uint16_t memValueMine = instance._mem.Read16(targetAddr) ;
             uint16_t memValueRef = egg.readHalf(targetAddr) ;
 
-            uint32_t memChk = memValueMine == memValueRef ;
+            uint32_t memChk = memValueMine == memValueRef && memValueMine != 0 ;
             ASSERT_TRUE(errFlag == 0 && memChk)
                                         << "#" << t << '\n'
                                         << std::hex << "Errflag: " << errFlag << '\n'
