@@ -18,7 +18,8 @@ namespace {
 
     TEST_F(ggTest, strh_post_reg_offset) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0 ;
@@ -52,9 +53,9 @@ namespace {
                     targetRm.value
             ) ;
 
-            instance._status._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
-            instance._status._regs[ targetRm.value ] = RmValue.value ;
-            instance._status._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
+            instance._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+            instance._regs[ targetRm.value ] = RmValue.value ;
+            instance._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
 
             egg.regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
             egg.regs[ targetRm.value ] = RmValue.value ;
@@ -62,7 +63,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint16_t memValueMine = instance._mem.Read16(addrPair[ writeMode.value ].first) ;
@@ -82,7 +83,8 @@ namespace {
 
     TEST_F(ggTest, strh_imm_post_offset) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0 ;
@@ -115,15 +117,15 @@ namespace {
                     immOffset.value
             ) ;
 
-            instance._status._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
-            instance._status._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
+            instance._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+            instance._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
 
             egg.regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
             egg.regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint16_t memValueMine = instance._mem.Read16(addrPair[ writeMode.value ].first) ;
@@ -144,7 +146,8 @@ namespace {
 
     TEST_F(ggTest, strh_reg_pre_offset) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0 ;
@@ -179,13 +182,13 @@ namespace {
                     targetRm.value
             ) ;
 
-            instance._status._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
-            instance._status._regs[ targetRm.value ] = RmValue.value ;
+            instance._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+            instance._regs[ targetRm.value ] = RmValue.value ;
 
             egg.regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
             egg.regs[ targetRm.value ] = RmValue.value ;
 
-            instance._status._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
+            instance._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
             egg.regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
 
             uint32_t targetAddr = addrPair[ writeMode.value ].first ;
@@ -195,7 +198,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint16_t memValueMine = instance._mem.Read16(targetAddr) ;
@@ -216,7 +219,8 @@ namespace {
 
     TEST_F(ggTest, strh_imm_pre_offset) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0 ;
@@ -250,10 +254,10 @@ namespace {
                     immOffset.value
             ) ;
 
-            instance._status._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+            instance._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
             egg.regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
 
-            instance._status._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
+            instance._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
             egg.regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
 
             uint32_t targetAddr = addrPair[ writeMode.value ].first ;
@@ -263,7 +267,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint16_t memValueMine = instance._mem.Read16(targetAddr) ;

@@ -31,14 +31,13 @@ project(ggAdv)
     set(header_core
         include/instruction_class.h
         include/framework/logger.h
-        include/component/cpu/cpu.h
         include/component/cpu/status.h
         include/component/component_class.h
         include/component/cpu/cpu_enum.h
         include/framework/emu_framework.h
         include/framework/framework_base.h
         src/framework/framework_base.cpp
-        include/framework/gba_instance.h
+        include/component/cpu/cpu.h
         include/component/memory/mmu.h
         include/component/io/io.h
         include/gba_bios.h

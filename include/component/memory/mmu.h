@@ -16,8 +16,6 @@
 #define GGADV_MMU_H
 
 namespace gg_core {
-    class GbaInstance;
-
     namespace gg_mem {
         template <E_AccessWidth W>
         inline unsigned AddrAlign(uint32_t addr) {

@@ -6,11 +6,10 @@
 #define GGTEST_BRANCH_H
 
 namespace gg_core::gg_cpu {
-    class CPUCore ;
-    static void BranchExchange_impl(CPUCore& instance);
+    static void BranchExchange_impl(CPU& instance);
 
     template <bool L>
-    static void Branch_impl(CPUCore& instance);
+    static void Branch_impl(CPU& instance);
 
     template <uint32_t HashCode32>
     static constexpr auto Branch() {

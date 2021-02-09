@@ -13,7 +13,8 @@ namespace {
         // ldmib -> pre-increment load, [L,P,U] == [1,1,1]
         uint32_t t = 0 ;
         Arm egg;
-        GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         TestField wFlag(0,1,1) ;
@@ -26,7 +27,7 @@ namespace {
         } // for
 
         for (int i = 0 ; i < 16 ; ++i) {
-            instance._status._regs[ i ] = 0;
+            instance._regs[ i ] = 0;
             egg.regs[ i ] = 0 ;
         } // for
 
@@ -40,11 +41,11 @@ namespace {
                 return ;
 
             egg.regs[ r4 ] = 0x03006ea0 ; // OWRAM
-            instance._status._regs[ r4 ] = 0x03006ea0 ; // OWRAM
+            instance._regs[ r4 ] = 0x03006ea0 ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             ASSERT_TRUE(errFlag == 0 )
@@ -63,7 +64,8 @@ namespace {
         // ldmia -> post-increment load, [L,P,U] == [1,0,1]
         uint32_t t = 0 ;
         Arm egg;
-        GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         TestField wFlag(0,1,1) ;
@@ -76,7 +78,7 @@ namespace {
         } // for
 
         for (int i = 0 ; i < 16 ; ++i) {
-            instance._status._regs[ i ] = 0;
+            instance._regs[ i ] = 0;
             egg.regs[ i ] = 0 ;
         } // for
 
@@ -90,11 +92,11 @@ namespace {
             ) ;
 
             egg.regs[ r4 ] = 0x03006ea0 ; // OWRAM
-            instance._status._regs[ r4 ] = 0x03006ea0 ; // OWRAM
+            instance._regs[ r4 ] = 0x03006ea0 ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             ASSERT_TRUE(errFlag == 0 )
@@ -113,7 +115,8 @@ namespace {
         // ldmdb -> pre-decrement load, [L,P,U] == [1,1,0]
         uint32_t t = 0 ;
         Arm egg;
-        GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         TestField wFlag(0,1,1) ;
@@ -126,7 +129,7 @@ namespace {
         } // for
 
         for (int i = 0 ; i < 16 ; ++i) {
-            instance._status._regs[ i ] = 0;
+            instance._regs[ i ] = 0;
             egg.regs[ i ] = 0 ;
         } // for
 
@@ -140,11 +143,11 @@ namespace {
             ) ;
 
             egg.regs[ r4 ] = 0x03006ea0 ; // OWRAM
-            instance._status._regs[ r4 ] = 0x03006ea0 ; // OWRAM
+            instance._regs[ r4 ] = 0x03006ea0 ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             ASSERT_TRUE(errFlag == 0 )
@@ -163,7 +166,8 @@ namespace {
         // ldmda -> post-decrement load, [L,P,U] == [1,0,0]
         uint32_t t = 0 ;
         Arm egg;
-        GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         TestField wFlag(0,1,1) ;
@@ -176,7 +180,7 @@ namespace {
         } // for
 
         for (int i = 0 ; i < 16 ; ++i) {
-            instance._status._regs[ i ] = 0;
+            instance._regs[ i ] = 0;
             egg.regs[ i ] = 0 ;
         } // for
 
@@ -190,11 +194,11 @@ namespace {
             ) ;
 
             egg.regs[ r4 ] = 0x03006ea0 ; // OWRAM
-            instance._status._regs[ r4 ] = 0x03006ea0 ; // OWRAM
+            instance._regs[ r4 ] = 0x03006ea0 ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             ASSERT_TRUE(errFlag == 0 )

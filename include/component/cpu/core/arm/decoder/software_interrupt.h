@@ -11,7 +11,7 @@
 
 namespace gg_core::gg_cpu {
     template <E_OperationMode OpMode>
-    static void Interrupt_impl(GbaInstance &instance);
+    static void Interrupt_impl(CPU &instance);
 
     template <uint32_t HashCode32>
     static constexpr auto SoftwareInterrupt() {

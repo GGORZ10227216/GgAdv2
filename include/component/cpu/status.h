@@ -14,11 +14,9 @@
 class ggTest ;
 
 namespace gg_core {
-    class GbaInstance;
-
     namespace gg_cpu {
         struct Status {
-            friend class gg_core::GbaInstance;
+            friend class CPU;
             friend class ::ggTest ;
         public :
             std::array<unsigned, 16> _regs;
@@ -144,13 +142,6 @@ namespace gg_core {
             E_CpuMode GetCpuMode() {
                 return _cpsr & 0x20u ? THUMB : ARM;
             } // GetCpuMode()
-
-            void ChangeCpuMode(E_CpuMode mode) {
-                if (mode == THUMB)
-                    _cpsr |= 0x1 << T ;
-                else
-                    _cpsr &= ~(0x1 << T);
-            } // ChangeCpuMode()
 
             bool F() { return _cpsr & 0x40u; } // F()
             bool I() { return _cpsr & 0x80u; } // I()

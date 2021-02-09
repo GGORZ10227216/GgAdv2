@@ -11,10 +11,10 @@
 
 namespace gg_core::gg_cpu {
     template<bool A, bool S>
-    static void Multiply_impl(GbaInstance &instance);
+    static void Multiply_impl(CPU &instance);
 
     template<bool U, bool A, bool S>
-    static void MultiplyLong_impl(GbaInstance &instance);
+    static void MultiplyLong_impl(CPU &instance);
 
     template<uint32_t HashCode32>
     static constexpr auto Multiply() {

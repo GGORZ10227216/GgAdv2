@@ -7,7 +7,7 @@
 
 static void ALU_PerformanceTest(benchmark::State& state) {
     for (auto _ : state) {
-        gg_core::GbaInstance emu(std::nullopt) ;
+        CPU emu(std::nullopt) ;
     } // for
 }
 // Register the function as a benchmark

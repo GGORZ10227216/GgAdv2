@@ -20,7 +20,8 @@ namespace {
 
     TEST_F(ggTest, ldrh_reg_post_offset) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0 ;
@@ -55,8 +56,8 @@ namespace {
                     targetRm.value
             ) ;
 
-            instance._status._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
-            instance._status._regs[ targetRm.value ] = RmValue.value ;
+            instance._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+            instance._regs[ targetRm.value ] = RmValue.value ;
             instance._mem.Write16(addrPair[ writeMode.value ].first, testValue[ memValueIdx.value ]) ;
 
             egg.regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
@@ -65,10 +66,10 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
-            // uint32_t memChk = instance._status._regs[targetRd.value] == egg.readHalfRotate(RmValue.value);
+            // uint32_t memChk = instance._regs[targetRd.value] == egg.readHalfRotate(RmValue.value);
             ASSERT_TRUE(errFlag == 0)
                                         << "#" << t << '\n'
                                         << std::hex << "Errflag: " << errFlag << '\n'
@@ -82,7 +83,8 @@ namespace {
 
     TEST_F(ggTest, ldrh_imm_post_offset) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0 ;
@@ -116,7 +118,7 @@ namespace {
                     immOffset.value
             ) ;
 
-            instance._status._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+            instance._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
             instance._mem.Write16(addrPair[ writeMode.value ].first, testValue[ memValueIdx.value ]) ;
 
             egg.regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
@@ -124,10 +126,10 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
-            // uint32_t memChk = instance._status._regs[targetRd.value] == egg.readHalfRotate(RmValue.value);
+            // uint32_t memChk = instance._regs[targetRd.value] == egg.readHalfRotate(RmValue.value);
             ASSERT_TRUE(errFlag == 0)
                                         << "#" << t << '\n'
                                         << std::hex << "Errflag: " << errFlag << '\n'
@@ -141,7 +143,8 @@ namespace {
 
     TEST_F(ggTest, ldrh_reg_pre_offset) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0 ;
@@ -177,8 +180,8 @@ namespace {
                     targetRm.value
             ) ;
 
-            instance._status._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
-            instance._status._regs[ targetRm.value ] = RmValue.value ;
+            instance._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+            instance._regs[ targetRm.value ] = RmValue.value ;
 
             egg.regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
             egg.regs[ targetRm.value ] = RmValue.value ;
@@ -193,10 +196,10 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
-            // uint32_t memChk = instance._status._regs[targetRd.value] == egg.readHalfRotate(RmValue.value);
+            // uint32_t memChk = instance._regs[targetRd.value] == egg.readHalfRotate(RmValue.value);
             ASSERT_TRUE(errFlag == 0)
                                         << "#" << t << '\n'
                                         << std::hex << "Errflag: " << errFlag << '\n'
@@ -210,7 +213,8 @@ namespace {
 
     TEST_F(ggTest, ldrh_imm_pre_offset) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0 ;
@@ -245,7 +249,7 @@ namespace {
                     immOffset.value
             ) ;
 
-            instance._status._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+            instance._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
             egg.regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
 
             uint32_t targetAddr = addrPair[ writeMode.value ].first ;
@@ -258,10 +262,10 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
-            // uint32_t memChk = instance._status._regs[targetRd.value] == egg.readHalfRotate(RmValue.value);
+            // uint32_t memChk = instance._regs[targetRd.value] == egg.readHalfRotate(RmValue.value);
             ASSERT_TRUE(errFlag == 0)
                 << "#" << t << '\n'
                 << std::hex << "Errflag: " << errFlag << '\n'

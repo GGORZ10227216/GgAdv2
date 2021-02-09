@@ -11,8 +11,10 @@
 #define GGTEST_DATA_PROCESSING_H
 
 namespace gg_core::gg_cpu {
+    class CPU ; // Forward declaration of cpu class
+
     template<bool I, bool S, bool TEST, SHIFT_BY SHIFT_SRC, SHIFT_TYPE ST, OP_TYPE OT, E_DataProcess opcode>
-    static void Alu_impl(GbaInstance &instance) ;
+    static void Alu_impl(CPU &instance) ;
 
     template <uint32_t HashCode32>
     static constexpr auto DataProcessing() {

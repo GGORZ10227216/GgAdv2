@@ -19,9 +19,7 @@
 
 namespace gg_core {
     namespace gg_cpu {
-        class CPUCore ;
-
-        static void UndefinedHandler(CPUCore &instance) {
+        static void UndefinedHandler(CPU &instance) {
             std::cout << "Execute a undefined instruction." << std::endl ;
             exit(-2) ;
         }
@@ -105,7 +103,11 @@ namespace gg_core {
             return result ;
         }
 
-        constexpr static auto armHandlers =
+        constexpr static auto ARM_HandlerTable =
+                GetArmInstructionTable(std::make_index_sequence<4096>{}) ;
+
+        // todo: Thumb decoder
+        constexpr static auto Thumb_HandlerTable =
                 GetArmInstructionTable(std::make_index_sequence<4096>{}) ;
     }
 }

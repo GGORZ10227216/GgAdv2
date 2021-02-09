@@ -10,15 +10,15 @@
 
 namespace gg_core::gg_cpu {
     template <bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
-    static void SingleDataTransfer_impl(GbaInstance &instance) {
+    static void SingleDataTransfer_impl(CPU &instance) {
         constexpr bool translation = !P && W ;
 
         uint8_t RnNumber = (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ;
         uint8_t RdNumber = (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ;
 
         auto Access = [&]() {
-            uint32_t &Rn = instance._status._regs[ RnNumber ] ;
-            uint32_t &Rd = instance._status._regs[ RdNumber ] ;
+            uint32_t &Rn = instance._regs[ RnNumber ] ;
+            uint32_t &Rd = instance._regs[ RdNumber ] ;
             uint32_t offset = 0, targetAddr = Rn ;
 
             if constexpr (I) {
@@ -48,7 +48,8 @@ namespace gg_core::gg_cpu {
                 } // else
 
                 if (RdNumber == pc)
-                    instance.RefillPipeline() ;
+//                    (instance.*RefillPipeline)() ;
+                    instance.RefillPipeline();
 
                 if constexpr (!P || W) {
                     // Info from heyrick.eu:
@@ -89,21 +90,21 @@ namespace gg_core::gg_cpu {
         };
 
         if constexpr (translation)
-            instance._status.AccessUsrRegBankInPrivilege(Access) ;
+            instance.AccessUsrRegBankInPrivilege(Access) ;
         else
             Access() ;
     } // MemAccess_impl()
 
     template <bool P, bool U, bool W, bool L, bool S, bool H,  OFFSET_TYPE OT>
-    void HalfMemAccess_impl(GbaInstance &instance) {
+    void HalfMemAccess_impl(CPU &instance) {
         unsigned int RnNumber = (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ;
         unsigned int RdNumber = (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ;
-        uint32_t &Rn = instance._status._regs[ RnNumber ] ;
-        uint32_t &Rd = instance._status._regs[ RdNumber ] ;
+        uint32_t &Rn = instance._regs[ RnNumber ] ;
+        uint32_t &Rd = instance._regs[ RdNumber ] ;
         uint32_t offset = 0, targetAddr = Rn ;
 
         if constexpr (OT == OFFSET_TYPE::RM) {
-            offset = instance._status._regs[ CURRENT_INSTRUCTION & 0xf ] ;
+            offset = instance._regs[ CURRENT_INSTRUCTION & 0xf ] ;
         } // constexpr()
         else {
             offset = ((CURRENT_INSTRUCTION & 0xf00) >> 4) | (CURRENT_INSTRUCTION & 0xf) ;
@@ -127,19 +128,19 @@ namespace gg_core::gg_cpu {
                 // LDRH
                 Rd = instance._mem.Read16(targetAddr) ;
                 if (RdNumber == pc)
-                    instance.RefillPipeline() ;
+                    instance.RefillPipeline();
             } // else if
             else if constexpr (S && !H) {
                 // LDRSB
                 Rd = (static_cast<int32_t>(instance._mem.Read8(targetAddr)) << 24) >> 24 ; // sign extend
                 if (RdNumber == pc)
-                    instance.RefillPipeline() ;
+                    instance.RefillPipeline();
             } // else if
             else {
                 // LDRSH
                 Rd = (static_cast<int32_t>(instance._mem.Read16(targetAddr)) << 16) >> 16 ; // sign extend
                 if (RdNumber == pc)
-                    instance.RefillPipeline() ;
+                    instance.RefillPipeline();
             } // else
 
             if constexpr (!P || W) {
@@ -173,10 +174,10 @@ namespace gg_core::gg_cpu {
     } // HalfMemAccess_impl()
 
     template <bool P, bool U, bool S, bool W, bool L>
-    void BlockMemAccess_impl(GbaInstance &instance) {
+    void BlockMemAccess_impl(CPU &instance) {
         // todo: undocumented behavior of ldm/stm implement
         uint32_t regList = BitFieldValue<0, 16>(CURRENT_INSTRUCTION) ;
-        uint32_t &Rn = instance._status._regs[ BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ] ;
+        uint32_t &Rn = instance._regs[ BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ] ;
 
         uint32_t base = 0 ;
         unsigned int registerCnt = PopCount32(regList) ;
@@ -187,11 +188,11 @@ namespace gg_core::gg_cpu {
             offset = 0x40 ;
         } // if
 
-        uint32_t originalCPSR = instance._status.ReadCPSR() ;
-        uint32_t originalMode = instance._status.GetOperationMode() ;
+        uint32_t originalCPSR = instance.ReadCPSR() ;
+        uint32_t originalMode = instance.GetOperationMode() ;
 
         if constexpr (S)
-            instance._status.WriteCPSR( (originalCPSR & ~0b11111) | static_cast<uint32_t>(E_OperationMode::USR) ) ;
+            instance.WriteCPSR( (originalCPSR & ~0b11111) | static_cast<uint32_t>(E_OperationMode::USR) ) ;
 
         if constexpr (U) {
             if constexpr (P) {
@@ -220,7 +221,7 @@ namespace gg_core::gg_cpu {
                     CPU_REG[ idx ] = instance._mem.Read32(base) ;
                     if (idx == pc) {
                         CPU_REG[ pc ] &= ~0x3 ;
-                        instance.RefillPipeline() ;
+                        instance.RefillPipeline();
                     } // if
                 } // if
                 else {
@@ -237,10 +238,10 @@ namespace gg_core::gg_cpu {
         if constexpr (S) {
             if constexpr (L) {
                 if (TestBit(regList, 15))
-                    instance._status.WriteCPSR(instance._status.ReadSPSR(static_cast<E_OperationMode>(originalMode))) ;
+                    instance.WriteCPSR(instance.ReadSPSR(static_cast<E_OperationMode>(originalMode))) ;
             } // if
 
-            instance._status.WriteCPSR( (originalCPSR & ~0b11111) | originalMode ) ;
+            instance.WriteCPSR( (originalCPSR & ~0b11111) | originalMode ) ;
         } // if
 
         if constexpr (W) {
@@ -252,10 +253,10 @@ namespace gg_core::gg_cpu {
     } // BlockMemAccess_impl()
 
     template <bool B>
-    void Swap_impl(GbaInstance &instance) {
-        uint32_t Rn = instance._status._regs[ (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ] ;
-        uint32_t &Rd = instance._status._regs[ (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ] ;
-        uint32_t Rm = instance._status._regs[ CURRENT_INSTRUCTION & 0xf ] ;
+    void Swap_impl(CPU &instance) {
+        uint32_t Rn = instance._regs[ (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ] ;
+        uint32_t &Rd = instance._regs[ (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ] ;
+        uint32_t Rm = instance._regs[ CURRENT_INSTRUCTION & 0xf ] ;
 
         if constexpr (B) {
             Rd = instance._mem.Read8(Rn) ;

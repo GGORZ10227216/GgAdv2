@@ -18,7 +18,8 @@ namespace {
             using namespace gg_core ;
 
             Arm egg;
-            gg_core::GbaInstance instance(std::nullopt);
+            gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
             ArmAssembler gg_asm ;
 
             unsigned int t = 0 ;
@@ -39,16 +40,16 @@ namespace {
 
                 auto idx = std::make_tuple(RnNumber.value, RmNumber.value, r4) ;
                 auto val = std::make_tuple(FieldRn.value, FieldRm.value, FieldRs.value);
-                FillRegs(instance._status._regs, idx, val) ;
+                FillRegs(instance._regs, idx, val) ;
                 FillRegs(egg.regs, idx, val) ;
 
                 egg.cpsr = (cpsr.value << 28) | 0xd3 ;
-                instance._status.WriteCPSR(cpsr.value << 28 | 0xd3) ;
+                instance.WriteCPSR(cpsr.value << 28 | 0xd3) ;
 
                 uint32_t inst_hash = hashArm(instruction) ;
 
                 std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-                instance.CPUStep(instruction);
+                instance.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(instance, egg) ;
                 ASSERT_TRUE(errFlag == 0)
@@ -87,7 +88,8 @@ namespace {
             using namespace gg_core ;
 
             Arm egg;
-            gg_core::GbaInstance instance(std::nullopt);
+            gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
             ArmAssembler gg_asm ;
 
             unsigned int t = 0 ;
@@ -107,13 +109,13 @@ namespace {
 
                 auto idx = std::make_tuple(RnNumber.value, RmNumber.value, r4) ;
                 auto val = std::make_tuple(FieldRn.value, FieldRm.value, FieldRs.value);
-                FillRegs(instance._status._regs, idx, val) ;
+                FillRegs(instance._regs, idx, val) ;
                 FillRegs(egg.regs, idx, val) ;
 
                 uint32_t inst_hash = hashArm(instruction) ;
 
                 std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-                instance.CPUStep(instruction);
+                instance.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(instance, egg) ;
                 ASSERT_TRUE(errFlag == 0)
@@ -154,7 +156,8 @@ namespace {
             using namespace gg_core ;
 
             Arm egg;
-            gg_core::GbaInstance instance(std::nullopt);
+            gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
             ArmAssembler gg_asm ;
 
             unsigned int t = 0 ;
@@ -175,15 +178,15 @@ namespace {
 
                 auto idx = std::make_tuple(RnNumber.value, RmNumber.value) ;
                 auto val = std::make_tuple(FieldRn.value, FieldRm.value);
-                FillRegs(instance._status._regs, idx, val) ;
+                FillRegs(instance._regs, idx, val) ;
                 FillRegs(egg.regs, idx, val) ;
 
                 egg.cpsr = (cpsr.value << 28) | 0xd3 ;
-                instance._status.WriteCPSR(cpsr.value << 28 | 0xd3) ;
+                instance.WriteCPSR(cpsr.value << 28 | 0xd3) ;
 
                 uint32_t inst_hash = hashArm(instruction) ;
                 std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-                instance.CPUStep(instruction);
+                instance.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(instance, egg) ;
                 ASSERT_TRUE(errFlag == 0)
@@ -224,7 +227,8 @@ namespace {
             using namespace gg_core ;
 
             Arm egg;
-            gg_core::GbaInstance instance(std::nullopt);
+            gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
             ArmAssembler gg_asm ;
 
             unsigned int t = 0 ;
@@ -244,12 +248,12 @@ namespace {
 
                 auto idx = std::make_tuple(RnNumber.value, RmNumber.value) ;
                 auto val = std::make_tuple(FieldRn.value, FieldRm.value);
-                FillRegs(instance._status._regs, idx, val) ;
+                FillRegs(instance._regs, idx, val) ;
                 FillRegs(egg.regs, idx, val) ;
 
                 uint32_t inst_hash = hashArm(instruction) ;
                 std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-                instance.CPUStep(instruction);
+                instance.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(instance, egg) ;
                 ASSERT_TRUE(errFlag == 0)
@@ -291,7 +295,8 @@ namespace {
             using namespace gg_core ;
 
             Arm egg;
-            gg_core::GbaInstance instance(std::nullopt);
+            gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
             ArmAssembler gg_asm ;
 
             unsigned int t = 0 ;
@@ -308,12 +313,12 @@ namespace {
                         AL, operation, false, RnNumber.value, RdNumber.value, rotate.value, imm.value
                 ) ;
 
-                instance._status._regs[ RnNumber.value ] = FieldRn.value ;
+                instance._regs[ RnNumber.value ] = FieldRn.value ;
                 egg.regs[ RnNumber.value ] = FieldRn.value ;
 
                 uint32_t inst_hash = hashArm(instruction) ;
                 std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-                instance.CPUStep(instruction);
+                instance.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(instance, egg) ;
                 ASSERT_TRUE(errFlag == 0)
@@ -355,7 +360,8 @@ namespace {
             using namespace gg_core ;
 
             Arm egg;
-            gg_core::GbaInstance instance(std::nullopt);
+            gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
             ArmAssembler gg_asm ;
 
             unsigned int t = 0 ;
@@ -373,15 +379,15 @@ namespace {
                         AL, operation, true, RnNumber.value, RdNumber.value, rotate.value, imm.value
                 ) ;
 
-                instance._status._regs[ RnNumber.value ] = FieldRn.value ;
+                instance._regs[ RnNumber.value ] = FieldRn.value ;
                 egg.regs[ RnNumber.value ] = FieldRn.value ;
 
                 egg.cpsr = (cpsr.value << 28) | 0xd3 ;
-                instance._status.WriteCPSR(cpsr.value << 28 | 0xd3) ;
+                instance.WriteCPSR(cpsr.value << 28 | 0xd3) ;
 
                 uint32_t inst_hash = hashArm(instruction) ;
                 std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-                instance.CPUStep(instruction);
+                instance.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(instance, egg) ;
                 ASSERT_TRUE(errFlag == 0)

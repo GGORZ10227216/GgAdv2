@@ -18,7 +18,8 @@ namespace {
         using namespace gg_core;
 
         Arm egg;
-        GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         uint64_t t = 0 ;
@@ -40,7 +41,7 @@ namespace {
 
             auto idx = std::make_tuple(targetRn.value, targetRm.value) ;
             auto val = std::make_tuple(RnValue.value, testValue[ RmValue.value ] );
-            FillRegs(instance._status._regs, idx, val) ;
+            FillRegs(instance._regs, idx, val) ;
             FillRegs(egg.regs, idx, val) ;
 
             instance._mem.Write32((uint32_t)RnValue.value, testValue[ memValue.value ]) ;
@@ -49,7 +50,7 @@ namespace {
             uint32_t inst_hash = hashArm(instruction) ;
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
             ASSERT_TRUE(errFlag == 0)
@@ -69,7 +70,8 @@ namespace {
         using namespace gg_core;
 
         Arm egg;
-        GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         uint64_t t = 0 ;
@@ -91,7 +93,7 @@ namespace {
 
             auto idx = std::make_tuple(targetRn.value, targetRm.value) ;
             auto val = std::make_tuple(RnValue.value, testValue[ RmValue.value ] );
-            FillRegs(instance._status._regs, idx, val) ;
+            FillRegs(instance._regs, idx, val) ;
             FillRegs(egg.regs, idx, val) ;
 
             instance._mem.Write8((uint32_t)RnValue.value, (uint8_t)testValue[ memValue.value ]) ;
@@ -100,7 +102,7 @@ namespace {
             uint32_t inst_hash = hashArm(instruction) ;
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
 

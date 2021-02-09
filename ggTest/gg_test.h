@@ -16,7 +16,7 @@
 #include <capstone/capstone.h>
 #include <keystone/keystone.h>
 
-#include <framework/gba_instance.h>
+#include <component/cpu/cpu.h>
 #include <arm/arm.h>
 #include <gg_utility.h>
 #include <cpu_enum.h>
@@ -86,30 +86,30 @@ protected:
         return ((instr >> 16) & 0xFF0) | ((instr >> 4) & 0xF);
     }
 
-    uint32_t CheckStatus(const gg_core::GbaInstance& mine, const Arm& egg) const {
+    uint32_t CheckStatus(const gg_core::gg_cpu::CPU& mine, const Arm& egg) const {
         using namespace gg_core::gg_cpu ;
 
         uint32_t status_flag = 0 ;
         for (int i = r0 ; i <= pc ; ++i) {
-            if (mine._status._regs[i] != egg.regs[i])
+            if (mine._regs[i] != egg.regs[i])
                 status_flag |= gg_core::_BV(i) ;
         } // for
 
-        if (mine._status.ReadCPSR() != egg.cpsr)
+        if (mine.ReadCPSR() != egg.cpsr)
             status_flag |= gg_core::_BV(16) ;
         return status_flag ;
     }
 
-    std::string Diagnose(const gg_core::GbaInstance& mine, const Arm& egg, uint32_t status_flag) const {
+    std::string Diagnose(const gg_core::gg_cpu::CPU& mine, const Arm& egg, uint32_t status_flag) const {
         using namespace gg_core::gg_cpu ;
 
         std::string result ;
         for (int i = r0 ; i <= 16 ; ++i) {
             if (status_flag & gg_core::_BV(i)) {
                 if (i < 16)
-                    result += fmt::format("\t[X] r{}: mine={:x} ref={:x}\n", i, mine._status._regs[i], egg.regs[i]) ;
+                    result += fmt::format("\t[X] r{}: mine={:x} ref={:x}\n", i, mine._regs[i], egg.regs[i]) ;
                 else
-                    result += fmt::format("\t[X] cpsr: mine={:x} ref={:x}\n", mine._status.ReadCPSR(), egg.cpsr) ;
+                    result += fmt::format("\t[X] cpsr: mine={:x} ref={:x}\n", mine.ReadCPSR(), egg.cpsr) ;
             } // if
         } // for
 

@@ -9,12 +9,12 @@
 #define GGTEST_INTERRUPT_H
 
 namespace gg_core::gg_cpu {
-    static void mrs(GbaInstance& instance) ;
-    static void msr_Rm(GbaInstance& instance) ;
-    static void mrsp(GbaInstance& instance) ;
-    static void msrp_Rm(GbaInstance& instance) ;
-    static void msr_Imm(GbaInstance& instance) ;
-    static void msrp_Imm(GbaInstance& instance) ;
+    static void mrs(CPU& instance) ;
+    static void msr_Rm(CPU& instance) ;
+    static void mrsp(CPU& instance) ;
+    static void msrp_Rm(CPU& instance) ;
+    static void msr_Imm(CPU& instance) ;
+    static void msrp_Imm(CPU& instance) ;
 
     template <uint32_t HashCode32>
     static constexpr auto PSR_Transfer() {

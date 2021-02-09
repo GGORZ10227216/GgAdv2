@@ -19,7 +19,8 @@ namespace {
 
     TEST_F(ggTest, ldr_post_imm_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm ;
 
         unsigned int t = 0 ;
@@ -43,7 +44,7 @@ namespace {
                     targetRn.value, targetRd.value, immOffset.value
             ) ;
 
-            instance._status._regs[ targetRn.value ] = baseAddr ;
+            instance._regs[ targetRn.value ] = baseAddr ;
             egg.regs[ targetRn.value ] = baseAddr ;
 
             instance._mem.Write32(targetAddr, testValue[memValueidx.value]) ;
@@ -52,7 +53,7 @@ namespace {
             uint32_t inst_hash = hashArm(instruction) ;
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
             uint32_t memReadBack = gg_core::rotr(testValue[memValueidx.value], (targetAddr & 0b11) << 3);
@@ -70,7 +71,8 @@ namespace {
 
     TEST_F(ggTest, ldr_post_reg_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm ;
 
         unsigned int t = 0 ;
@@ -125,16 +127,16 @@ namespace {
                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
             ) ;
 
-            instance._status._regs[ targetRn.value ] = baseAddr ;
+            instance._regs[ targetRn.value ] = baseAddr ;
             egg.regs[ targetRn.value ] = baseAddr ;
 
-            instance._status._regs[ r4 ] = RmValue.value ;
+            instance._regs[ r4 ] = RmValue.value ;
             egg.regs[ r4 ] = RmValue.value ;
 
             uint32_t inst_hash = hashArm(instruction) ;
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
             ASSERT_TRUE(errFlag == 0)
@@ -150,7 +152,8 @@ namespace {
 
     TEST_F(ggTest, ldrb_post_imm_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm ;
 
         unsigned int t = 0 ;
@@ -174,7 +177,7 @@ namespace {
                     targetRn.value, targetRd.value, immOffset.value
             ) ;
 
-            instance._status._regs[ targetRn.value ] = baseAddr ;
+            instance._regs[ targetRn.value ] = baseAddr ;
             egg.regs[ targetRn.value ] = baseAddr ;
 
             instance._mem.Write32(targetAddr, testValue[memValueidx.value]) ;
@@ -183,7 +186,7 @@ namespace {
             uint32_t inst_hash = hashArm(instruction) ;
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
             uint32_t memReadBack = gg_core::rotr(testValue[memValueidx.value], (targetAddr & 0b11) << 3);
@@ -201,7 +204,8 @@ namespace {
 
     TEST_F(ggTest, ldrb_post_reg_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm ;
 
         unsigned int t = 0 ;
@@ -256,16 +260,16 @@ namespace {
                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
             ) ;
 
-            instance._status._regs[ targetRn.value ] = baseAddr ;
+            instance._regs[ targetRn.value ] = baseAddr ;
             egg.regs[ targetRn.value ] = baseAddr ;
 
-            instance._status._regs[ r4 ] = RmValue.value ;
+            instance._regs[ r4 ] = RmValue.value ;
             egg.regs[ r4 ] = RmValue.value ;
 
             uint32_t inst_hash = hashArm(instruction) ;
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
             ASSERT_TRUE(errFlag == 0)
@@ -281,7 +285,8 @@ namespace {
 
     TEST_F(ggTest, ldr_pre_imm_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm ;
 
         unsigned int t = 0 ;
@@ -310,7 +315,7 @@ namespace {
                     targetRn.value, targetRd.value, immOffset.value
             ) ;
 
-            instance._status._regs[ targetRn.value ] = baseAddr ;
+            instance._regs[ targetRn.value ] = baseAddr ;
             egg.regs[ targetRn.value ] = baseAddr ;
 
             instance._mem.Write32(targetAddr, testValue[memValueidx.value]) ;
@@ -319,7 +324,7 @@ namespace {
             uint32_t inst_hash = hashArm(instruction) ;
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
             uint32_t memReadBack = gg_core::rotr(testValue[memValueidx.value], (targetAddr & 0b11) << 3);
@@ -337,7 +342,8 @@ namespace {
 
     TEST_F(ggTest, ldr_pre_reg_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm ;
 
         unsigned int t = 0 ;
@@ -393,16 +399,16 @@ namespace {
                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
             ) ;
 
-            instance._status._regs[ targetRn.value ] = baseAddr ;
+            instance._regs[ targetRn.value ] = baseAddr ;
             egg.regs[ targetRn.value ] = baseAddr ;
 
-            instance._status._regs[ r4 ] = RmValue.value ;
+            instance._regs[ r4 ] = RmValue.value ;
             egg.regs[ r4 ] = RmValue.value ;
 
             uint32_t inst_hash = hashArm(instruction) ;
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
             ASSERT_TRUE(errFlag == 0)
@@ -418,7 +424,8 @@ namespace {
 
     TEST_F(ggTest, ldrb_pre_imm_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm ;
 
         unsigned int t = 0 ;
@@ -447,7 +454,7 @@ namespace {
                     targetRn.value, targetRd.value, immOffset.value
             ) ;
 
-            instance._status._regs[ targetRn.value ] = baseAddr ;
+            instance._regs[ targetRn.value ] = baseAddr ;
             egg.regs[ targetRn.value ] = baseAddr ;
 
             instance._mem.Write32(targetAddr, testValue[memValueidx.value]) ;
@@ -456,7 +463,7 @@ namespace {
             uint32_t inst_hash = hashArm(instruction) ;
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
             uint32_t memReadBack = gg_core::rotr(testValue[memValueidx.value], (targetAddr & 0b11) << 3);
@@ -474,7 +481,8 @@ namespace {
 
     TEST_F(ggTest, ldrb_pre_reg_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm ;
 
         unsigned int t = 0 ;
@@ -530,16 +538,16 @@ namespace {
                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
             ) ;
 
-            instance._status._regs[ targetRn.value ] = baseAddr ;
+            instance._regs[ targetRn.value ] = baseAddr ;
             egg.regs[ targetRn.value ] = baseAddr ;
 
-            instance._status._regs[ r4 ] = RmValue.value ;
+            instance._regs[ r4 ] = RmValue.value ;
             egg.regs[ r4 ] = RmValue.value ;
 
             uint32_t inst_hash = hashArm(instruction) ;
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
             ASSERT_TRUE(errFlag == 0)

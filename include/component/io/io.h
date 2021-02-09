@@ -6,8 +6,6 @@
 #define GGADV_IO_H
 
 namespace gg_core {
-    class GbaInstance ;
-
     namespace gg_io {
         class IOReg {
         public :

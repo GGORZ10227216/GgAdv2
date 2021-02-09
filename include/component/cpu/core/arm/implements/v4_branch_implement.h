@@ -1,26 +1,28 @@
 namespace gg_core::gg_cpu {
-    static void BranchExchange_impl(CPUCore& self) {
-        const uint32_t RnNumber = self.CurrentInstruction() & 0xf ;
-        uint32_t &Rn = self._regs[RnNumber] ;
+    static void BranchExchange_impl(CPU& instance) {
+        const uint32_t RnNumber = instance.CurrentInstruction() & 0xf ;
+        uint32_t &Rn = instance._regs[RnNumber] ;
 
         if (Rn & 0x1)
-            self.ChangeCpuMode(THUMB) ;
+            instance.ChangeCpuMode(THUMB) ;
+        else
+            instance.ChangeCpuMode(ARM) ;
 
-        self._regs[pc] = Rn ;
-        self.RefillPipeline<ARM>() ;
+        instance._regs[pc] = Rn ;
+        instance.RefillPipeline();
     }
 
     template <bool L>
-    static void Branch_impl(CPUCore& self) {
-        int32_t offset = (self.CurrentInstruction() & 0x00ffffff) << 2;
+    static void Branch_impl(CPU& instance) {
+        int32_t offset = (instance.CurrentInstruction() & 0x00ffffff) << 2;
 
         if (gg_core::TestBit(offset, 25))
             offset |= 0xfc000000 ; // sign extend
 
         if constexpr (L)
-            self._regs[lr] = self._regs[pc] - 4 ;
+            instance._regs[lr] = instance._regs[pc] - 4 ;
 
-        self._regs[pc] += offset ;
-        self.RefillPipeline<ARM>() ;
+        instance._regs[pc] += offset ;
+        instance.RefillPipeline();
     }
 } // gg_core::gg_cpu

@@ -9,25 +9,24 @@
 
 namespace gg_core::gg_cpu {
     template <E_OperationMode opMode>
-    static void Interrupt_impl(CPUCore &self) {
-        const uint32_t preCPSR = self.ReadCPSR() ;
+    static void Interrupt_impl(CPU &instance) {
+        const uint32_t preCPSR = instance.ReadCPSR() ;
 
-        self.WriteCPSR((preCPSR & ~0b11111u) | static_cast<uint8_t>(opMode)) ;
-        self.WriteSPSR(preCPSR) ;
+        instance.WriteCPSR((preCPSR & ~0b11111u) | static_cast<uint8_t>(opMode)) ;
+        instance.WriteSPSR(preCPSR) ;
 
         // both SVC & IRQ have same offset(4) in ARM mode
-        self._regs[ lr ] = self._regs[ pc ] - 4 ;
+        instance._regs[ lr ] = instance._regs[ pc ] - 4 ;
 
         if constexpr (opMode == SVC)
-            self._regs[ pc ] = SW_IRQ ;
+            instance._regs[ pc ] = SW_IRQ ;
         else if constexpr (opMode == IRQ)
-            self._regs[ pc ] = HW_IRQ ;
+            instance._regs[ pc ] = HW_IRQ ;
 
-        // fixme: check document
-        self.RefillPipeline<ARM>() ;
+        instance.RefillPipeline();
 
-        self.ChangeCpuMode(ARM);
-        self.SetI() ;
+        instance.ChangeCpuMode(ARM);
+        instance.SetI() ;
     } // Interrupt_impl()
 }
 

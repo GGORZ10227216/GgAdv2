@@ -11,7 +11,8 @@ namespace {
         using namespace gg_core;
 
         Arm egg;
-        GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt);
+        CPU instance(mmu); ;
         ArmAssembler gg_asm;
 
         unsigned int t = 0;
@@ -25,12 +26,12 @@ namespace {
             );
 
             egg.regs[15] = 0 ;
-            instance._status._regs[15] = 0 ;
+            instance._regs[15] = 0 ;
 
             uint32_t inst_hash = hashArm(instruction);
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             ASSERT_TRUE(errFlag == 0)
@@ -49,7 +50,8 @@ namespace {
         using namespace gg_core;
 
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+                gg_mem::MMU mmu(std::nullopt);
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0;
@@ -63,12 +65,12 @@ namespace {
             );
 
             egg.regs[15] = 0 ;
-            instance._status._regs[15] = 0 ;
+            instance._regs[15] = 0 ;
 
             uint32_t inst_hash = hashArm(instruction);
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             ASSERT_TRUE(errFlag == 0)
@@ -87,7 +89,8 @@ namespace {
         using namespace gg_core;
 
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0;
@@ -100,12 +103,12 @@ namespace {
             uint32_t instruction = 0xe12fff10 | targetRn.value ;
 
             egg.regs[targetRn.value] = RnValue.value ;
-            instance._status._regs[targetRn.value] = RnValue.value ;
+            instance._regs[targetRn.value] = RnValue.value ;
 
             uint32_t inst_hash = hashArm(instruction);
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUStep(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             ASSERT_TRUE(errFlag == 0)
