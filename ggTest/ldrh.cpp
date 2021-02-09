@@ -185,8 +185,7 @@ namespace {
 
             uint32_t targetAddr = addrPair[ writeMode.value ].first ;
             targetAddr = addrPair[ writeMode.value ].second ? targetAddr + RmValue.value : targetAddr - RmValue.value ;
-            if (targetRn.value == gg_cpu::pc)
-                targetAddr = addrPair[ writeMode.value ].second ? targetAddr + 4 : targetAddr - 4 ;
+
 
             instance._mem.Write16(targetAddr, testValue[ memValueIdx.value ]) ;
             egg.writeHalf(targetAddr, testValue[ memValueIdx.value ]) ;
@@ -250,8 +249,7 @@ namespace {
 
             uint32_t targetAddr = addrPair[ writeMode.value ].first ;
             targetAddr = addrPair[ writeMode.value ].second ? targetAddr + immOffset.value : targetAddr - immOffset.value ;
-            if (targetRn.value == gg_cpu::pc)
-                targetAddr = addrPair[ writeMode.value ].second ? targetAddr + 4 : targetAddr - 4 ;
+
 
             instance._mem.Write16(targetAddr, testValue[ memValueIdx.value ]) ;
             egg.writeHalf(targetAddr, testValue[ memValueIdx.value ]) ;
