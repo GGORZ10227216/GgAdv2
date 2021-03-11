@@ -16,9 +16,6 @@ class ggTest ;
 namespace gg_core {
     namespace gg_cpu {
         struct Status {
-            friend class CPU;
-            friend class ::ggTest ;
-        public :
             std::array<unsigned, 16> _regs;
 
             Status() {
@@ -163,9 +160,8 @@ namespace gg_core {
             void SetN() { _cpsr |= (1 << 31); } // SetN()
             void ClearN() { _cpsr &= ~(1 << 31); } // ClearN()
 
-        protected :
             std::array<uint32_t, 2> fetchedBuffer;
-            uint8_t pipelineCnt = 0;
+            uint8_t fetchIdx = 0;
             uint32_t currentInstruction = 0x00 ;
             uint32_t _cpsr = 0xd3;
 

@@ -17,6 +17,11 @@ namespace gg_core {
     constexpr auto MakeArray(Args... args) {
         return std::array<T, sizeof...(args)> { args... } ;
     }
+
+    template <typename T, typename U>
+    constexpr bool SameSize() {
+        return sizeof(T) == sizeof(U) ;
+    }
 }
 
 #endif //GGTEST_GG_UTILITY_H

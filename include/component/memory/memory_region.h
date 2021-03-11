@@ -12,18 +12,23 @@
 
 namespace gg_core::gg_mem {
     class MMU ;
-    template <typename T>
-    struct MemoryRegion {
-        MemoryRegion(unsigned& ccRef) : _ccRef(ccRef) {} // MemoryRegion()
 
-        uint8_t &Access(unsigned addr, E_AccessWidth width) {
-            return static_cast<T*>(this)->AccessImpl(addr, width) ;
+    template <typename T>
+    struct Memory {
+        template <E_AccessWidth W>
+        uint8_t &Access(unsigned addr) {
+            return static_cast<T*>(this)->AccessImpl<W>(addr) ;
         } // Access()
 
     private :
-        unsigned& _ccRef ;
+        unsigned _ccRef ;
         MemoryRegion() = delete ;
         friend T ;
+
+//        template <E_RegionTag R, E_AccessWidth W>
+//        inline unsigned _cycleCounting() {
+//            return static_cast<T*>(this)->template _CycleCountingImpl<R, W>() ;
+//        }
     };
 }
 

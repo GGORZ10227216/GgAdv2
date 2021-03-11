@@ -7,10 +7,10 @@
 #include <filesystem>
 #include <iostream>
 
+#include <arm_decoder.h>
 #include <status.h>
 #include <mmu.h>
 #include <io.h>
-#include <arm_decoder.h>
 
 #ifndef GGADV_GBA_INSTANCE_H
 #define GGADV_GBA_INSTANCE_H
@@ -18,24 +18,39 @@
 namespace gg_core::gg_cpu {
     class CPU final : public Status {
     public :
+
         // gg_cpu::Status _status;
         gg_core::gg_mem::MMU &_mem;
-        gg_io::IOReg _io;
 
         CPU(gg_mem::MMU &instanceMemory) :
-            _mem(instanceMemory), _io()
+            _mem(instanceMemory)
         {
+            _mem.cpuStatus = this ;
+            fetchedBuffer[0] = _mem.Read32(0);
+            fetchedBuffer[1] = _mem.Read32(4);
+            _regs[pc] = 8;
+            fetchIdx = 1;
         } // CPU()
 
         void CPUTick() {
-            currentInstruction = fetchedBuffer[ pipelineCnt ] ;
-            std::invoke(Fetch, this) ;
-            instructionTable[ iHash(currentInstruction) ](*this) ;
+            try {
+                currentInstruction = fetchedBuffer[ !fetchIdx ] ;
+                std::invoke(Fetch, this) ;
+                instructionTable[ iHash(currentInstruction) ](*this) ;
+            } catch (gg_mem::MMU::InvalidAccessException& e) {
+                std::cout << e.what() << std::endl ;
+                exit(-1) ;
+            } // try-catch()
         } // Tick()
 
         void CPU_Test(uint32_t inst) {
-            currentInstruction = inst ;
-            instructionTable[ iHash(currentInstruction) ](*this) ;
+//            try {
+                currentInstruction = inst ;
+                instructionTable[ iHash(currentInstruction) ](*this) ;
+//            } catch (gg_mem::MMU::InvalidAccessException& e) {
+//                std::cout << e.what() << std::endl ;
+//                // exit(-1) ;
+//            } // try-catch()
         } // Tick()
 
         void RefillPipeline() {
@@ -67,7 +82,7 @@ namespace gg_core::gg_cpu {
             fetchedBuffer[1] = _mem.Read32(pcBase + 4);
 
             _regs[pc] = pcBase + 4;
-            pipelineCnt = 0;
+            fetchIdx = 1;
         } // RefillPipeline()
 
         void THUMB_RefillPipeline() {
@@ -78,19 +93,19 @@ namespace gg_core::gg_cpu {
             fetchedBuffer[1] = _mem.Read16(pcBase + 2);
 
             _regs[pc] = pcBase + 2;
-            pipelineCnt = 0;
+            fetchIdx = 1;
         } // RefillPipeline()
 
         void ARM_Fetch() {
             _regs[gg_cpu::pc] += 4;
-            pipelineCnt = (pipelineCnt + 1) % fetchedBuffer.size();
-            fetchedBuffer[pipelineCnt] = _mem.Read32(_regs[gg_cpu::pc]);
+            fetchIdx = !fetchIdx;
+            fetchedBuffer[fetchIdx] = _mem.Read32(_regs[gg_cpu::pc]);
         } // ARM_Fetch()
 
         void THUMB_Fetch() {
             _regs[gg_cpu::pc] += 2;
-            pipelineCnt = (pipelineCnt + 1) % fetchedBuffer.size();
-            fetchedBuffer[pipelineCnt] = _mem.Read16(_regs[gg_cpu::pc]);
+            fetchIdx = (fetchIdx + 1) % fetchedBuffer.size();
+            fetchedBuffer[fetchIdx] = _mem.Read16(_regs[gg_cpu::pc]);
         } // THUMB_Fetch()
         
         static inline auto ARM_instructionHashFunc = [](uint32_t inst) {

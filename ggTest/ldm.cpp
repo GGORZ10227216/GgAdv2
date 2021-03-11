@@ -13,6 +13,7 @@ namespace {
         // ldmib -> pre-increment load, [L,P,U] == [1,1,1]
         uint32_t t = 0 ;
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;
@@ -64,6 +65,7 @@ namespace {
         // ldmia -> post-increment load, [L,P,U] == [1,0,1]
         uint32_t t = 0 ;
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;
@@ -115,6 +117,7 @@ namespace {
         // ldmdb -> pre-decrement load, [L,P,U] == [1,1,0]
         uint32_t t = 0 ;
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;
@@ -166,6 +169,7 @@ namespace {
         // ldmda -> post-decrement load, [L,P,U] == [1,0,0]
         uint32_t t = 0 ;
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;

@@ -46,6 +46,7 @@ namespace {
 
         auto task = [&](uint8_t cpsr) {
             Arm egg;
+egg.init();
             gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
             ArmAssembler gg_asm;
@@ -122,6 +123,7 @@ namespace {
 
         auto task = [&](uint8_t cpsr) {
             Arm egg;
+egg.init();
             gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
             ArmAssembler gg_asm;
@@ -198,6 +200,7 @@ namespace {
 
         auto task = [&](uint8_t cpsr) {
             Arm egg;
+egg.init();
             gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
             ArmAssembler gg_asm;
@@ -274,6 +277,7 @@ namespace {
 
         auto task = [&](uint8_t cpsr) {
             Arm egg;
+egg.init();
             gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
             ArmAssembler gg_asm;
@@ -350,6 +354,7 @@ namespace {
 
         auto task = [&](uint8_t cpsr) {
             Arm egg;
+egg.init();
             gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
             ArmAssembler gg_asm;
@@ -426,6 +431,7 @@ namespace {
 
         auto task = [&](uint8_t cpsr) {
             Arm egg;
+egg.init();
             gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
             ArmAssembler gg_asm;
@@ -502,6 +508,7 @@ namespace {
 
         auto task = [&](uint8_t cpsr) {
             Arm egg;
+egg.init();
             gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
             ArmAssembler gg_asm;
@@ -578,6 +585,7 @@ namespace {
 
         auto task = [&](uint8_t cpsr) {
             Arm egg;
+egg.init();
             gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
             ArmAssembler gg_asm;

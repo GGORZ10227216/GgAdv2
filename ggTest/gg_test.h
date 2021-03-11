@@ -97,6 +97,12 @@ protected:
 
         if (mine.ReadCPSR() != egg.cpsr)
             status_flag |= gg_core::_BV(16) ;
+
+//        if (egg.pipe[0] != mine.fetchedBuffer[ !mine.pipelineCnt ])
+//            status_flag |= gg_core::_BV(17) ;
+//        if (egg.pipe[1] != mine.fetchedBuffer[ mine.pipelineCnt ])
+//            status_flag |= gg_core::_BV(18) ;
+
         return status_flag ;
     }
 
@@ -104,12 +110,18 @@ protected:
         using namespace gg_core::gg_cpu ;
 
         std::string result ;
-        for (int i = r0 ; i <= 16 ; ++i) {
+        for (int i = r0 ; i <= 18 ; ++i) {
             if (status_flag & gg_core::_BV(i)) {
                 if (i < 16)
                     result += fmt::format("\t[X] r{}: mine={:x} ref={:x}\n", i, mine._regs[i], egg.regs[i]) ;
-                else
+                else if ( i == 16 )
                     result += fmt::format("\t[X] cpsr: mine={:x} ref={:x}\n", mine.ReadCPSR(), egg.cpsr) ;
+//                else if ( i == 17 )
+//                    result += fmt::format("\t[X] pipeline[0]: mine={:x} ref={:x}\n",
+//                                          mine.fetchedBuffer[ !mine.pipelineCnt ], egg.pipe[0]) ;
+//                else if ( i == 18 )
+//                    result += fmt::format("\t[X] pipeline[1]: mine={:x} ref={:x}\n",
+//                                          mine.fetchedBuffer[ mine.pipelineCnt ], egg.pipe[1]) ;
             } // if
         } // for
 

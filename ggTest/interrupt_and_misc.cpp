@@ -11,6 +11,7 @@ namespace {
 
     TEST_F(ggTest, svc_test) {
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;

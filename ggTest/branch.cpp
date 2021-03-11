@@ -11,8 +11,9 @@ namespace {
         using namespace gg_core;
 
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt);
-        CPU instance(mmu); ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0;
@@ -50,6 +51,7 @@ namespace {
         using namespace gg_core;
 
         Arm egg;
+egg.init();
                 gg_mem::MMU mmu(std::nullopt);
         CPU instance(mmu);
         ArmAssembler gg_asm;
@@ -89,6 +91,7 @@ namespace {
         using namespace gg_core;
 
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;

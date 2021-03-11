@@ -52,7 +52,7 @@ project(ggAdv)
 
     set(src_core src/framework/logger/console_logger.cpp)
 
-    add_executable(ggAdv main.cpp ${header_core} ${v4_arm_core_src} ${src_core})
+    add_executable(ggAdv main.cpp ${header_core} ${v4_arm_core_src} ${src_core} include/component/memory/memory_exceptions.h)
     target_link_libraries(ggAdv /usr/local/lib/libfmt.a)
     target_include_directories(ggAdv PUBLIC
         include

@@ -19,6 +19,7 @@ namespace {
 
     TEST_F(ggTest, str_post_imm_offset_test) {
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;
@@ -72,6 +73,7 @@ namespace {
 
     TEST_F(ggTest, str_post_reg_offset_test) {
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;
@@ -149,6 +151,7 @@ namespace {
 
     TEST_F(ggTest, strb_post_imm_offset_test) {
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;
@@ -203,6 +206,7 @@ namespace {
 
     TEST_F(ggTest, strb_post_reg_offset_test) {
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;
@@ -285,6 +289,7 @@ namespace {
 
     TEST_F(ggTest, str_pre_imm_offset_test) {
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;
@@ -341,6 +346,7 @@ namespace {
 
     TEST_F(ggTest, str_pre_reg_offset_test) {
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;
@@ -420,6 +426,7 @@ namespace {
 
     TEST_F(ggTest, strb_pre_imm_offset_test) {
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;
@@ -478,6 +485,7 @@ namespace {
 
     TEST_F(ggTest, strb_pre_reg_offset_test) {
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;

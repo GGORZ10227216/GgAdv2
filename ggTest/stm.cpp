@@ -15,6 +15,7 @@ namespace {
         uint32_t t = 0 ;
 
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;
@@ -76,6 +77,7 @@ namespace {
         uint32_t t = 0 ;
 
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;
@@ -137,6 +139,7 @@ namespace {
         uint32_t t = 0 ;
 
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;
@@ -201,6 +204,7 @@ namespace {
         uint32_t t = 0 ;
 
         Arm egg;
+egg.init();
         gg_mem::MMU mmu(std::nullopt) ;
         CPU instance(mmu);
         ArmAssembler gg_asm;

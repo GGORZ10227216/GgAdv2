@@ -126,6 +126,7 @@ namespace gg_core::gg_cpu {
                 gg_core::Unreachable() ;
             else if constexpr (!S && H) {
                 // LDRH
+                /// fixme: need rotate?
                 Rd = instance._mem.Read16(targetAddr) ;
                 if (RdNumber == pc)
                     instance.RefillPipeline();
@@ -138,6 +139,7 @@ namespace gg_core::gg_cpu {
             } // else if
             else {
                 // LDRSH
+                /// fixme: need rotate?
                 Rd = (static_cast<int32_t>(instance._mem.Read16(targetAddr)) << 16) >> 16 ; // sign extend
                 if (RdNumber == pc)
                     instance.RefillPipeline();
