@@ -11,11 +11,11 @@ namespace gg_core::gg_io {
     enum class IO_AccessMode {
         R = 0, W = 1, RW = 2
     };
-    
+
     using IO_RegInfo = std::tuple<uint8_t, uint32_t, IO_AccessMode> ;
-    using IO_AccessHandler = uint8_t&(*)(IO*) ;
-    using IO_RW_Handler = std::pair<IO_AccessHandler, IO_AccessHandler> ;
-    using IO_Policy = std::tuple<IO_RW_Handler, IO_RW_Handler, IO_RW_Handler> ;
+    using IO_AccessHandler = bool(*)() ;
+    using IO_RW_Policy = std::pair<IO_AccessHandler, IO_AccessHandler> ;
+    using IO_Policy = std::tuple<IO_RW_Policy, IO_RW_Policy, IO_RW_Policy> ;
 
     enum E_IOField { NAME_ADDR = 0, WIDTH = 1, ACCESS_MODE = 2 };
 
