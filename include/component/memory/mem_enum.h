@@ -19,6 +19,17 @@ namespace gg_core::gg_mem {
         E_WS0, E_WS1, E_WS2, E_SRAM
     } ;
 
+    enum E_BackupMediaType {
+        SRAM,
+        FLASH
+    };
+
+    enum E_ErrorType {
+        BIOS_ACCESS_FROM_OUTSIDE,
+        ACCESS_INVALID_AREA,
+        SRAM_WIDTH_MISMATCH
+    };
+
     // General memroy area
     constexpr static unsigned BIOS_start = 0x0000000, BIOS_end = 0x0003fff;
     constexpr static unsigned onboardStart = 0x2000000, onboardEnd = 0x203ffff;
@@ -29,9 +40,22 @@ namespace gg_core::gg_mem {
     constexpr static unsigned paletteStart = 0x05000000, paletteEnd = 0x050003ff;
     constexpr static unsigned VRAM_Start = 0x06000000, VRAM_End = 0x06017FFF;
     constexpr static unsigned OAM_Start = 0x07000000, OAM_End = 0x070003FF;
+    constexpr static unsigned SRAM_Start = 0x0E000000, SRAM_End = 0x0E00FFFF ;
 
     // Gamepak area
     constexpr static unsigned ROM_BLOCK_SIZE = 0x2000000;
+
+    enum E_RamSize {
+        E_BIOS_SIZE = BIOS_end - BIOS_start + 1,
+        E_EWRAM_SIZE = onboardEnd - onboardStart + 1,
+        E_IWRAM_SIZE = onchipEnd - onchipStart + 1,
+        E_IO_SIZE = ioEnd - ioStart + 1,
+        E_PALETTE_SIZE = paletteEnd - paletteStart + 1,
+        E_VRAM_SIZE = VRAM_End - VRAM_Start + 1,
+        E_OAM_SIZE = OAM_End - OAM_Start + 1,
+        E_ROM_BLOCK_SIZE = 0x2000000,
+        E_SRAM_SIZE = SRAM_End - SRAM_Start + 1
+    };
 
     static constexpr std::array<const char *, 2> accessModeName{
             "Read", "Write"

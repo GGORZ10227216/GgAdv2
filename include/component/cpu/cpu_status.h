@@ -8,17 +8,17 @@
 
 #include <cpu_enum.h>
 
-#ifndef GGADV_REGISTER_H
-#define GGADV_REGISTER_H
+#ifndef GGADV_CPU_STATUS_H
+#define GGADV_CPU_STATUS_H
 
 class ggTest ;
 
 namespace gg_core {
     namespace gg_cpu {
-        struct Status {
+        struct CPU_Status {
             std::array<unsigned, 16> _regs;
 
-            Status() {
+            CPU_Status() {
                 _regs.fill(0) ;
             }
 
@@ -202,4 +202,4 @@ namespace gg_core {
     }
 }
 
-#endif //GGADV_REGISTER_H
+#endif //GGADV_CPU_STATUS_H

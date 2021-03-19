@@ -26,6 +26,16 @@ namespace gg_core {
     constexpr bool SameSize() {
         return sizeof(T) == sizeof(U);
     }
+
+    inline void Unimplemented(const std::string& what) {
+        std::cerr << "Unimplemented: " << what << std::endl ;
+        exit(-1) ;
+    }
+
+    void GGLOG(const char* what) {
+        // temporary implement
+        std::cout << what << std::endl ;
+    }
 }
 
 #endif //GGTEST_GG_UTILITY_H

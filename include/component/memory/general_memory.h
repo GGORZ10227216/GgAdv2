@@ -39,12 +39,12 @@ namespace gg_core::gg_mem {
     static inline unsigned IO_ACCESS_CYCLE() { return 1 ; }
 
     template <typename W>
-    static inline unsigned OWRAM_ACCESS_CYCLE() {
+    static inline unsigned EWRAM_ACCESS_CYCLE() {
         if constexpr (SameSize<W, DWORD>())
             return 6 ;
         else
             return 3 ;
-    } // OWRAM_ACCESS_CYCLE()
+    } // EWRAM_ACCESS_CYCLE()
 }
 
 #endif //GGADV_GENERAL_MEMORY_H

@@ -1,17 +1,23 @@
+from collections import defaultdict
+
 fp = open("./IOmap", "r")
 mapInfos = fp.readlines()
 fp.close()
 
 
 def mode_format(mode_name):
-    for char in "\"/":
+    for char in "\"/?":
         mode_name = mode_name.replace(char, "")
     return mode_name
 
 
 enums = list()
 tuples = list()
+modes = list()
 wave_ram_declare = "std::make_tuple(WAVE_RAM{num}_{hl}, 2, IO_AccessMode::RW)"
+
+for i in range(0x3ff):
+    modes.append('U')
 
 for info in mapInfos:
     fields = info.split()
@@ -27,6 +33,9 @@ for info in mapInfos:
                     tuples.append(wave_ram_declare.format(num=ramNum, hl='H'))
                     enums.append("WAVE_RAM{num}_H = 0x{addr:x}".format(num=ramNum, addr=baseAddr2 + 2))
 
+                for i in range(0x20):
+                    modes[0x4000090 + i] = 'RW'
+
             else:
                 tuples.append("std::make_tuple({name}, {size}, IO_AccessMode::{mode})".format(
                     size=fields[1],
@@ -35,9 +44,15 @@ for info in mapInfos:
                 ))
 
                 enums.append("{name} = 0x{addr}".format(name=fields[3], addr=fields[0][:-1].lower()))
+                for i in range(int(fields[1])):
+                    modes[int(fields[0][:-1].lower(), 16) - 0x4000000 + i] = mode_format(fields[2])
+
     except:
         print("yee: " + info)
 
 
 print("enum E_IOName{{\n{}\n}}".format(',\n'.join(enums)))
 print("gg_core::make_array(\n{}\n)".format(',\n'.join(tuples)))
+
+print("gg_core::make_array(\n{}\n)".format(','.join(modes)))
+

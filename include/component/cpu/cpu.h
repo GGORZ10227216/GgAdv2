@@ -8,7 +8,7 @@
 #include <iostream>
 
 #include <arm_decoder.h>
-#include <status.h>
+#include <cpu_status.h>
 #include <mmu.h>
 #include <io.h>
 
@@ -16,16 +16,14 @@
 #define GGADV_GBA_INSTANCE_H
 
 namespace gg_core::gg_cpu {
-    class CPU final : public Status {
+    class CPU final : public CPU_Status {
     public :
-
-        // gg_cpu::Status _status;
         gg_core::gg_mem::MMU &_mem;
 
         CPU(gg_mem::MMU &instanceMemory) :
             _mem(instanceMemory)
         {
-            _mem.cpuStatus = this ;
+            _mem._cpuStatus = this ;
             fetchedBuffer[0] = _mem.Read32(0);
             fetchedBuffer[1] = _mem.Read32(4);
             _regs[pc] = 8;
