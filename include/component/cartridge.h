@@ -11,9 +11,12 @@
 #define GGTEST_CARTRIDGE_H
 
 namespace gg_core {
+    enum E_SaveType {
+        SRAM, EEPROM, FLASH64K, FLASH128K, UNKNOWN
+    };
+
     struct Header {
         using RomByte = const uint8_t ;
-
         Header(const uint8_t* romData):
             _romData(romData),
             entryPoint(romData, romData + 0x4),
@@ -60,15 +63,14 @@ namespace gg_core {
 
     class Cartridge {
     public:
-        Cartridge() {
-
-        }
+        Cartridge() = default ;
 
         Cartridge(const char* pathStr) {
             using namespace std::filesystem;
             path romPath(pathStr) ;
             if (exists(romPath)) {
                 romData = LoadFileToBuffer(romPath);
+                header.Parse(romData.data()) ;
             } // if
             else {
 
@@ -77,6 +79,34 @@ namespace gg_core {
 
     private :
         std::vector<uint8_t> romData ;
+        Header header ;
+
+        E_SaveType CheckSaveType() {
+            const uint32_t entryPointOffset =
+                    (reinterpret_cast<const uint32_t&>(header.entryPoint[0]) & 0xffffff) + 8 ;
+
+            for (size_t idx = entryPointOffset ; idx < romData.size() ; ++idx) {
+                for (const auto& [idStr, idEnum] : saveTypeID) {
+                    bool boundaryCheck = idx + idStr.size() < romData.size() ;
+                    if (boundaryCheck && std::equal(idStr.begin(), idStr.end(), romData.begin() + idx)) {
+                        return idEnum ;
+                    } // if
+                } // for
+            } // for
+
+            return UNKNOWN ;
+        }
+
+        using SaveType = std::pair<std::string, E_SaveType> ;
+
+        std::array<SaveType, 6> saveTypeID {
+            SaveType("SRAM_V", SRAM),
+            SaveType("SRAM_F_V", SRAM),
+            SaveType("EEPROM_V", EEPROM),
+            SaveType("FLASH_V", FLASH64K),
+            SaveType("FLASH512_V", FLASH64K),
+            SaveType("FLASH1M_V", FLASH128K)
+        };
     };
 }
 
