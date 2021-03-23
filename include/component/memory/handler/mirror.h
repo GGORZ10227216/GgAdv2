@@ -14,12 +14,8 @@ namespace gg_core::gg_mem {
         return addr & ((addr & 0x10000) ? 0x17fff : 0x0'ffff);
     }
 
-    template <E_BackupMediaType T>
     inline uint32_t SRAM_MIRROR(MMU_Status* mmu, uint32_t addr) {
-        if (T == SRAM)
-            return addr & 0x7fff;
-        else
-            return addr & 0xffff;
+        return addr & mmu->cartridge.GetSRAM_MirrorMask();
     }
 }
 

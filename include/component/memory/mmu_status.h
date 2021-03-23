@@ -26,7 +26,7 @@ namespace gg_core::gg_mem {
         std::array<uint8_t, 0x400> OAM{};
 
         std::vector<uint8_t> ROM_WS0, ROM_WS1, ROM_WS2;
-        std::array<uint8_t, 0x10000> SRAM;
+        Cartridge cartridge ;
 
         std::array<NS_CYCLE_VALUE, 4> CurrentWaitStates{
                 NS_CYCLE_VALUE(N_CYCLE_TABLE[0], S_CYCLE_TABLE[0]), // WS0
@@ -39,9 +39,15 @@ namespace gg_core::gg_mem {
         uint32_t _addrBus = 0 ;
 
         uint32_t bios_readBuf = 0 ;
-        uint32_t dummy ;
+        uint32_t dummy = 0 ;
 
         gg_cpu::CPU_Status *const _cpuStatus = nullptr;
+
+        MMU_Status(const char* romPath) :
+            cartridge(romPath)
+        {
+
+        }
 
         [[nodiscard]] uint32_t IllegalReadValue() {
             if (_cpuStatus->GetCpuMode() == gg_cpu::E_CpuMode::ARM)
