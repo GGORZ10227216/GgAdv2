@@ -10,6 +10,49 @@
 #ifndef GGTEST_CARTRIDGE_H
 #define GGTEST_CARTRIDGE_H
 
+/*
+ * Gameboy Advance cartridge pinout
+   --------------------------------
+
+   ROM access uses a multiplexed bus. RAM does not, but can only address 64KB.
+
+   n   ROM     RAM         description
+   --- ------- ----------- -------------------------------------------
+    1   VCC     VCC         +3V3
+    2   PHI     PHI         clock signal (not required)
+    3   ~WR     ~WR         ROM: write word, increase address on rising edge; RAM: write byte
+    4   ~RD     ~RD         ROM: read word, increase address on rising edge; RAM: read byte
+    5   ~CS     -           latches A0..15
+    6   AD0     A0          ROM: multiplexed address/data signals; RAM: address signals
+    7   AD1     A1          "
+    8   AD2     A2          "
+    9   AD3     A3          "
+    10  AD4     A4          "
+    11  AD5     A5          "
+    12  AD6     A6          "
+    13  AD7     A7          "
+    14  AD8     A8          "
+    15  AD9     A9          "
+    16  AD10    A10         "
+    17  AD11    A11         "
+    18  AD12    A12         "
+    19  AD13    A13         "
+    20  AD14    A14         "
+    21  AD15    A15         "
+    22  A16     D0          ROM: high address signals should always be accurate, but can't hurt to latch too; RAM: data signals
+    23  A17     D1          "
+    24  A18     D2          "
+    25  A19     D3          "
+    26  A20     D4          "
+    27  A21     D5          "
+    28  A22     D6          "
+    29  A23     D7          "
+    30  -       ~CS2        selects SRAM
+    31  IRQ     IRQ         can be unconnected or tied to GND
+    32  GND     GND         ground
+*/
+
+
 namespace gg_core {
     enum E_SaveType {
         E_SRAM, E_EEPROM, E_FLASH64K, E_FLASH128K, E_UNKNOWN
@@ -39,9 +82,9 @@ namespace gg_core {
                 joybusEntryPoint(romData + 0xe0, romData + 0xe4) {}
 
         bool Verify() {
-            bool logoCheck = std::equal(logo.begin(), logo.end(), correctLogo.begin()) ;
-            bool fixedValue_0xb2 = fixedValue[0] == 0x96 ;
-            return logoCheck && fixedValue_0xb2 ;
+            bool logoCheck = std::equal(logo.begin(), logo.end(), correctLogo.begin());
+            bool fixedValue_0xb2 = fixedValue[0] == 0x96;
+            return logoCheck && fixedValue_0xb2;
         }
 
         std::span<RomByte, 0x4> entryPoint;
@@ -81,43 +124,108 @@ namespace gg_core {
         };
     };
 
+    template <uint32_t I>
+    struct EEPROM {
+        const unsigned addrWidth = gg_core::PopCount32(I - 1);
+
+        EEPROM(unsigned& c) : _cycleCounter(c) {}
+
+        void SendCmd(unsigned cmd) {
+            bool cmdBit = cmd & 0b1 ;
+            switch (mode) {
+                case LISTENING:
+                    _accessMode = (_accessMode << 1) | cmdBit ;
+                    if (++_nthBit == 2)
+                        mode = RECEIVING_ADDR ;
+                    break ;
+                case RECEIVING_ADDR:
+                    _addr = (_addr << 1) | cmdBit ;
+                    if (++_nthBit == 2 + addrWidth)
+                        mode = _accessMode == 0b11 ? WAIT_CLOSE : RECEIVING_DATA ;
+                    break ;
+                case RECEIVING_DATA:
+                    _data[ _addr ] <<= 1 ;
+                    _data[ _addr ] |= cmdBit ;
+                    if (++_nthBit == 66 + addrWidth)
+                        mode = WAIT_CLOSE ;
+                    break ;
+                case WAIT_CLOSE:
+                    if (cmdBit != 0)
+                        gg_core::GGLOG("Invalid EEPROM command: End of transmission signal is not equal to 0.") ;
+                    else {
+                        _ready = true ;
+                        if (_accessMode == 0b11)
+                            mode = TRANSMITTING ;
+                        else {
+                            _cycleCounter += 108368 ; // cycles for EEPROM erasing
+                            mode = LISTENING ;
+                        } // else
+                    } // else
+                    break ;
+            } // switch
+        } // SendCmd()
+
+        uint64_t _ReadData(uint32_t chunkNum) {
+            // todo: transmit 68bit in TRANSMITTING mode
+            return 0 ;
+        } // _ReadData()
+
+    private :
+        unsigned& _cycleCounter ;
+        enum E_WORK_MODE {LISTENING, RECEIVING_ADDR, RECEIVING_DATA, WAIT_CLOSE, TRANSMITTING} ;
+        E_WORK_MODE mode = LISTENING ;
+
+        uint16_t _addr = 0 ;
+        uint8_t _nthBit = 0, _accessMode = 0 ;
+        bool _ready = false ;
+
+        std::array<uint64_t, I> _data ;
+
+        void _Reset() {
+            _addr = 0 ;
+            _nthBit = 0 ;
+            _accessMode = LISTENING ;
+        } // _Reset()
+    };
+
     class Cartridge {
     public:
         using SaveType_t = std::pair<std::string, E_SaveType>;
         std::array<uint8_t, 0x10000> SRAM;
 
-        Cartridge() = delete;
+        Cartridge() {}
 
         Cartridge(const char *pathStr) {
             using namespace std::filesystem;
             path romPath(pathStr);
             if (exists(romPath)) {
                 romData = LoadFileToBuffer(romPath);
-                Header header = GetHeader() ;
+                Header header = GetHeader();
 
                 if (header.Verify()) {
-                    _saveType = CheckSaveType() ;
+                    _saveType = CheckSaveType();
                 } // if
                 else {
-                    GGLOG("Rom verify failed, probably not a valid GBA rom file.") ;
+                    GGLOG("Rom verify failed, probably not a valid GBA rom file.");
+                    std::exit(-1);
                 } // else
             } // if
             else {
-                GGLOG("File does not exist!!") ;
-                std::exit(-1) ;
+                GGLOG("File does not exist!!");
+                std::exit(-1);
             } // else
         }
 
-        uint8_t* ImagePtr() {
-            return romData.data() + EntrypointOffset() ;
-        }
+        uint8_t &operator[](size_t idx) {
+            return romData[idx];
+        } // operator[]
 
         unsigned Size() {
-            return romData.size() ;
+            return romData.size();
         } // size()
 
         E_SaveType SaveType() {
-            return _saveType ;
+            return _saveType;
         } // saveType()
 
         Header GetHeader() {
@@ -125,17 +233,24 @@ namespace gg_core {
         } // GetHeader()
 
         unsigned EntrypointOffset() {
-            Header header = GetHeader() ;
-            return (reinterpret_cast<const uint32_t &>(header.entryPoint[0]) & 0xffffff) + 8 ;
+            Header header = GetHeader();
+            return (reinterpret_cast<const uint32_t &>(header.entryPoint[0]) & 0xffffff) + 8;
         } // Rom_EntrypointOffset()
 
         unsigned GetSRAM_MirrorMask() {
-            return SRAM_MirrorMask ;
+            return SRAM_MirrorMask;
         } // GetSRAM_MirrorMask()
+
+        bool IsEEPROM_Access(uint32_t absAddr) {
+            bool smallROM = romData.size() <= 0x1000000 ;
+            const uint32_t eepromStart = smallROM ? 0x0D00'0000 : 0x0DFF'FF00 ;
+            const uint32_t eepromEnd = 0x0DFF'FFFF ;
+            return absAddr >= eepromStart && absAddr <= eepromEnd ;
+        } // IsEEPROM_Access()
 
     private :
         std::vector<uint8_t> romData;
-        E_SaveType _saveType = E_UNKNOWN ;
+        E_SaveType _saveType = E_UNKNOWN;
         unsigned SRAM_MirrorMask = 0x7fff;
 
         E_SaveType CheckSaveType() {
@@ -146,7 +261,7 @@ namespace gg_core {
                     bool boundaryCheck = idx + idStr.size() < romData.size();
                     if (boundaryCheck && std::equal(idStr.begin(), idStr.end(), romData.begin() + idx)) {
                         if (idEnum != E_SRAM)
-                            SRAM_MirrorMask = 0xffff ;
+                            SRAM_MirrorMask = 0xffff;
                         return idEnum;
                     } // if
                 } // for

@@ -65,14 +65,6 @@ namespace gg_core::gg_mem {
             "BYTE", "WORD", "DWORD"
     };
 
-    constexpr static std::array<unsigned, 3> N_START_BIT {
-            2, 5, 8
-    };
-
-    constexpr static std::array<unsigned, 3> S_START_BIT {
-            4, 7, 10
-    };
-
     constexpr static std::array<unsigned, 4> N_CYCLE_TABLE {
             4,3,2,8
     };

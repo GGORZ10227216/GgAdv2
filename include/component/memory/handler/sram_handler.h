@@ -32,8 +32,8 @@ namespace gg_core::gg_mem {
     template <typename T>
     void SRAM_Write(MMU_Status* mmu, uint32_t addr, T data) {
         const uint32_t relativeAddr = SRAM_MIRROR(mmu,addr);
-        mmu->_cycleCounter = OAM_ACCESS_CYCLE();
-        reinterpret_cast<T&>(mmu->OAM[relativeAddr]) = data;
+        mmu->_cycleCounter = GAMEPAK_ACCESS_CYCLE<uint8_t, E_SRAM>(mmu);
+        reinterpret_cast<T&>(mmu->cartridge.SRAM[relativeAddr]) = data;
     }
 }
 

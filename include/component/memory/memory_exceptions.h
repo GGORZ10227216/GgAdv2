@@ -4,9 +4,6 @@
 
 #include <cstdlib>
 
-#include <mmu_status.h>
-#include <cpu_status.h>
-
 #ifndef GGTEST_MEMORY_EXCEPTIONS_H
 #define GGTEST_MEMORY_EXCEPTIONS_H
 

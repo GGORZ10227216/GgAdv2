@@ -43,6 +43,11 @@ namespace gg_core::gg_mem {
 
         gg_cpu::CPU_Status *const _cpuStatus = nullptr;
 
+        MMU_Status()
+        {
+            /*MMU without cartridge, for debug only*/
+        }
+
         MMU_Status(const char* romPath) :
             cartridge(romPath)
         {
@@ -69,7 +74,25 @@ namespace gg_core::gg_mem {
 
         void UpdateWaitState() {
             const uint16_t WAITCNT = IOReg[ 0x204 ] ;
-            // todo
+
+            // wc == wait_control
+            const unsigned wc_sram = WAITCNT & 0b11;
+            CurrentWaitStates[ E_SRAM ].first = N_CYCLE_TABLE[ wc_sram ] ;
+
+            const unsigned wc_ws0_n = (WAITCNT & 0b1100) >> 2;
+            const unsigned wc_ws0_s = TestBit(WAITCNT, 4);
+            CurrentWaitStates[ E_WS0 ].first = N_CYCLE_TABLE[ wc_ws0_n ] ;
+            CurrentWaitStates[ E_WS0 ].second = S_CYCLE_TABLE[ wc_ws0_s ] ;
+
+            const unsigned wc_ws1_n = (WAITCNT & 0b1100000) >> 5;
+            const unsigned wc_ws1_s = TestBit(WAITCNT, 7);
+            CurrentWaitStates[ E_WS1 ].first = N_CYCLE_TABLE[ wc_ws1_n ] ;
+            CurrentWaitStates[ E_WS1 ].second = S_CYCLE_TABLE[ wc_ws1_s + 2 ] ;
+
+            const unsigned wc_ws2_n = (WAITCNT & 0b1100000000) >> 8;
+            const unsigned wc_ws2_s = TestBit(WAITCNT, 10);
+            CurrentWaitStates[ E_WS2 ].first = N_CYCLE_TABLE[ wc_ws2_n ] ;
+            CurrentWaitStates[ E_WS2 ].second = S_CYCLE_TABLE[ wc_ws2_s + 4 ] ;
         } // UpdateWaitState()
     };
 }

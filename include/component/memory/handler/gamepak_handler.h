@@ -11,26 +11,28 @@
 
 namespace gg_core::gg_mem {
     template <typename T, E_GamePakRegion P>
-    T GamePak_Read(MMU_Status* mmu, uint32_t addr) {
-        uint32_t relativeAddr = 0x0800'0000 ;
-        std::vector<uint8_t>& bank = mmu->ROM_WS0 ;
-        if constexpr (P == E_WS1) {
-            relativeAddr = 0x0900'0000;
-            bank = mmu->ROM_WS1;
-        } // if
+    T ROM_Read(MMU_Status* mmu, uint32_t addr) {
+        uint32_t relativeAddr = addr ;
+
+        if constexpr (P == E_WS0)
+            relativeAddr -= 0x0800'0000 ;
+        else if constexpr (P == E_WS1)
+            relativeAddr -= 0x0A00'0000 ;
         else if constexpr (P == E_WS2) {
-            relativeAddr = 0x0C00'0000;
-            bank = mmu->ROM_WS2 ;
-        } // else if
+            relativeAddr -= 0x0C00'0000 ;
+            if (mmu->cartridge.SaveType() == E_EEPROM && mmu->cartridge.IsEEPROM_Access(addr)) {
+
+            } // if
+        } // if
         else
-            Unreachable() ;
+            gg_core::Unreachable() ;
 
         mmu->_cycleCounter =  GAMEPAK_ACCESS_CYCLE<T, P>();
-        return reinterpret_cast<T&>(bank[relativeAddr]) ;
+        return reinterpret_cast<T&>(mmu->cartridge[relativeAddr]) ;
     }
 
     template <typename T, E_GamePakRegion P>
-    T GamePak_Write(MMU_Status* mmu, uint32_t addr, T data) {
+    T ROM_Write(MMU_Status* mmu, uint32_t addr, T data) {
         GGLOG(
             fmt::format("Attempt to write {} value {} to ROM{}(0x{:x})",
                 accessWidthName[sizeof(T) >> 1],
