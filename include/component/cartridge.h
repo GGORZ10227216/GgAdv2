@@ -124,9 +124,9 @@ namespace gg_core {
         };
     };
 
-    template <uint32_t I>
+    template <uint32_t CHUNKNUM>
     struct EEPROM {
-        const unsigned addrWidth = gg_core::PopCount32(I - 1);
+        const unsigned addrWidth = gg_core::PopCount32(CHUNKNUM - 1);
 
         EEPROM(unsigned& c) : _cycleCounter(c) {}
 
@@ -135,29 +135,42 @@ namespace gg_core {
             switch (mode) {
                 case LISTENING:
                     _accessMode = (_accessMode << 1) | cmdBit ;
-                    if (++_nthBit == 2)
+                    if (++_nthBit == 2) {
                         mode = RECEIVING_ADDR ;
+                        _nthBit = 0 ;
+                    } // if
                     break ;
                 case RECEIVING_ADDR:
                     _addr = (_addr << 1) | cmdBit ;
-                    if (++_nthBit == 2 + addrWidth)
-                        mode = _accessMode == 0b11 ? WAIT_CLOSE : RECEIVING_DATA ;
+                    if (++_nthBit == addrWidth) {
+                        if (_accessMode == 0b11) {
+                            mode = WAIT_CLOSE ;
+                            _nthBit = 0 ;
+                        } // if
+                        else {
+                            mode = RECEIVING_DATA ;
+                            _data[ _addr ] = 0 ;
+                            _cycleCounter += 108368 ; // cycles for EEPROM erasing
+                            _nthBit = 0 ;
+                        } // else
+                    } // if
                     break ;
                 case RECEIVING_DATA:
                     _data[ _addr ] <<= 1 ;
                     _data[ _addr ] |= cmdBit ;
-                    if (++_nthBit == 66 + addrWidth)
+                    if (++_nthBit == 64) {
                         mode = WAIT_CLOSE ;
+                        _nthBit = 0 ;
+                    } // if
                     break ;
                 case WAIT_CLOSE:
                     if (cmdBit != 0)
-                        gg_core::GGLOG("Invalid EEPROM command: End of transmission signal is not equal to 0.") ;
+                        gg_core::GGLOG("Invalid EEPROM command: End of transmission signal is not equal to 0") ;
                     else {
                         _ready = true ;
                         if (_accessMode == 0b11)
                             mode = TRANSMITTING ;
                         else {
-                            _cycleCounter += 108368 ; // cycles for EEPROM erasing
                             mode = LISTENING ;
                         } // else
                     } // else
@@ -165,9 +178,27 @@ namespace gg_core {
             } // switch
         } // SendCmd()
 
-        uint64_t _ReadData(uint32_t chunkNum) {
+        uint16_t _ReadData(uint32_t chunkNum) {
             // todo: transmit 68bit in TRANSMITTING mode
-            return 0 ;
+            if (_ready) {
+                _nthBit += 1 ;
+                if (_nthBit < 4) {
+                    return 0 ;
+                } // if
+                else if (_nthBit < 68) {
+                    uint16_t result = 0 ;
+                    result |= !!(_data[_addr] & (1 << _nthBit));
+                    return result ;
+                } // else
+                else {
+                    mode = LISTENING ;
+                    _nthBit = 0 ;
+                } // else
+            } // if
+            else {
+                GGLOG("Reading data before command sent") ;
+                return 0 ;
+            } // else
         } // _ReadData()
 
     private :
@@ -179,7 +210,7 @@ namespace gg_core {
         uint8_t _nthBit = 0, _accessMode = 0 ;
         bool _ready = false ;
 
-        std::array<uint64_t, I> _data ;
+        std::array<uint64_t, CHUNKNUM> _data ;
 
         void _Reset() {
             _addr = 0 ;
