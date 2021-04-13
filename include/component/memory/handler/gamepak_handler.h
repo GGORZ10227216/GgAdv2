@@ -20,9 +20,6 @@ namespace gg_core::gg_mem {
             relativeAddr -= 0x0A00'0000 ;
         else if constexpr (P == E_WS2) {
             relativeAddr -= 0x0C00'0000 ;
-            if (mmu->cartridge.SaveType() == E_EEPROM && mmu->cartridge.IsEEPROM_Access(addr)) {
-
-            } // if
         } // if
         else
             gg_core::Unreachable() ;

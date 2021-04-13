@@ -52,7 +52,7 @@ project(ggAdv)
 
     set(src_core src/framework/logger/console_logger.cpp)
 
-    add_executable(ggAdv main.cpp ${header_core} ${v4_arm_core_src} ${src_core} include/component/memory/memory_exceptions.h include/component/io/io_enum.h include/component/memory/mmu_status.h include/component/memory/handler/bios_handler.h include/component/memory/handler/ewram_handler.h include/component/memory/handler/iwram_handler.h include/component/memory/handler/io_handler.h include/component/memory/handler/palette_handler.h include/component/memory/handler/mirror.h include/component/memory/handler/vram_handler.h include/component/memory/handler/oam_handler.h include/component/memory/handler/handler_table.h include/component/memory/handler/gamepak_handler.h include/component/memory/handler/sram_handler.h include/component/cartridge.h)
+    add_executable(ggAdv main.cpp ${header_core} ${v4_arm_core_src} ${src_core} include/component/memory/memory_exceptions.h include/component/io/io_enum.h include/component/memory/mmu_status.h include/component/memory/handler/bios_handler.h include/component/memory/handler/ewram_handler.h include/component/memory/handler/iwram_handler.h include/component/memory/handler/io_handler.h include/component/memory/handler/palette_handler.h include/component/memory/handler/mirror.h include/component/memory/handler/vram_handler.h include/component/memory/handler/oam_handler.h include/component/memory/handler/handler_table.h include/component/memory/handler/gamepak_handler.h include/component/memory/handler/sram_handler.h include/component/cartridge.h include/component/memory/eeprom.h)
     target_link_libraries(ggAdv /usr/local/lib/libfmt.a)
     target_include_directories(ggAdv PUBLIC
         include
