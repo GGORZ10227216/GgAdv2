@@ -25,7 +25,6 @@ namespace gg_core::gg_mem {
         std::array<uint8_t, 0x18000> VRAM{};
         std::array<uint8_t, 0x400> OAM{};
 
-        std::vector<uint8_t> ROM_WS0, ROM_WS1, ROM_WS2;
         Cartridge cartridge ;
 
         std::array<NS_CYCLE_VALUE, 4> CurrentWaitStates{
@@ -41,17 +40,18 @@ namespace gg_core::gg_mem {
         uint32_t bios_readBuf = 0 ;
         uint32_t dummy = 0 ;
 
-        gg_cpu::CPU_Status *const _cpuStatus = nullptr;
+        gg_cpu::CPU_Status * _cpuStatus = nullptr;
 
-        MMU_Status()
+        MMU_Status() :
+            cartridge(_cycleCounter)
         {
             /*MMU without cartridge, for debug only*/
         }
 
         MMU_Status(const char* romPath) :
-            cartridge(romPath)
+            cartridge(_cycleCounter)
         {
-
+            cartridge.LoadRom(romPath) ;
         }
 
         [[nodiscard]] uint32_t IllegalReadValue() {

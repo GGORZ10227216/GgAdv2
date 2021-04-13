@@ -31,14 +31,9 @@ namespace gg_core::gg_cpu {
         } // CPU()
 
         void CPUTick() {
-            try {
-                currentInstruction = fetchedBuffer[ !fetchIdx ] ;
-                std::invoke(Fetch, this) ;
-                instructionTable[ iHash(currentInstruction) ](*this) ;
-            } catch (gg_mem::MMU::InvalidAccessException& e) {
-                std::cout << e.what() << std::endl ;
-                exit(-1) ;
-            } // try-catch()
+            currentInstruction = fetchedBuffer[ !fetchIdx ] ;
+            std::invoke(Fetch, this) ;
+            instructionTable[ iHash(currentInstruction) ](*this) ;
         } // Tick()
 
         void CPU_Test(uint32_t inst) {

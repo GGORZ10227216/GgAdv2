@@ -13,14 +13,14 @@ namespace gg_core::gg_mem {
     template <typename T>
     auto VRAM_Read(MMU_Status* mmu, uint32_t addr) {
         const uint32_t relativeAddr = VRAM_MIRROR(addr);
-        mmu->_cycleCounter = VRAM_ACCESS_CYCLE<T>();
+        mmu->_cycleCounter += VRAM_ACCESS_CYCLE<T>();
         return *reinterpret_cast<T*>(mmu->VRAM.data() + relativeAddr);
     } // IWRAM_Read()
 
     template <typename T>
     void VRAM_Write(MMU_Status* mmu, uint32_t addr, T data) {
         const uint32_t relativeAddr = VRAM_MIRROR(addr);
-        mmu->_cycleCounter = VRAM_ACCESS_CYCLE<T>();
+        mmu->_cycleCounter += VRAM_ACCESS_CYCLE<T>();
         *reinterpret_cast<T*>(mmu->VRAM.data() + relativeAddr) = data;
     } // IWRAM_Write()
 }

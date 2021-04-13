@@ -15,7 +15,7 @@ namespace gg_core::gg_mem {
         const uint32_t relativeAddr = addr ;
 
         if (relativeAddr < E_RamSize::E_BIOS_SIZE) {
-            mmu->_cycleCounter = BIOS_ACCESS_CYCLE();
+            mmu->_cycleCounter += BIOS_ACCESS_CYCLE();
             if (mmu->_cpuStatus->_regs[gg_cpu::pc] <= 0x3fff) {
                 mmu->bios_readBuf = mmu->bios_data[relativeAddr];
                 return *reinterpret_cast<T*>(mmu->bios_data.data() + relativeAddr);

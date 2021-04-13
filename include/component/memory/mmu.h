@@ -55,11 +55,6 @@ namespace gg_core::gg_mem {
             // fixme: leave bios data to all zero for debugging
             bios_data.fill(0);
             // memcpy( bios_data.data(), biosData.data(), biosData.size() ) ;
-
-            // fixme: open all gamepak memory area for debug only
-            ROM_WS0.reserve(0x2000000);
-            ROM_WS1.reserve(0x2000000);
-            ROM_WS2.reserve(0x2000000);
         }
 
         uint8_t Read8(unsigned addr) {
@@ -95,14 +90,14 @@ namespace gg_core::gg_mem {
 
         template<typename W, typename T>
         void Write(uint32_t addr, T value) requires std::is_same_v<W, T> {
-            try {
-                _addrBus = addr;
-                _dataBus = value;
-                reinterpret_cast<W &> (_Access<WRITE, W>()) = value;
-            } catch (InvalidAccessException &e) {
-                std::cout << e.what() << std::endl;
-                IllegalWriteBehavior(e._errType);
-            }
+//            try {
+//                _addrBus = addr;
+//                _dataBus = value;
+//                reinterpret_cast<W &> (_Access<WRITE, W>()) = value;
+//            } catch (InvalidAccessException &e) {
+//                std::cout << e.what() << std::endl;
+//                IllegalWriteBehavior(e._errType);
+//            }
         } // Write()
 
         template<typename W>
