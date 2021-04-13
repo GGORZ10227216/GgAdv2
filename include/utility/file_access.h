@@ -10,10 +10,10 @@
 #define GGADV_FILE_ACCESS_H
 
 namespace gg_core {
-    std::vector<uint8_t> LoadFileToBuffer(const std::filesystem::path& filePath){;
+    void LoadFileToBuffer(const std::filesystem::path& filePath, std::vector<uint8_t>& romBuffer){
         if (exists(filePath)) {
             std::ifstream stream(filePath.c_str(), std::ios::in | std::ios::binary);
-            return std::vector<uint8_t>((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
+            romBuffer = std::vector<uint8_t>((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
         } // if
         else {
             // logger.LogWarning(fmt::format("File: \"{}\" doesn't exist!", filePath.string())) ;

@@ -53,7 +53,6 @@
     32  GND     GND         ground
 */
 
-
 namespace gg_core::gg_mem {
     struct Header {
         using RomByte = const uint8_t;
@@ -121,20 +120,24 @@ namespace gg_core::gg_mem {
         };
     };
 
-
-
     class Cartridge {
     public:
         using SaveType_t = std::pair<std::string, E_SaveType>;
+
         std::array<uint8_t, 0x10000> SRAM;
+        std::vector<uint8_t> romData;
+        unsigned SRAM_MirrorMask = 0x7fff;
+        EEPROM eeprom ;
 
-        Cartridge() {}
+        Cartridge(unsigned& mmuCycleCounter)
+            : eeprom(mmuCycleCounter)
+        {}
 
-        Cartridge(const char *pathStr) {
+        void LoadRom(const char* pathStr) {
             using namespace std::filesystem;
             path romPath(pathStr);
             if (exists(romPath)) {
-                romData = LoadFileToBuffer(romPath);
+                LoadFileToBuffer(romPath, romData);
                 Header header = GetHeader();
 
                 if (header.Verify()) {
@@ -149,16 +152,7 @@ namespace gg_core::gg_mem {
                 GGLOG("File does not exist!!");
                 std::exit(-1);
             } // else
-        }
-
-        template <typename T>
-        T Read(uint32_t addr) {
-            if (SaveType() == E_EEPROM && IsEEPROM_Access(addr)) {
-                // todo
-            } // if
-            else
-                return reinterpret_cast<T&>(romData[addr]);
-        } // operator[]
+        } // LoadRom()
 
         unsigned Size() {
             return romData.size();
@@ -188,10 +182,25 @@ namespace gg_core::gg_mem {
             return absAddr >= eepromStart && absAddr <= eepromEnd ;
         } // IsEEPROM_Access()
 
+        template <E_GamePakRegion P>
+        uint32_t RelativeAddr(uint32_t absAddr) {
+            uint32_t result = absAddr ;
+            if constexpr (P == E_WS0)
+                result -= 0x0800'0000 ;
+            else if constexpr (P == E_WS1)
+                result -= 0x0A00'0000 ;
+            else if constexpr (P == E_WS2)
+                result -= 0x0C00'0000 ;
+            else if constexpr (P == E_SRAM)
+                result -= 0x0E00'0000 ;
+            else
+                gg_core::Unreachable() ;
+
+            return result ;
+        } // RelativeAddr()
+
     private :
-        std::vector<uint8_t> romData;
         E_SaveType _saveType = E_UNKNOWN;
-        unsigned SRAM_MirrorMask = 0x7fff;
 
         E_SaveType CheckSaveType() {
             const uint32_t entryPointOffset = EntrypointOffset();

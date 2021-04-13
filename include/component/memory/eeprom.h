@@ -9,20 +9,13 @@
 
 namespace gg_core::gg_mem {
     struct EEPROM {
-        EEPROM(unsigned& c, E_SaveType t) : _cycleCounter(c) {
-            if (t == E_EEPROM512B) {
-                addrWidth = 6 ;
-                _data.resize(64) ;
-            } // if
-            else if (t == E_EEPROM8K){
-                addrWidth = 14 ;
-                _data.resize(1024) ;
-            } // else
-            else {
-                GGLOG("Unsupported EEPROM size") ;
-                exit(-1);
-            }
-        }
+        EEPROM(unsigned& c) : _mmuCycleCounterRef(c){}
+
+        void Initialize(unsigned t) {
+            const unsigned sizeInBlock = t >> 3 ;
+            addrWidth = gg_core::PopCount32(sizeInBlock - 1);
+            _data.resize(sizeInBlock) ;
+        } // Initialize()
 
         void SendCmd(unsigned cmd) {
             bool cmdBit = cmd & 0b1 ;
@@ -44,7 +37,7 @@ namespace gg_core::gg_mem {
                         else {
                             mode = RECEIVING_DATA ;
                             _data[ _addr ] = 0 ;
-                            _cycleCounter += 108368 ; // cycles for EEPROM erasing
+                            _mmuCycleCounterRef += 108368 ; // cycles for EEPROM erasing
                             _nthBit = 0 ;
                         } // else
                     } // if
@@ -65,39 +58,37 @@ namespace gg_core::gg_mem {
                         if (_accessMode == 0b11)
                             mode = TRANSMITTING ;
                         else {
-                            mode = LISTENING ;
+                            _Reset() ;
                         } // else
                     } // else
                     break ;
             } // switch
         } // SendCmd()
 
-        uint16_t _ReadData(uint32_t chunkNum) {
+        uint16_t ReadData() {
             // todo: transmit 68bit in TRANSMITTING mode
             if (_ready) {
                 _nthBit += 1 ;
-                if (_nthBit < 4) {
-                    return 0 ;
-                } // if
-                else if (_nthBit < 68) {
+                if (_nthBit >= 4 && _nthBit < 68) {
                     uint16_t result = 0 ;
                     result |= !!(_data[_addr] & (1 << _nthBit));
                     return result ;
                 } // else
                 else {
-                    mode = LISTENING ;
-                    _nthBit = 0 ;
+                    _Reset() ;
                 } // else
             } // if
             else {
                 GGLOG("Reading data before command sent") ;
-                return 0 ;
             } // else
+
+            return 0 ;
         } // _ReadData()
 
     private :
         unsigned addrWidth = 0;
-        unsigned& _cycleCounter ;
+        unsigned& _mmuCycleCounterRef ;
+
         enum E_WORK_MODE {LISTENING, RECEIVING_ADDR, RECEIVING_DATA, WAIT_CLOSE, TRANSMITTING} ;
         E_WORK_MODE mode = LISTENING ;
 

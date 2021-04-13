@@ -14,14 +14,14 @@ namespace gg_core::gg_mem {
     template <typename T>
     auto IWRAM_Read(MMU_Status* mmu, uint32_t addr) {
         const uint32_t relativeAddr = NORMAL_MIRROR(addr, E_IWRAM_SIZE) - onchipStart ;
-        mmu->_cycleCounter = IWRAM_ACCESS_CYCLE();
+        mmu->_cycleCounter += IWRAM_ACCESS_CYCLE();
         return *reinterpret_cast<T*>(mmu->IWRAM.data() + relativeAddr);
     } // IWRAM_Read()
 
     template <typename T>
     void IWRAM_Write(MMU_Status* mmu, uint32_t addr, T data) {
         const uint32_t relativeAddr = NORMAL_MIRROR(addr, E_IWRAM_SIZE) - onchipStart ;
-        mmu->_cycleCounter = IWRAM_ACCESS_CYCLE();
+        mmu->_cycleCounter += IWRAM_ACCESS_CYCLE();
         *reinterpret_cast<T*>(mmu->IWRAM.data() + relativeAddr) = data;
     } // IWRAM_Write()
 }
