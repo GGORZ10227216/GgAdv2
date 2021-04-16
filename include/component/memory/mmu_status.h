@@ -6,6 +6,7 @@
 #include <cstdint>
 
 #include <cartridge.h>
+#include <display_memory.h>
 
 #ifndef GGTEST_MMU_STATUS_H
 #define GGTEST_MMU_STATUS_H
@@ -21,11 +22,8 @@ namespace gg_core::gg_mem {
         std::array<uint8_t, 0x8000> IWRAM{};
         std::array<uint8_t, 0x400> IOReg{};
 
-        std::array<uint8_t, 0x400> palette{};
-        std::array<uint8_t, 0x18000> VRAM{};
-        std::array<uint8_t, 0x400> OAM{};
-
         Cartridge cartridge ;
+        VideoRAM VideoRAM ;
 
         std::array<NS_CYCLE_VALUE, 4> CurrentWaitStates{
                 NS_CYCLE_VALUE(N_CYCLE_TABLE[0], S_CYCLE_TABLE[0]), // WS0

@@ -9,7 +9,6 @@
 #include <bit_manipulate.h>
 #include <mem_enum.h>
 #include <mmu_status.h>
-#include <display_memory.h>
 #include <gamepak_memory.h>
 #include <general_memory.h>
 #include <memory_exceptions.h>

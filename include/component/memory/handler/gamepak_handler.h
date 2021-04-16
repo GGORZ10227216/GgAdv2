@@ -57,22 +57,30 @@ namespace gg_core::gg_mem {
     void SRAM_Write(MMU_Status* mmu, uint32_t addr, T data) {
         const uint32_t relativeAddr = SRAM_MIRROR(mmu,addr);
         mmu->_cycleCounter += GAMEPAK_ACCESS_CYCLE<uint8_t, E_SRAM>(mmu);
-        reinterpret_cast<T&>(mmu->cartridge.SRAM[relativeAddr]) = data;
+
+        // SRAM is only allow byte access
+        if constexpr (sizeof(T) == 1)
+            reinterpret_cast<T&>(mmu->cartridge.SRAM[relativeAddr]) = data;
+        else
+            mmu->cartridge.SRAM[relativeAddr] = static_cast<uint8_t>(gg_core::rotr(data, addr*8)) ;
     }
 
     template <typename T, E_GamePakRegion P>
-    T ROM_Write(MMU_Status* mmu, uint32_t addr, T data) {
+    void GAMEPAK_Write(MMU_Status* mmu, uint32_t addr, T data) {
         // todo: DMA3 implement
-        GGLOG(
-            fmt::format("Attempt to write {} value {} to ROM{}(0x{:x})",
-                accessWidthName[sizeof(T) >> 1],
-                data,
-                static_cast<int>(P),
-                addr
-            )
-        );
-
-        return ;
+        if constexpr (P == E_SRAM) {
+            SRAM_Write(mmu, addr, data) ;
+        } // if
+        else {
+            GGLOG(
+                    fmt::format("Attempt to write {} value {} to ROM{}(0x{:x})",
+                                accessWidthName[sizeof(T) >> 1],
+                                data,
+                                static_cast<int>(P),
+                                addr
+                    )
+            );
+        } // else
     }
 }
 

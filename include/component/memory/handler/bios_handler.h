@@ -47,7 +47,7 @@ namespace gg_core::gg_mem {
         ).c_str());
 
         return mmu->IllegalReadValue() ;
-    } // BIOS_Read()
+    } // NoUsed_Read()
 
     template <typename T>
     void NoUsed_Write(MMU_Status* mmu, uint32_t addr, T data) {
@@ -58,7 +58,7 @@ namespace gg_core::gg_mem {
                 addr
             ).c_str()
         );
-    }
+    } // NoUsed_Write()
 }
 
 #endif //GGTEST_BIOS_HANDLER_H

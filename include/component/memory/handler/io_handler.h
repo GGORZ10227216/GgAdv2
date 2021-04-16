@@ -57,6 +57,7 @@ namespace gg_core::gg_mem {
                 // Just write the data directly, since we are reading IO by byte access(check policy per byte)
                 // so direct write is safe.
                 reinterpret_cast<T&>(mmu->IOReg.data() + relativeAddr) = data ;
+                // handle io behavior which relative with mmu directly.
                 switch (relativeAddr) {
                     case 0x204:
                         mmu->UpdateWaitState() ;
