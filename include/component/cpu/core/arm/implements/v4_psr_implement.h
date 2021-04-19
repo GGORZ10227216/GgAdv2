@@ -4,71 +4,71 @@
 #define V4_ARM_PSR_TRANSFER
 
 namespace gg_core::gg_cpu {
-    static void mrs(GbaInstance& instance) {
+    static void mrs(CPU& instance) {
         const uint32_t RdNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
-        uint32_t &Rd = instance._status._regs[RdNumber] ;
-        Rd = instance._status.ReadCPSR() ;
+        uint32_t &Rd = instance._regs[RdNumber] ;
+        Rd = instance.ReadCPSR() ;
     }
 
-    static void msr_Rm(GbaInstance& instance) {
+    static void msr_Rm(CPU& instance) {
         const uint32_t RmNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
-        uint32_t Rm = instance._status._regs[RmNumber] ;
-        if (instance._status.GetOperationMode() == USR || !TestBit(CURRENT_INSTRUCTION, 16)) {
-            uint32_t protectedCpsr = instance._status.ReadCPSR() & 0x0fffffff ;
+        uint32_t Rm = instance._regs[RmNumber] ;
+        if (instance.GetOperationMode() == USR || !TestBit(CURRENT_INSTRUCTION, 16)) {
+            uint32_t protectedCpsr = instance.ReadCPSR() & 0x0fffffff ;
             uint32_t newCpsrValue = protectedCpsr | (Rm & 0xf0000000) ;
-            instance._status.WriteCPSR(newCpsrValue) ;
+            instance.WriteCPSR(newCpsrValue) ;
         } // if
         else {
-            instance._status.WriteCPSR(Rm) ;
+            instance.WriteCPSR(Rm) ;
         } // else
     }
 
-    static void mrsp(GbaInstance& instance) {
+    static void mrsp(CPU& instance) {
         const uint32_t RdNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
-        uint32_t &Rd = instance._status._regs[RdNumber] ;
-        Rd = instance._status.ReadSPSR() ;
+        uint32_t &Rd = instance._regs[RdNumber] ;
+        Rd = instance.ReadSPSR() ;
     }
 
-    static void msrp_Rm(GbaInstance& instance) {
+    static void msrp_Rm(CPU& instance) {
         const uint32_t RmNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
-        uint32_t Rm = instance._status._regs[RmNumber] ;
+        uint32_t Rm = instance._regs[RmNumber] ;
         if (!TestBit(CURRENT_INSTRUCTION, 16)) {
-            uint32_t protectedSpsr = instance._status.ReadSPSR() & 0x0fffffff ;
+            uint32_t protectedSpsr = instance.ReadSPSR() & 0x0fffffff ;
             uint32_t newSpsrValue = protectedSpsr | (Rm & 0xf0000000) ;
-            instance._status.WriteSPSR(newSpsrValue) ;
+            instance.WriteSPSR(newSpsrValue) ;
         } // if
         else {
-            instance._status.WriteSPSR(Rm) ;
+            instance.WriteSPSR(Rm) ;
         } // else
     }
 
-    static void msr_Imm(GbaInstance& instance) {
+    static void msr_Imm(CPU& instance) {
         const uint32_t imm = CURRENT_INSTRUCTION & 0xff;
         const uint32_t rot = (CURRENT_INSTRUCTION & 0xf00) >> 8;
         const uint32_t immVal = rotr(imm, rot*2) ;
 
-        if (instance._status.GetOperationMode() == USR || !TestBit(CURRENT_INSTRUCTION, 16)) {
-            uint32_t protectedCpsr = instance._status.ReadCPSR() & 0x0fffffff ;
+        if (instance.GetOperationMode() == USR || !TestBit(CURRENT_INSTRUCTION, 16)) {
+            uint32_t protectedCpsr = instance.ReadCPSR() & 0x0fffffff ;
             uint32_t newCpsrValue = protectedCpsr | (immVal & 0xf0000000) ;
-            instance._status.WriteCPSR(newCpsrValue) ;
+            instance.WriteCPSR(newCpsrValue) ;
         } // if
         else {
-            instance._status.WriteCPSR(immVal) ;
+            instance.WriteCPSR(immVal) ;
         } // else
     }
 
-    static void msrp_Imm(GbaInstance& instance) {
+    static void msrp_Imm(CPU& instance) {
         const uint32_t imm = CURRENT_INSTRUCTION & 0xff;
         const uint32_t rot = (CURRENT_INSTRUCTION & 0xf00) >> 8;
         const uint32_t immVal = rotr(imm, rot*2) ;
 
         if (!TestBit(CURRENT_INSTRUCTION, 16)) {
-            uint32_t protectedSpsr = instance._status.ReadSPSR() & 0x0fffffff ;
+            uint32_t protectedSpsr = instance.ReadSPSR() & 0x0fffffff ;
             uint32_t newSpsrValue = protectedSpsr | (immVal & 0xf0000000) ;
-            instance._status.WriteSPSR(newSpsrValue) ;
+            instance.WriteSPSR(newSpsrValue) ;
         } // if
         else {
-            instance._status.WriteSPSR(immVal) ;
+            instance.WriteSPSR(immVal) ;
         } // else
     }
 } // gg_core::gg_cpu

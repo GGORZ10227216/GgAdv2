@@ -10,7 +10,7 @@
 namespace gg_core::gg_cpu {
     // using alu_handler = void(*)(uint32_t&, uint32_t, uint32_t) ;
     template <E_DataProcess opcode>
-    inline void CPSR_Arithmetic(GbaInstance &instance, uint32_t Rn, uint32_t op2, uint64_t result) {
+    inline void CPSR_Arithmetic(CPU &instance, uint32_t Rn, uint32_t op2, uint64_t result) {
         bool needSetCarry = false, needSetOverflow = false ;
         if constexpr (opcode == ADD || opcode == CMN){
             needSetOverflow = TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ;
@@ -18,7 +18,7 @@ namespace gg_core::gg_cpu {
         } // if
         else if constexpr (opcode == ADC) {
             needSetOverflow = TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ;
-            needSetCarry = static_cast<uint64_t>(Rn) + op2 + instance._status.C() > 0xffffffff ;
+            needSetCarry = static_cast<uint64_t>(Rn) + op2 + instance.C() > 0xffffffff ;
         } // if
         else if constexpr (opcode == SUB || opcode == CMP) {
             needSetOverflow = TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ;
@@ -26,7 +26,7 @@ namespace gg_core::gg_cpu {
         } // else if
         else if constexpr (opcode == SBC) {
             needSetOverflow = TestBit(Rn, 31) != TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31) ;
-            needSetCarry = static_cast<uint64_t>(Rn) >= static_cast<uint64_t>(op2) - instance._status.C() + 1 ;
+            needSetCarry = static_cast<uint64_t>(Rn) >= static_cast<uint64_t>(op2) - instance.C() + 1 ;
         } // else if
         else if constexpr (opcode == RSB) {
             needSetOverflow = TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ;
@@ -34,19 +34,19 @@ namespace gg_core::gg_cpu {
         } // else if
         else if constexpr (opcode == RSC) {
             needSetOverflow = TestBit(op2, 31) != TestBit(Rn, 31) && TestBit(op2, 31) != TestBit(result, 31) ;
-            needSetCarry = static_cast<uint64_t>(op2) >= static_cast<uint64_t>(Rn) - instance._status.C() + 1 ;
+            needSetCarry = static_cast<uint64_t>(op2) >= static_cast<uint64_t>(Rn) - instance.C() + 1 ;
         } // else if
 
-        needSetOverflow ? instance._status.SetV() : instance._status.ClearV() ;
-        needSetCarry ? instance._status.SetC() : instance._status.ClearC() ;
+        needSetOverflow ? instance.SetV() : instance.ClearV() ;
+        needSetCarry ? instance.SetC() : instance.ClearC() ;
     }
 
     template<bool I, bool S, bool TEST, SHIFT_BY SHIFT_SRC, SHIFT_TYPE ST, OP_TYPE OT, E_DataProcess opcode>
-    static void Alu_impl(GbaInstance &instance) {
+    static void Alu_impl(CPU &instance) {
         const uint32_t curInst = CURRENT_INSTRUCTION ;
         const uint8_t RnNumber = (curInst & 0xf0000) >> 16 ;
 
-        uint32_t RnVal = instance._status._regs[RnNumber] ;
+        uint32_t RnVal = instance._regs[RnNumber] ;
         uint32_t op2 = 0 ;
         bool shiftCarry = false ;
 
@@ -76,11 +76,11 @@ namespace gg_core::gg_cpu {
         else if constexpr (opcode == ADD || opcode == CMN)
             result = static_cast<uint64_t>(RnVal) + op2 ;
         else if constexpr (opcode == ADC)
-            result = static_cast<uint64_t>(RnVal) + op2 + instance._status.C() ;
+            result = static_cast<uint64_t>(RnVal) + op2 + instance.C() ;
         else if constexpr (opcode == SBC)
-            result = static_cast<uint64_t>(RnVal) - op2 + instance._status.C() - 1 ;
+            result = static_cast<uint64_t>(RnVal) - op2 + instance.C() - 1 ;
         else if constexpr (opcode == RSC)
-            result = static_cast<uint64_t>(op2) - RnVal + instance._status.C() - 1 ;
+            result = static_cast<uint64_t>(op2) - RnVal + instance.C() - 1 ;
         else if constexpr (opcode == ORR)
             result = static_cast<uint64_t>(RnVal) | op2 ;
         else if constexpr (opcode == MOV)
@@ -92,24 +92,24 @@ namespace gg_core::gg_cpu {
 
         if constexpr (S) {
             if constexpr (OT == OP_TYPE::LOGICAL) {
-                TestBit(result, 31) ? instance._status.SetN() : instance._status.ClearN() ;
-                shiftCarry ? instance._status.SetC() : instance._status.ClearC() ;
-                result == 0 ? instance._status.SetZ() : instance._status.ClearZ();
+                TestBit(result, 31) ? instance.SetN() : instance.ClearN() ;
+                shiftCarry ? instance.SetC() : instance.ClearC() ;
+                result == 0 ? instance.SetZ() : instance.ClearZ();
             } // if
             else {
                 CPSR_Arithmetic<opcode> (instance, RnVal, op2, result);
-                (result & 0xffffffff) == 0 ? instance._status.SetZ() : instance._status.ClearZ() ;
-                TestBit(result, 31) ? instance._status.SetN() : instance._status.ClearN() ;
+                (result & 0xffffffff) == 0 ? instance.SetZ() : instance.ClearZ() ;
+                TestBit(result, 31) ? instance.SetN() : instance.ClearN() ;
             } // else
         } // if
 
         if constexpr (!TEST) {
             const uint8_t RdNumber = (curInst & 0xf000) >> 12 ;
-            instance._status._regs[RdNumber] = result ;
+            instance._regs[RdNumber] = result ;
             if (RdNumber == pc) {
-                instance.RefillPipeline() ;
+                instance.RefillPipeline();
                 if constexpr (S) {
-                    instance._status.WriteCPSR( instance._status.ReadSPSR() ) ;
+                    instance.WriteCPSR( instance.ReadSPSR() ) ;
                 } // if
             } // if
         } // if

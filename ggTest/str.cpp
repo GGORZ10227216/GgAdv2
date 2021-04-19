@@ -19,7 +19,9 @@ namespace {
 
     TEST_F(ggTest, str_post_imm_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+egg.init();
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0;
@@ -43,16 +45,16 @@ namespace {
                     targetRn.value, targetRd.value, immOffset.value
             );
 
-            instance._status._regs[targetRn.value] = baseAddr;
+            instance._regs[targetRn.value] = baseAddr;
             egg.regs[targetRn.value] = baseAddr;
 
-            instance._status._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
+            instance._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
             egg.regs[ targetRd.value ] = testValue[ memValueidx.value ]  ;
 
             uint32_t inst_hash = hashArm(instruction);
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint32_t memChk = instance._mem.Read32(baseAddr) == egg.readWordRotate(baseAddr);
@@ -71,7 +73,9 @@ namespace {
 
     TEST_F(ggTest, str_post_reg_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+egg.init();
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0;
@@ -118,19 +122,19 @@ namespace {
                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
             );
 
-            instance._status._regs[targetRn.value] = baseAddr;
+            instance._regs[targetRn.value] = baseAddr;
             egg.regs[targetRn.value] = baseAddr;
 
-            instance._status._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
+            instance._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
             egg.regs[ targetRd.value ] = testValue[ memValueidx.value ]  ;
 
-            instance._status._regs[r4] = RmValue.value;
+            instance._regs[r4] = RmValue.value;
             egg.regs[r4] = RmValue.value;
 
             uint32_t inst_hash = hashArm(instruction);
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint32_t memChk = instance._mem.Read32(baseAddr) == egg.readWordRotate(baseAddr);
@@ -147,7 +151,9 @@ namespace {
 
     TEST_F(ggTest, strb_post_imm_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+egg.init();
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0;
@@ -173,16 +179,16 @@ namespace {
                     targetRn.value, targetRd.value, immOffset.value
             );
 
-            instance._status._regs[targetRn.value] = baseAddr;
+            instance._regs[targetRn.value] = baseAddr;
             egg.regs[targetRn.value] = baseAddr;
 
-            instance._status._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
+            instance._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
             egg.regs[ targetRd.value ] = testValue[ memValueidx.value ]  ;
 
             uint32_t inst_hash = hashArm(instruction);
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint32_t memChk = instance._mem.Read32(baseAddr) == egg.readWordRotate(baseAddr);
@@ -200,7 +206,9 @@ namespace {
 
     TEST_F(ggTest, strb_post_reg_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+egg.init();
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0;
@@ -252,19 +260,19 @@ namespace {
                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
             );
 
-            instance._status._regs[targetRn.value] = baseAddr;
+            instance._regs[targetRn.value] = baseAddr;
             egg.regs[targetRn.value] = baseAddr;
 
-            instance._status._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
+            instance._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
             egg.regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
 
-            instance._status._regs[r4] = RmValue.value;
+            instance._regs[r4] = RmValue.value;
             egg.regs[r4] = RmValue.value;
 
             uint32_t inst_hash = hashArm(instruction);
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint32_t memChk = instance._mem.Read32(baseAddr) == egg.readWordRotate(baseAddr);
@@ -281,7 +289,9 @@ namespace {
 
     TEST_F(ggTest, str_pre_imm_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+egg.init();
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0;
@@ -309,16 +319,16 @@ namespace {
                     targetRn.value, targetRd.value, immOffset.value
             );
 
-            instance._status._regs[targetRn.value] = baseAddr;
+            instance._regs[targetRn.value] = baseAddr;
             egg.regs[targetRn.value] = baseAddr;
 
-            instance._status._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
+            instance._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
             egg.regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
 
             uint32_t inst_hash = hashArm(instruction);
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint32_t memChk = instance._mem.Read32(targetAddr) == egg.readWordRotate(targetAddr) ;
@@ -336,7 +346,9 @@ namespace {
 
     TEST_F(ggTest, str_pre_reg_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+egg.init();
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0;
@@ -385,19 +397,19 @@ namespace {
                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
             );
 
-            instance._status._regs[targetRn.value] = baseAddr;
+            instance._regs[targetRn.value] = baseAddr;
             egg.regs[targetRn.value] = baseAddr;
 
-            instance._status._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
+            instance._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
             egg.regs[ targetRd.value ] = testValue[ memValueIdx.value ]  ;
 
-            instance._status._regs[r4] = RmValue.value;
+            instance._regs[r4] = RmValue.value;
             egg.regs[r4] = RmValue.value;
 
             uint32_t inst_hash = hashArm(instruction);
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint32_t memChk = instance._mem.Read32(targetAddr) == egg.readWordRotate(targetAddr);
@@ -414,7 +426,9 @@ namespace {
 
     TEST_F(ggTest, strb_pre_imm_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+egg.init();
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0;
@@ -444,16 +458,16 @@ namespace {
                     targetRn.value, targetRd.value, immOffset.value
             );
 
-            instance._status._regs[targetRn.value] = baseAddr;
+            instance._regs[targetRn.value] = baseAddr;
             egg.regs[targetRn.value] = baseAddr;
 
-            instance._status._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
+            instance._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
             egg.regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
 
             uint32_t inst_hash = hashArm(instruction);
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint32_t memChk = instance._mem.Read32(targetAddr) == egg.readWordRotate(targetAddr);
@@ -471,7 +485,9 @@ namespace {
 
     TEST_F(ggTest, strb_pre_reg_offset_test) {
         Arm egg;
-        gg_core::GbaInstance instance(std::nullopt);
+egg.init();
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         unsigned int t = 0;
@@ -525,19 +541,19 @@ namespace {
                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
             );
 
-            instance._status._regs[targetRn.value] = baseAddr;
+            instance._regs[targetRn.value] = baseAddr;
             egg.regs[targetRn.value] = baseAddr;
 
-            instance._status._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
+            instance._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
             egg.regs[ targetRd.value ] = testValue[ memValueIdx.value ]  ;
 
-            instance._status._regs[r4] = RmValue.value;
+            instance._regs[r4] = RmValue.value;
             egg.regs[r4] = RmValue.value;
 
             uint32_t inst_hash = hashArm(instruction);
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             uint32_t memChk = instance._mem.Read32(targetAddr) == egg.readWordRotate(targetAddr);

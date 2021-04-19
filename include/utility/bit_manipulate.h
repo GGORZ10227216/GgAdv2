@@ -25,7 +25,7 @@ namespace gg_core {
 
     template <typename T>
     constexpr uint8_t PopCount32(T i) {
-        static_assert(sizeof(T) <= 4, "Type's size exceed 32 bit");
+        static_assert(sizeof(T) <= 4, "Type size exceed 32 bit");
         i = i - ((i >> 1) & 0x55555555);
         i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
         return (((i + (i >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;

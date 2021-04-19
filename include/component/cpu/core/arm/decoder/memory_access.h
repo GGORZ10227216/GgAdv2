@@ -12,16 +12,16 @@
 
 namespace gg_core::gg_cpu {
     template<bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
-    static void SingleDataTransfer_impl(GbaInstance &instance);
+    static void SingleDataTransfer_impl(CPU &instance);
 
     template<bool P, bool U, bool W, bool L, bool S, bool H, OFFSET_TYPE OT>
-    static void HalfMemAccess_impl(GbaInstance &instance);
+    static void HalfMemAccess_impl(CPU &instance);
 
     template<bool P, bool U, bool S, bool W, bool L>
-    static void BlockMemAccess_impl(GbaInstance &instance);
+    static void BlockMemAccess_impl(CPU &instance);
 
     template<bool B>
-    static void Swap_impl(GbaInstance &instance);
+    static void Swap_impl(CPU &instance);
 
     template<uint32_t HashCode32>
     static constexpr auto SingleDataTransfer() {

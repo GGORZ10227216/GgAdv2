@@ -15,7 +15,9 @@ namespace {
         uint32_t t = 0 ;
 
         Arm egg;
-        GbaInstance instance(std::nullopt);
+egg.init();
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         TestField wFlag(0,1,1) ;
@@ -29,7 +31,7 @@ namespace {
 
             for (unsigned i = 0 ; i < 16 ; ++i) {
                 egg.regs[ i ] = (i << 4) | (i << 12) | (i << 20) | (0xe << 28);
-                instance._status._regs[ i ] = (i << 4) | (i << 12) | (i << 20) | (0xe << 28) ;
+                instance._regs[ i ] = (i << 4) | (i << 12) | (i << 20) | (0xe << 28) ;
             } // for
 
             uint32_t instruction = MakeBlockTransferInstruction<Cond, P, U, S, W, L, Rn, RegList>(
@@ -37,11 +39,11 @@ namespace {
             ) ;
 
             egg.regs[ r4 ] = baseAddr ; // OWRAM
-            instance._status._regs[ r4 ] = baseAddr ; // OWRAM
+            instance._regs[ r4 ] = baseAddr ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             for (unsigned i = 0, offsetCnt = 1; i < 16 ; ++i) {
@@ -75,7 +77,9 @@ namespace {
         uint32_t t = 0 ;
 
         Arm egg;
-        GbaInstance instance(std::nullopt);
+egg.init();
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         TestField wFlag(0,1,1) ;
@@ -89,7 +93,7 @@ namespace {
 
             for (unsigned i = 0 ; i < 16 ; ++i) {
                 egg.regs[ i ] = (i << 4) | (i << 12) | (i << 20) | (0xe << 28);
-                instance._status._regs[ i ] = (i << 4) | (i << 12) | (i << 20) | (0xe << 28) ;
+                instance._regs[ i ] = (i << 4) | (i << 12) | (i << 20) | (0xe << 28) ;
             } // for
 
             uint32_t instruction = MakeBlockTransferInstruction<Cond, P, U, S, W, L, Rn, RegList>(
@@ -97,11 +101,11 @@ namespace {
             ) ;
 
             egg.regs[ r4 ] = baseAddr ; // OWRAM
-            instance._status._regs[ r4 ] = baseAddr ; // OWRAM
+            instance._regs[ r4 ] = baseAddr ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
             for (unsigned i = 0, offsetCnt = 0; i < 16 ; ++i) {
@@ -135,7 +139,9 @@ namespace {
         uint32_t t = 0 ;
 
         Arm egg;
-        GbaInstance instance(std::nullopt);
+egg.init();
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         TestField wFlag(0,1,1) ;
@@ -149,7 +155,7 @@ namespace {
 
             for (unsigned i = 0 ; i < 16 ; ++i) {
                 egg.regs[ i ] = (i << 4) | (i << 12) | (i << 20) | (0xe << 28);
-                instance._status._regs[ i ] = (i << 4) | (i << 12) | (i << 20) | (0xe << 28) ;
+                instance._regs[ i ] = (i << 4) | (i << 12) | (i << 20) | (0xe << 28) ;
             } // for
 
             uint32_t instruction = MakeBlockTransferInstruction<Cond, P, U, S, W, L, Rn, RegList>(
@@ -157,11 +163,11 @@ namespace {
             ) ;
 
             egg.regs[ r4 ] = baseAddr ; // OWRAM
-            instance._status._regs[ r4 ] = baseAddr ; // OWRAM
+            instance._regs[ r4 ] = baseAddr ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
 
@@ -198,7 +204,9 @@ namespace {
         uint32_t t = 0 ;
 
         Arm egg;
-        GbaInstance instance(std::nullopt);
+egg.init();
+        gg_mem::MMU mmu(std::nullopt) ;
+        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         TestField wFlag(0,1,1) ;
@@ -212,7 +220,7 @@ namespace {
 
             for (unsigned i = 0 ; i < 16 ; ++i) {
                 egg.regs[ i ] = (i << 4) | (i << 12) | (i << 20) | (0xe << 28);
-                instance._status._regs[ i ] = (i << 4) | (i << 12) | (i << 20) | (0xe << 28) ;
+                instance._regs[ i ] = (i << 4) | (i << 12) | (i << 20) | (0xe << 28) ;
             } // for
 
             uint32_t instruction = MakeBlockTransferInstruction<Cond, P, U, S, W, L, Rn, RegList>(
@@ -220,11 +228,11 @@ namespace {
             ) ;
 
             egg.regs[ r4 ] = baseAddr ; // OWRAM
-            instance._status._regs[ r4 ] = baseAddr ; // OWRAM
+            instance._regs[ r4 ] = baseAddr ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-            instance.CPUTick_Debug(instruction);
+            instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
 

@@ -8,22 +8,17 @@
 
 #include <cpu_enum.h>
 
-#ifndef GGADV_REGISTER_H
-#define GGADV_REGISTER_H
+#ifndef GGADV_CPU_STATUS_H
+#define GGADV_CPU_STATUS_H
 
 class ggTest ;
 
 namespace gg_core {
-    class GbaInstance;
-
     namespace gg_cpu {
-        struct Status {
-            friend class gg_core::GbaInstance;
-            friend class ::ggTest ;
-        public :
+        struct CPU_Status {
             std::array<unsigned, 16> _regs;
 
-            Status() {
+            CPU_Status() {
                 _regs.fill(0) ;
             }
 
@@ -145,13 +140,6 @@ namespace gg_core {
                 return _cpsr & 0x20u ? THUMB : ARM;
             } // GetCpuMode()
 
-            void ChangeCpuMode(E_CpuMode mode) {
-                if (mode == THUMB)
-                    _cpsr |= 0x1 << T ;
-                else
-                    _cpsr &= ~(0x1 << T);
-            } // ChangeCpuMode()
-
             bool F() { return _cpsr & 0x40u; } // F()
             bool I() { return _cpsr & 0x80u; } // I()
             bool V() { return _cpsr & 0x10000000u; } // V()
@@ -172,9 +160,8 @@ namespace gg_core {
             void SetN() { _cpsr |= (1 << 31); } // SetN()
             void ClearN() { _cpsr &= ~(1 << 31); } // ClearN()
 
-        private :
             std::array<uint32_t, 2> fetchedBuffer;
-            uint8_t pipelineCnt = 0;
+            uint8_t fetchIdx = 0;
             uint32_t currentInstruction = 0x00 ;
             uint32_t _cpsr = 0xd3;
 
@@ -215,4 +202,4 @@ namespace gg_core {
     }
 }
 
-#endif //GGADV_REGISTER_H
+#endif //GGADV_CPU_STATUS_H
