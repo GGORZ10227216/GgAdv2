@@ -11,8 +11,8 @@
 
 namespace gg_core::gg_mem {
     template <typename T>
-    T BIOS_Read(MMU_Status* mmu, uint32_t addr) {
-        const uint32_t relativeAddr = addr ;
+    T BIOS_Read(MMU_Status* mmu, uint32_t absAddr) {
+        const uint32_t relativeAddr = absAddr ;
 
         if (relativeAddr < E_RamSize::E_BIOS_SIZE) {
             mmu->_cycleCounter += BIOS_ACCESS_CYCLE();
@@ -28,12 +28,12 @@ namespace gg_core::gg_mem {
     } // BIOS_Read()
 
     template <typename T>
-    void BIOS_Write(MMU_Status* mmu, uint32_t addr, T data) {
+    void BIOS_Write(MMU_Status* mmu, uint32_t absAddr, T data) {
         gg_core::GGLOG(fmt::format(
                 "Attempt to WRITE {} value ({}) to BIOS area({})",
                 accessWidthName[ sizeof(T) >> 1 ],
                 data,
-                addr
+                absAddr
             ).c_str()
         );
     }

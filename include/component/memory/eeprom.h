@@ -66,7 +66,6 @@ namespace gg_core::gg_mem {
         } // SendCmd()
 
         uint16_t ReadData() {
-            // todo: transmit 68bit in TRANSMITTING mode
             if (_ready && mode == TRANSMITTING) {
                 _nthBit += 1 ;
                 if (_nthBit >= 4 && _nthBit < 68) {

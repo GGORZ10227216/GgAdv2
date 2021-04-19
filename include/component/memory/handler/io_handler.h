@@ -13,11 +13,11 @@
 
 namespace gg_core::gg_mem {
     template <typename T>
-    T IO_Read(MMU_Status* mmu, uint32_t addr) {
+    T IO_Read(MMU_Status* mmu, uint32_t absAddr) {
         // 04000000-040003FE   I/O Registers
         using namespace gg_io ;
 
-        const uint32_t relativeAddr = addr - ioStart ;
+        const uint32_t relativeAddr = absAddr - ioStart ;
         T result = 0 ;
         if (relativeAddr < E_RamSize::E_IO_SIZE) {
             mmu->_cycleCounter += IO_ACCESS_CYCLE();
@@ -39,24 +39,24 @@ namespace gg_core::gg_mem {
         } // if
         else {
             // 04000400-04FFFFFF Not used
-            NoUsed_Read<T>(mmu, addr);
+            NoUsed_Read<T>(mmu, absAddr);
             return mmu->IllegalReadValue() ;
         } // else
     } // IO_Read()
 
     template <typename T>
-    void IO_Write(MMU_Status* mmu, uint32_t addr, T data) {
+    void IO_Write(MMU_Status* mmu, uint32_t absAddr, T data) {
         // 04000000-040003FE   I/O Registers
         using namespace gg_io ;
 
-        const uint32_t relativeAddr = addr - ioStart ;
+        const uint32_t relativeAddr = absAddr - ioStart ;
         if (relativeAddr < E_RamSize::E_IO_SIZE) {
             mmu->_cycleCounter += IO_ACCESS_CYCLE();
             const auto curPolicy = static_cast<E_IO_AccessMode> (policyTable[relativeAddr]) ;
             if (curPolicy == E_IO_AccessMode::W || curPolicy == E_IO_AccessMode::RW) {
                 // Just write the data directly, since we are reading IO by byte access(check policy per byte)
                 // so direct write is safe.
-                reinterpret_cast<T&>(mmu->IOReg.data() + relativeAddr) = data ;
+                reinterpret_cast<T&>(mmu->IOReg[ relativeAddr ]) = data ;
                 // handle io behavior which relative with mmu directly.
                 switch (relativeAddr) {
                     case 0x204:
@@ -70,12 +70,12 @@ namespace gg_core::gg_mem {
                 GGLOG(fmt::format(
                     "Attempt to WRITE {} value to READ-ONLY IO register 0x{:x}",
                     accessWidthName[ sizeof(T) >> 1 ],
-                    addr
+                    absAddr
                 ).c_str());
             } // else
         } // if
 
-        NoUsed_Write(mmu, addr, data);
+        NoUsed_Write(mmu, absAddr, data);
     } // IO_Write()
 }
 

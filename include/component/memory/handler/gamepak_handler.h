@@ -54,33 +54,40 @@ namespace gg_core::gg_mem {
     } // ROM_Read()
 
     template <typename T>
-    void SRAM_Write(MMU_Status* mmu, uint32_t addr, T data) {
-        const uint32_t relativeAddr = SRAM_MIRROR(mmu,addr);
+    void SRAM_Write(MMU_Status* mmu, uint32_t absAddr, T data) {
+        const uint32_t relativeAddr = SRAM_MIRROR(mmu,absAddr);
         mmu->_cycleCounter += GAMEPAK_ACCESS_CYCLE<uint8_t, E_SRAM>(mmu);
 
         // SRAM is only allow byte access
         if constexpr (sizeof(T) == 1)
             reinterpret_cast<T&>(mmu->cartridge.SRAM[relativeAddr]) = data;
         else
-            mmu->cartridge.SRAM[relativeAddr] = static_cast<uint8_t>(gg_core::rotr(data, addr*8)) ;
+            mmu->cartridge.SRAM[relativeAddr] = static_cast<uint8_t>(gg_core::rotr(data, absAddr*8)) ;
     }
 
     template <typename T, E_GamePakRegion P>
-    void GAMEPAK_Write(MMU_Status* mmu, uint32_t addr, T data) {
+    void GAMEPAK_Write(MMU_Status* mmu, uint32_t absAddr, T data) {
         // todo: DMA3 implement
         if constexpr (P == E_SRAM) {
-            SRAM_Write(mmu, addr, data) ;
+            SRAM_Write(mmu, absAddr, data) ;
+            return ;
         } // if
-        else {
-            GGLOG(
-                    fmt::format("Attempt to write {} value {} to ROM{}(0x{:x})",
-                                accessWidthName[sizeof(T) >> 1],
-                                data,
-                                static_cast<int>(P),
-                                addr
-                    )
-            );
-        } // else
+        else if constexpr (P == E_WS2) {
+            Cartridge& cart = mmu->cartridge ;
+            if (cart.IsEEPROM_Access(absAddr) && cart.SaveType() == E_EEPROM) {
+                mmu->cartridge.eeprom.SendCmd(data) ;
+                return ;
+            } // if
+        } // else if
+
+        GGLOG(
+                fmt::format("Attempt to write {} value {} to ROM{}(0x{:x})",
+                            accessWidthName[sizeof(T) >> 1],
+                            data,
+                            static_cast<int>(P),
+                            absAddr
+                ).c_str()
+        );
     }
 }
 

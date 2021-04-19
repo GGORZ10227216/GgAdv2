@@ -28,7 +28,6 @@ namespace gg_core::gg_mem {
         void(*)(MMU_Status*, uint32_t, uint32_t)
     >;
 
-    // todo: finish the table
     constexpr static std::array<ReadHandler, 16> ReadHandlers {
         /*0x0 BIOS*/      ReadHandler(BIOS_Read<uint8_t>, BIOS_Read<uint16_t>, BIOS_Read<uint32_t>),
         /*0x1 NO USED*/   ReadHandler(NoUsed_Read<uint8_t>, NoUsed_Read<uint16_t>, NoUsed_Read<uint32_t>),

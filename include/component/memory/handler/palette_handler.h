@@ -11,17 +11,17 @@
 
 namespace gg_core::gg_mem {
     template <typename T>
-    auto Palette_Read(MMU_Status* mmu, uint32_t addr) {
-        const uint32_t relativeAddr = NORMAL_MIRROR(addr, E_PALETTE_SIZE);
-        VideoRAM& vram = mmu->VideoRAM ;
+    T Palette_Read(MMU_Status* mmu, uint32_t absAddr) {
+        const uint32_t relativeAddr = NORMAL_MIRROR(absAddr, E_PALETTE_SIZE);
+        VideoRAM& vram = mmu->videoRAM ;
         mmu->_cycleCounter += PALETTE_ACCESS_CYCLE<T>();
         return reinterpret_cast<T&>(vram.palette_data[ relativeAddr ]);
     } // IWRAM_Read()
 
     template <typename T>
-    void Palette_Write(MMU_Status* mmu, uint32_t addr, T data) {
-        const uint32_t relativeAddr = NORMAL_MIRROR(addr, E_PALETTE_SIZE);
-        VideoRAM& vram = mmu->VideoRAM ;
+    void Palette_Write(MMU_Status* mmu, uint32_t absAddr, T data) {
+        const uint32_t relativeAddr = NORMAL_MIRROR(absAddr, E_PALETTE_SIZE);
+        VideoRAM& vram = mmu->videoRAM ;
         mmu->_cycleCounter += PALETTE_ACCESS_CYCLE<T>();
 
         if constexpr (sizeof(T) == 1) {
