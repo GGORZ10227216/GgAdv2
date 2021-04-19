@@ -11,17 +11,31 @@
 
 namespace gg_core::gg_mem {
     template <typename T>
-    auto Palette_Read(MMU_Status* mmu, uint32_t addr) {
-        const uint32_t relativeAddr = NORMAL_MIRROR(addr, E_PALETTE_SIZE);
+    T Palette_Read(MMU_Status* mmu, uint32_t absAddr) {
+        const uint32_t relativeAddr = NORMAL_MIRROR(absAddr, E_PALETTE_SIZE);
+        VideoRAM& vram = mmu->videoRAM ;
         mmu->_cycleCounter += PALETTE_ACCESS_CYCLE<T>();
-        return *reinterpret_cast<T*>(mmu->palette.data() + relativeAddr);
+        return reinterpret_cast<T&>(vram.palette_data[ relativeAddr ]);
     } // IWRAM_Read()
 
     template <typename T>
-    void Palette_Write(MMU_Status* mmu, uint32_t addr, T data) {
-        const uint32_t relativeAddr = NORMAL_MIRROR(addr, E_PALETTE_SIZE);
+    void Palette_Write(MMU_Status* mmu, uint32_t absAddr, T data) {
+        const uint32_t relativeAddr = NORMAL_MIRROR(absAddr, E_PALETTE_SIZE);
+        VideoRAM& vram = mmu->videoRAM ;
         mmu->_cycleCounter += PALETTE_ACCESS_CYCLE<T>();
-        *reinterpret_cast<T*>(mmu->palette.data() + relativeAddr) = data;
+
+        if constexpr (sizeof(T) == 1) {
+            // byte write to palette memory is undefined behavior,
+            // but we can emulate it by logic below:
+            // [addr_align_by_16] = data * 0x101
+            const uint32_t addrRealign = relativeAddr & (~0x1) ;
+            uint16_t newData = data ;
+            newData = (newData << 8) | data ;
+            reinterpret_cast<T&>(vram.palette_data[ addrRealign ]) = newData;
+            return ;
+        } // if
+
+        reinterpret_cast<T&>(vram.palette_data[ relativeAddr ]) = data;
     } // IWRAM_Write()
 }
 

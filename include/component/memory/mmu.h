@@ -9,7 +9,6 @@
 #include <bit_manipulate.h>
 #include <mem_enum.h>
 #include <mmu_status.h>
-#include <display_memory.h>
 #include <gamepak_memory.h>
 #include <general_memory.h>
 #include <memory_exceptions.h>
@@ -20,9 +19,6 @@
 #define GGADV_MMU_H
 
 namespace gg_core::gg_mem {
-    // todo: invalid memory access handle
-    // todo: mmu refactoring
-
     template<typename W>
     inline unsigned AlignAddr(uint32_t addr) {
         if constexpr (SameSize<W, BYTE>())
@@ -90,14 +86,9 @@ namespace gg_core::gg_mem {
 
         template<typename W, typename T>
         void Write(uint32_t addr, T value) requires std::is_same_v<W, T> {
-//            try {
-//                _addrBus = addr;
-//                _dataBus = value;
-//                reinterpret_cast<W &> (_Access<WRITE, W>()) = value;
-//            } catch (InvalidAccessException &e) {
-//                std::cout << e.what() << std::endl;
-//                IllegalWriteBehavior(e._errType);
-//            }
+            const uint32_t alignedAddr = AlignAddr<W>(addr);
+            const unsigned addrTrait = (alignedAddr & 0x0f000000) >> 24;
+            std::get<(sizeof(W) >> 1)>(WriteHandlers[ addrTrait ])(this, addr, value) ;
         } // Write()
 
         template<typename W>

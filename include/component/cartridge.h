@@ -122,6 +122,7 @@ namespace gg_core::gg_mem {
 
     class Cartridge {
     public:
+        // TODO: flash memory support
         using SaveType_t = std::pair<std::string, E_SaveType>;
 
         std::array<uint8_t, 0x10000> SRAM;

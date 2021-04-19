@@ -6,6 +6,7 @@
 #include <cstdint>
 
 #include <cartridge.h>
+#include <display_memory.h>
 
 #ifndef GGTEST_MMU_STATUS_H
 #define GGTEST_MMU_STATUS_H
@@ -21,11 +22,8 @@ namespace gg_core::gg_mem {
         std::array<uint8_t, 0x8000> IWRAM{};
         std::array<uint8_t, 0x400> IOReg{};
 
-        std::array<uint8_t, 0x400> palette{};
-        std::array<uint8_t, 0x18000> VRAM{};
-        std::array<uint8_t, 0x400> OAM{};
-
         Cartridge cartridge ;
+        VideoRAM videoRAM ;
 
         std::array<NS_CYCLE_VALUE, 4> CurrentWaitStates{
                 NS_CYCLE_VALUE(N_CYCLE_TABLE[0], S_CYCLE_TABLE[0]), // WS0
@@ -61,16 +59,16 @@ namespace gg_core::gg_mem {
                 Unimplemented("thumb invalid memory access");
         } // IllegalReadValue()
 
-        void IllegalWriteBehavior(E_ErrorType errType) {
-            switch (errType) {
-                case SRAM_WIDTH_MISMATCH:
-                    Unimplemented("SRAM 16/32bit access");
-                    break;
-                default:
-                    std::cerr << "Unknown memory runtime error!!" << std::endl;
-                    exit(-1);
-            } // switch
-        } // IllegalReadBehavior()
+//        void IllegalWriteBehavior(E_ErrorType errType) {
+//            switch (errType) {
+//                case SRAM_WIDTH_MISMATCH:
+//                    Unimplemented("SRAM 16/32bit access");
+//                    break;
+//                default:
+//                    std::cerr << "Unknown memory runtime error!!" << std::endl;
+//                    exit(-1);
+//            } // switch
+//        } // IllegalReadBehavior()
 
         void UpdateWaitState() {
             const uint16_t WAITCNT = IOReg[ 0x204 ] ;
