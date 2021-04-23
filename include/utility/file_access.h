@@ -10,7 +10,7 @@
 #define GGADV_FILE_ACCESS_H
 
 namespace gg_core {
-    void LoadFileToBuffer(const std::filesystem::path& filePath, std::vector<uint8_t>& romBuffer){
+    static void LoadFileToBuffer(const std::filesystem::path& filePath, std::vector<uint8_t>& romBuffer){
         if (exists(filePath)) {
             std::ifstream stream(filePath.c_str(), std::ios::in | std::ios::binary);
             romBuffer = std::vector<uint8_t>((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());

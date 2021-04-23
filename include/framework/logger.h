@@ -4,7 +4,7 @@
 
 #include <string>
 #include <utility>
-#include <queue>
+#include <vector>
 #include <array>
 #include <chrono>
 
@@ -27,20 +27,20 @@ namespace gg_core {
 
     class Logger {
     public :
-        void LogDebug(const std::string& content) {
-            _msgQueue.push( Msg{ Msg::DEBUG, content } ) ;
+        void Debug(const std::string& content) {
+            _msgQueue.emplace_back(Msg::DEBUG, content) ;
         } // LogDebug()
 
-        void LogInfo(const std::string& content) {
-            _msgQueue.push( Msg{ Msg::INFO, content } ) ;
+        void Info(const std::string& content) {
+            _msgQueue.emplace_back(Msg::INFO, content) ;
         } // LogInfo()
 
-        void LogWarning(const std::string& content) {
-            _msgQueue.push( Msg{ Msg::WARN, content } ) ;
+        void Warning(const std::string& content) {
+            _msgQueue.emplace_back(Msg::WARN, content) ;
         }
 
-        void LogFatal(const std::string& content) {
-            _msgQueue.push( Msg{ Msg::FATAL, content } ) ;
+        void Fatal(const std::string& content) {
+            _msgQueue.emplace_back(Msg::FATAL, content ) ;
         }
 
         virtual void PrintLogs() ;
@@ -49,7 +49,7 @@ namespace gg_core {
             "DEBUG","INFO","WARN","FATAL"
         } ;
 
-        std::queue<Msg> _msgQueue ;
+        std::vector<Msg> _msgQueue ;
     };
 }
 

@@ -40,16 +40,15 @@ namespace gg_core::gg_mem {
 
         gg_cpu::CPU_Status * _cpuStatus = nullptr;
 
-        MMU_Status() :
+        MMU_Status(const std::optional<std::filesystem::path> &romPath) :
             cartridge(_cycleCounter)
         {
-            /*MMU without cartridge, for debug only*/
-        }
+            if (romPath.has_value())
+                cartridge.LoadRom(romPath.value().c_str()) ;
+            else {
+                GGLOG("Emulator is working under DEBUG mode(no ROM loaded!!)") ;
+            } // else
 
-        MMU_Status(const char* romPath) :
-            cartridge(_cycleCounter)
-        {
-            cartridge.LoadRom(romPath) ;
         }
 
         [[nodiscard]] uint32_t IllegalReadValue() {

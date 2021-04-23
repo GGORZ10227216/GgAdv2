@@ -12,8 +12,8 @@
 #include <mmu.h>
 #include <io.h>
 
-#ifndef GGADV_GBA_INSTANCE_H
-#define GGADV_GBA_INSTANCE_H
+#ifndef GGADV_CPU_H
+#define GGADV_CPU_H
 
 namespace gg_core::gg_cpu {
     class CPU final : public CPU_Status {
@@ -26,7 +26,7 @@ namespace gg_core::gg_cpu {
             _mem._cpuStatus = this ;
             fetchedBuffer[0] = _mem.Read32(0);
             fetchedBuffer[1] = _mem.Read32(4);
-            _regs[pc] = 8;
+            _regs[pc] = 4;
             fetchIdx = 1;
         } // CPU()
 
@@ -126,4 +126,4 @@ namespace gg_core::gg_cpu {
 #include <v4_psr_implement.h>
 #include <v4_branch_implement.h>
 
-#endif //GGADV_GBA_INSTANCE_H
+#endif //GGADV_CPU_H

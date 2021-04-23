@@ -7,3 +7,5 @@ benchmark/
 eggvance/
 cmake-build-release_remote/
 path.sh
+/ggTest/testRom.gba
+/ggTest/gba_bios.bin

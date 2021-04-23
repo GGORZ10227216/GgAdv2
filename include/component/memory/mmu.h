@@ -46,11 +46,9 @@ namespace gg_core::gg_mem {
     class MMU : public MMU_Status {
     public :
         MMU(const std::optional<std::filesystem::path> &romPath):
-            MMU_Status(romPath.value().c_str())
+            MMU_Status(romPath)
         {
-            // fixme: leave bios data to all zero for debugging
-            bios_data.fill(0);
-            // memcpy( bios_data.data(), biosData.data(), biosData.size() ) ;
+            memcpy( bios_data.data(), biosData.data(), biosData.size() ) ;
         }
 
         uint8_t Read8(unsigned addr) {
