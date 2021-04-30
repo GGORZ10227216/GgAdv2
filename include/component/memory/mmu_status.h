@@ -40,13 +40,14 @@ namespace gg_core::gg_mem {
 
         gg_cpu::CPU_Status * _cpuStatus = nullptr;
 
-        MMU_Status(const std::optional<std::filesystem::path> &romPath) :
-            cartridge(_cycleCounter)
+        MMU_Status(const std::optional<std::filesystem::path> &romPath, sinkType& sink) :
+            cartridge(_cycleCounter, sink),
+            logger(std::make_shared<spdlog::logger>("MMU", sink))
         {
             if (romPath.has_value())
                 cartridge.LoadRom(romPath.value().c_str()) ;
             else {
-                GGLOG("Emulator is working under DEBUG mode(no ROM loaded!!)") ;
+                logger->warn("Emulator is working under DEBUG mode(no ROM loaded!!)") ;
             } // else
 
         }
@@ -91,6 +92,8 @@ namespace gg_core::gg_mem {
             CurrentWaitStates[ E_WS2 ].first = N_CYCLE_TABLE[ wc_ws2_n ] ;
             CurrentWaitStates[ E_WS2 ].second = S_CYCLE_TABLE[ wc_ws2_s + 4 ] ;
         } // UpdateWaitState()
+
+        loggerType logger ;
     };
 }
 
