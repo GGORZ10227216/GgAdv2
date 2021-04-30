@@ -16,7 +16,7 @@
 #include <capstone/capstone.h>
 #include <keystone/keystone.h>
 
-#include <component/cpu/cpu.h>
+#include <gba_instance.h>
 #include <core/core.h>
 #include <gg_utility.h>
 #include <cpu_enum.h>
@@ -82,14 +82,17 @@ private:
 class ggTest : public testing::Test {
 protected:
     Arm& egg = arm;
+    gg_core::GbaInstance gbaInstance ;
+    gg_core::gg_mem::MMU& gg_mmu;
+    gg_core::gg_cpu::CPU& instance;
     constexpr static char* testRomPath = "/home/buildmachine/GgAdv2/ggTest/testRom.gba" ;
-    gg_core::gg_mem::MMU gg_mmu;
-    gg_core::gg_cpu::CPU instance;
 
     ArmAssembler gg_asm;
 
     ggTest():
-            gg_mmu(testRomPath), instance(gg_mmu)
+        gbaInstance(testRomPath),
+        gg_mmu(gbaInstance.mmu),
+        instance(gbaInstance.cpu)
     {
 
     }
