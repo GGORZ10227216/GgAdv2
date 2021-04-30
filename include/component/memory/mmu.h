@@ -5,15 +5,12 @@
 #include <filesystem>
 #include <optional>
 
-#include <gg_utility.h>
-#include <bit_manipulate.h>
 #include <mem_enum.h>
 #include <mmu_status.h>
 #include <gamepak_memory.h>
 #include <general_memory.h>
 #include <memory_exceptions.h>
 #include <handler/handler_table.h>
-#include <io.h>
 
 #ifndef GGADV_MMU_H
 #define GGADV_MMU_H
@@ -45,8 +42,8 @@ namespace gg_core::gg_mem {
 
     class MMU : public MMU_Status {
     public :
-        MMU(const std::optional<std::filesystem::path> &romPath):
-            MMU_Status(romPath)
+        MMU(const std::optional<std::filesystem::path> &romPath, sinkType& sink):
+            MMU_Status(romPath, sink)
         {
             memcpy( bios_data.data(), biosData.data(), biosData.size() ) ;
         }
@@ -85,16 +82,25 @@ namespace gg_core::gg_mem {
         template<typename W, typename T>
         void Write(uint32_t addr, T value) requires std::is_same_v<W, T> {
             const uint32_t alignedAddr = AlignAddr<W>(addr);
-            const unsigned addrTrait = (alignedAddr & 0x0f000000) >> 24;
+            unsigned addrTrait = (alignedAddr & 0xff000000) >> 24;
+
+            if (addrTrait > 0xf)
+                addrTrait = 0xf ;
+
             std::get<(sizeof(W) >> 1)>(WriteHandlers[ addrTrait ])(this, addr, value) ;
         } // Write()
 
         template<typename W>
         W Read(uint32_t addr) {
+
             const uint32_t alignedAddr = AlignAddr<W>(addr);
-            const unsigned addrTrait = (alignedAddr & 0x0f000000) >> 24;
+            unsigned addrTrait = (alignedAddr & 0xff000000) >> 24;
+
+            if (addrTrait > 0xf)
+                addrTrait = 0xf ;
+
             return std::get<(sizeof(W) >> 1)>(ReadHandlers[ addrTrait ])(this, addr) ;
-        } // Write()
+        } // Read()
     };
 }
 
