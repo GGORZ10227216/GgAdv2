@@ -10,10 +10,6 @@ namespace {
     using namespace gg_core::gg_mem;
 
     TEST_F(ggTest, svc_test) {
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
         ArmAssembler gg_asm;
 
         uint32_t instruction = 0xef000000 ;
@@ -34,10 +30,6 @@ egg.init();
     }
 
     TEST_F(ggTest, ldrt_test) {
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         instance.WriteCPSR(0x10) ;
         // fill usr reg
         for (int i = 0 ; i < 16 ; ++i)
@@ -59,10 +51,6 @@ egg.init();
     }
 
     TEST_F(ggTest, strt_test) {
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         instance.WriteCPSR(0x10) ;
         // fill usr reg
         for (int i = 0 ; i < 16 ; ++i)

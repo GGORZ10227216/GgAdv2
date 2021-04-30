@@ -9,12 +9,6 @@ namespace {
     TEST_F(ggTest, mul_cpsr_test) {
         using namespace gg_core ;
 
-        Arm egg;
-        egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm ;
-
         unsigned int t = 0 ;
 
         TestField targetRd(0, 0xe, 1) ;
@@ -59,12 +53,6 @@ namespace {
     TEST_F(ggTest, mul_test) {
         using namespace gg_core ;
 
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm ;
-
         unsigned int t = 0 ;
 
         TestField targetRd(0, 0xe, 1) ;
@@ -104,12 +92,6 @@ egg.init();
 
     TEST_F(ggTest, mla_cpsr_test) {
         using namespace gg_core ;
-
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm ;
 
         unsigned int t = 0 ;
 
@@ -157,12 +139,6 @@ egg.init();
 
     TEST_F(ggTest, mla_test) {
         using namespace gg_core ;
-
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm ;
 
         unsigned int t = 0 ;
 

@@ -17,12 +17,6 @@ namespace {
     };
 
     TEST_F(ggTest, strh_post_reg_offset) {
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0 ;
         TestField targetRn(0, 0xf, 1) ;
         TestField targetRd(0, 0xf, 1) ;
@@ -83,12 +77,6 @@ egg.init();
     }
 
     TEST_F(ggTest, strh_imm_post_offset) {
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0 ;
         TestField targetRn(0, 0xf, 1) ;
         TestField targetRd(0, 0xf, 1) ;
@@ -147,12 +135,6 @@ egg.init();
     }
 
     TEST_F(ggTest, strh_reg_pre_offset) {
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0 ;
         TestField targetRn(0, 0xf, 1) ;
         TestField targetRd(0, 0xf, 1) ;
@@ -221,12 +203,6 @@ egg.init();
     }
 
     TEST_F(ggTest, strh_imm_pre_offset) {
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0 ;
         TestField targetRn(0, 0xf, 1) ;
         TestField targetRd(0, 0xf, 1) ;

@@ -14,12 +14,6 @@ namespace {
     TEST_F(ggTest, stmib_test) {
         uint32_t t = 0 ;
 
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         TestField wFlag(0,1,1) ;
         TestField regList(0, 0xffff, 1) ;
         E_RegName targetRn = r4 ;
@@ -76,12 +70,6 @@ egg.init();
     TEST_F(ggTest, stmia_test) {
         uint32_t t = 0 ;
 
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         TestField wFlag(0,1,1) ;
         TestField regList(0, 0xffff, 1) ;
         E_RegName targetRn = r4 ;
@@ -137,12 +125,6 @@ egg.init();
 
     TEST_F(ggTest, stmdb_test) {
         uint32_t t = 0 ;
-
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
 
         TestField wFlag(0,1,1) ;
         TestField regList(0, 0xffff, 1) ;
@@ -202,12 +184,6 @@ egg.init();
 
     TEST_F(ggTest, stmda_test) {
         uint32_t t = 0 ;
-
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
 
         TestField wFlag(0,1,1) ;
         TestField regList(0, 0xffff, 1) ;

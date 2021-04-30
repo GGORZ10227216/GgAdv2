@@ -18,12 +18,6 @@ namespace {
     };
 
     TEST_F(ggTest, ldr_post_imm_offset_test) {
-        Arm egg;
-        egg.init();
-        gg_mem::MMU mmu(std::nullopt);
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -54,10 +48,6 @@ namespace {
             uint32_t inst_hash = hashArm(instruction);
 
             std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-
-            if (t >= 245763)
-                std::cout << std::endl ;
-
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -75,12 +65,6 @@ namespace {
     }
 
     TEST_F(ggTest, ldr_post_reg_offset_test) {
-        Arm egg;
-        egg.init();
-        gg_mem::MMU mmu(std::nullopt);
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -157,12 +141,6 @@ namespace {
     }
 
     TEST_F(ggTest, ldrb_post_imm_offset_test) {
-        Arm egg;
-        egg.init();
-        gg_mem::MMU mmu(std::nullopt);
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -210,12 +188,6 @@ namespace {
     }
 
     TEST_F(ggTest, ldrb_post_reg_offset_test) {
-        Arm egg;
-        egg.init();
-        gg_mem::MMU mmu(std::nullopt);
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -292,12 +264,6 @@ namespace {
     }
 
     TEST_F(ggTest, ldr_pre_imm_offset_test) {
-        Arm egg;
-        egg.init();
-        gg_mem::MMU mmu(std::nullopt);
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -350,12 +316,6 @@ namespace {
     }
 
     TEST_F(ggTest, ldr_pre_reg_offset_test) {
-        Arm egg;
-        egg.init();
-        gg_mem::MMU mmu(std::nullopt);
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -433,12 +393,6 @@ namespace {
     }
 
     TEST_F(ggTest, ldrb_pre_imm_offset_test) {
-        Arm egg;
-        egg.init();
-        gg_mem::MMU mmu(std::nullopt);
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -491,12 +445,6 @@ namespace {
     }
 
     TEST_F(ggTest, ldrb_pre_reg_offset_test) {
-        Arm egg;
-        egg.init();
-        gg_mem::MMU mmu(std::nullopt);
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
