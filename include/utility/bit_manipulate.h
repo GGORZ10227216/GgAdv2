@@ -33,12 +33,9 @@ namespace gg_core {
 
     template <typename T>
     constexpr T rotr(T x, uint32_t n) {
-        enum {
-            CHAR_BIT = 8
-        };
-        n %= sizeof(T) * CHAR_BIT;
-        const size_t shtLeft = CHAR_BIT * sizeof(T) - n;
-        if (shtLeft == sizeof(T) * CHAR_BIT)
+        n %= sizeof(T) * 8;
+        const size_t shtLeft = 8 * sizeof(T) - n;
+        if (shtLeft == sizeof(T) * 8)
             return x >> n;
         else
             return x >> n | (x << shtLeft);

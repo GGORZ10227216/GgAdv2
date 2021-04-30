@@ -34,10 +34,10 @@ project(ggAdv)
         include/component/cpu/cpu_status.h
         include/component/component_class.h
         include/component/cpu/cpu_enum.h
-        include/framework/emu_framework.h
-        include/framework/framework_base.h
-        src/framework/framework_base.cpp
+        include/framework/gba_instance.h
+        src/framework/gba_instance.cpp
         include/component/cpu/cpu.h
+        include/component/memory/mmu_status.h
         include/component/memory/mmu.h
         include/component/io/io.h
         include/gba_bios.h
@@ -50,9 +50,9 @@ project(ggAdv)
         include/utility/bit_manipulate.h include/utility/gg_utility.h include/component/cpu/core/arm/decoder/multiply.h include/component/cpu/core/arm/decoder/memory_access.h
     )
 
-    set(src_core src/framework/logger/console_logger.cpp)
+    set(src_core)
 
-    add_executable(ggAdv main.cpp ${header_core} ${v4_arm_core_src} ${src_core} include/component/memory/memory_exceptions.h include/component/io/io_enum.h include/component/memory/mmu_status.h include/component/memory/handler/bios_handler.h include/component/memory/handler/ewram_handler.h include/component/memory/handler/iwram_handler.h include/component/memory/handler/io_handler.h include/component/memory/handler/palette_handler.h include/component/memory/handler/mirror.h include/component/memory/handler/vram_handler.h include/component/memory/handler/oam_handler.h include/component/memory/handler/handler_table.h include/component/memory/handler/gamepak_handler.h include/component/memory/handler/sram_handler.h include/component/cartridge.h include/component/memory/eeprom.h)
+    add_executable(ggAdv main.cpp ${header_core} ${v4_arm_core_src} ${src_core} include/component/memory/memory_exceptions.h include/component/io/io_enum.h include/component/memory/handler/bios_handler.h include/component/memory/handler/ewram_handler.h include/component/memory/handler/iwram_handler.h include/component/memory/handler/io_handler.h include/component/memory/handler/palette_handler.h include/component/memory/handler/mirror.h include/component/memory/handler/vram_handler.h include/component/memory/handler/oam_handler.h include/component/memory/handler/handler_table.h include/component/memory/handler/gamepak_handler.h include/component/memory/handler/sram_handler.h include/component/cartridge.h include/component/memory/eeprom.h)
     target_link_libraries(ggAdv /usr/local/lib/libfmt.a)
     target_include_directories(ggAdv PUBLIC
         include
@@ -66,6 +66,7 @@ project(ggAdv)
         include/component/memory
         include/framework
         include/utility
+        spdlog/include
     )
 
 project(arm_analyzer)
@@ -92,6 +93,7 @@ target_include_directories(ggBenchmark PUBLIC
         include/instruction/arm
         include/component/cpu/core/arm/implements
         include/utility
+    spdlog/include
         )
 target_link_libraries(ggBenchmark /usr/local/lib/libfmt.a
         /usr/local/lib/libbenchmark.a
@@ -128,6 +130,7 @@ target_include_directories(ggTest PUBLIC
         ./eggvance/eggvance/external/shell/include/
         ggTest
         ggTest/include
+    spdlog/include
         )
 
 target_link_libraries(ggTest /usr/local/lib/libfmt.a

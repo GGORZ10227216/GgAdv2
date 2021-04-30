@@ -67,11 +67,11 @@ namespace gg_core::gg_mem {
                 return ;
             } // if
             else {
-                GGLOG(fmt::format(
+                mmu->logger->warn(
                     "Attempt to WRITE {} value to READ-ONLY IO register 0x{:x}",
                     accessWidthName[ sizeof(T) >> 1 ],
                     absAddr
-                ).c_str());
+                );
             } // else
         } // if
 

@@ -38,7 +38,7 @@ namespace gg_core::gg_mem {
                 case SRAM_WIDTH_MISMATCH:
                     break ;
                 default:
-                    std::cerr << "Unknown memory error!!" << std::endl ;
+                    spdlog::error("Unknown memory error!!") ;
                     std::exit(-1) ;
             } // switch
         }
@@ -57,7 +57,7 @@ namespace gg_core::gg_mem {
                 case SRAM_WIDTH_MISMATCH:
                     break ;
                 default:
-                    std::cerr << "Unknown memory error!!" << std::endl ;
+                    spdlog::error("Unknown memory error!!" );
                     std::exit(-1) ;
             } // switch
         }

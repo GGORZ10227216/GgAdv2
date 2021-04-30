@@ -9,7 +9,10 @@
 
 namespace gg_core::gg_mem {
     struct EEPROM {
-        EEPROM(unsigned& c) : _mmuCycleCounterRef(c){}
+        EEPROM(unsigned& c, sinkType& sink) :
+            logger(std::make_shared<spdlog::logger>("Cartridge", sink)),
+            _mmuCycleCounterRef(c)
+        {}
 
         void Initialize(unsigned t) {
             const unsigned sizeInBlock = t >> 3 ;
@@ -52,7 +55,7 @@ namespace gg_core::gg_mem {
                     break ;
                 case WAIT_CLOSE:
                     if (cmdBit != 0)
-                        gg_core::GGLOG("Invalid EEPROM command: End of transmission signal is not equal to 0") ;
+                        logger->error("Invalid EEPROM command: End of transmission signal is not equal to 0") ;
                     else {
                         _ready = true ;
                         if (_accessMode == 0b11)
@@ -78,7 +81,7 @@ namespace gg_core::gg_mem {
                 } // else
             } // if
             else {
-                GGLOG("Reading data before command sent") ;
+                logger->error("Reading data before command sent") ;
             } // else
 
             return 0 ;
@@ -87,6 +90,7 @@ namespace gg_core::gg_mem {
     private :
         unsigned addrWidth = 0;
         unsigned& _mmuCycleCounterRef ;
+        loggerType logger ;
 
         enum E_WORK_MODE {LISTENING, RECEIVING_ADDR, RECEIVING_DATA, WAIT_CLOSE, TRANSMITTING} ;
         E_WORK_MODE mode = LISTENING ;

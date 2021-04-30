@@ -29,7 +29,7 @@ namespace gg_core {
     }
 
     inline void Unimplemented(const std::string& what) {
-        std::cerr << "Unimplemented: " << what << std::endl ;
+        spdlog::error("Unimplemented: {}", what) ;
         exit(-1) ;
     }
 

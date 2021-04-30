@@ -130,8 +130,9 @@ namespace gg_core::gg_mem {
         unsigned SRAM_MirrorMask = 0x7fff;
         EEPROM eeprom ;
 
-        Cartridge(unsigned& mmuCycleCounter)
-            : eeprom(mmuCycleCounter)
+        Cartridge(unsigned& mmuCycleCounter, sinkType& sink) :
+            logger(std::make_shared<spdlog::logger>("Cartridge", sink)),
+            eeprom(mmuCycleCounter, sink)
         {}
 
         void LoadRom(const char* pathStr) {
@@ -145,12 +146,12 @@ namespace gg_core::gg_mem {
                     _saveType = CheckSaveType();
                 } // if
                 else {
-                    GGLOG("Rom verify failed, probably not a valid GBA rom file.");
+                    logger->error("Rom verify failed, probably not a valid GBA rom file.");
                     std::exit(-1);
                 } // else
             } // if
             else {
-                GGLOG("File does not exist!!");
+                logger->error("File does not exist!!");
                 std::exit(-1);
             } // else
         } // LoadRom()
@@ -202,6 +203,7 @@ namespace gg_core::gg_mem {
 
     private :
         E_SaveType _saveType = E_UNKNOWN;
+        loggerType logger ;
 
         E_SaveType CheckSaveType() {
             const uint32_t entryPointOffset = EntrypointOffset();
@@ -217,6 +219,7 @@ namespace gg_core::gg_mem {
                 } // for
             } // for
 
+            logger->warn("Save type id not found!");
             return E_UNKNOWN;
         } // CheckSaveType()
 

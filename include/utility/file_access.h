@@ -17,7 +17,7 @@ namespace gg_core {
         } // if
         else {
             // logger.LogWarning(fmt::format("File: \"{}\" doesn't exist!", filePath.string())) ;
-            GGLOG("Load file error");
+            spdlog::error("Load file error");
         } // else
     } // LoadFileToBuffer()
 }

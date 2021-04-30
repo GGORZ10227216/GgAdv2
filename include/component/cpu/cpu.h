@@ -8,9 +8,6 @@
 #include <iostream>
 
 #include <arm_decoder.h>
-#include <cpu_status.h>
-#include <mmu.h>
-#include <io.h>
 
 #ifndef GGADV_CPU_H
 #define GGADV_CPU_H
@@ -20,8 +17,9 @@ namespace gg_core::gg_cpu {
     public :
         gg_core::gg_mem::MMU &_mem;
 
-        CPU(gg_mem::MMU &instanceMemory) :
-            _mem(instanceMemory)
+        CPU(gg_mem::MMU &instanceMemory, sinkType& sink) :
+            _mem(instanceMemory),
+            logger(std::make_shared<spdlog::logger>("CPU", sink))
         {
             _mem._cpuStatus = this ;
             fetchedBuffer[0] = _mem.Read32(0);
@@ -62,8 +60,7 @@ namespace gg_core::gg_cpu {
         } // ChangeCpuMode()
 
     private:
-        bool pipelineFilled = false ;
-        int testCnt = 2048 ;
+        loggerType logger ;
 
         void (CPU::*RefillPipelineHandler)() = &CPU::ARM_RefillPipeline ;
 
