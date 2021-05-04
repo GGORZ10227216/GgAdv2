@@ -44,26 +44,26 @@ namespace gg_core::gg_mem {
         /*0xC GAMEPAK_2*/ ReadHandler(GAMEPAK_Read<uint8_t, E_WS2>, GAMEPAK_Read<uint16_t, E_WS2>, GAMEPAK_Read<uint32_t, E_WS2>),
         /*0xD GAMEPAK_2*/ ReadHandler(GAMEPAK_Read<uint8_t, E_WS2>, GAMEPAK_Read<uint16_t, E_WS2>, GAMEPAK_Read<uint32_t, E_WS2>),
         /*0xE SRAM*/      ReadHandler(GAMEPAK_Read<uint8_t, E_SRAM>, GAMEPAK_Read<uint16_t, E_SRAM>, GAMEPAK_Read<uint32_t, E_SRAM>),
-        /*0xF NO USED*/   ReadHandler(NoUsed_Read<uint8_t>, NoUsed_Read<uint16_t>, NoUsed_Read<uint32_t>)
+        /*0xF SRAM_MIRROR*/ReadHandler(GAMEPAK_Read<uint8_t, E_SRAM>, GAMEPAK_Read<uint16_t, E_SRAM>, GAMEPAK_Read<uint32_t, E_SRAM>)
     };
 
     constexpr static std::array<WriteHandler, 16> WriteHandlers {
-            /*0x0 BIOS*/      WriteHandler(BIOS_Write<uint8_t>, BIOS_Write<uint16_t>, BIOS_Write<uint32_t>),
-            /*0x1 NO USED*/   WriteHandler(NoUsed_Write<uint8_t>, NoUsed_Write<uint16_t>, NoUsed_Write<uint32_t>),
-            /*0x2 EWRAM*/     WriteHandler(EWRAM_Write<uint8_t>, EWRAM_Write<uint16_t>, EWRAM_Write<uint32_t>),
-            /*0x3 IWRAM*/     WriteHandler(IWRAM_Write<uint8_t>, IWRAM_Write<uint16_t>, IWRAM_Write<uint32_t>),
-            /*0x4 IO*/        WriteHandler(IO_Write<uint8_t>, IO_Write<uint16_t>, IO_Write<uint32_t>),
-            /*0x5 Palette*/   WriteHandler(Palette_Write<uint8_t>, Palette_Write<uint16_t>, Palette_Write<uint32_t>),
-            /*0x6 VRAM*/      WriteHandler(VRAM_Write<uint8_t>, VRAM_Write<uint16_t>, VRAM_Write<uint32_t>),
-            /*0x7 OAM*/       WriteHandler(OAM_Write<uint8_t>, OAM_Write<uint16_t>, OAM_Write<uint32_t>),
-            /*0x8 GAMEPAK_0*/ WriteHandler(GAMEPAK_Write<uint8_t, E_WS0>, GAMEPAK_Write<uint16_t, E_WS0>, GAMEPAK_Write<uint32_t, E_WS0>),
-            /*0x9 GAMEPAK_0*/ WriteHandler(GAMEPAK_Write<uint8_t, E_WS0>, GAMEPAK_Write<uint16_t, E_WS0>, GAMEPAK_Write<uint32_t, E_WS0>),
-            /*0xA GAMEPAK_1*/ WriteHandler(GAMEPAK_Write<uint8_t, E_WS1>, GAMEPAK_Write<uint16_t, E_WS1>, GAMEPAK_Write<uint32_t, E_WS1>),
-            /*0xB GAMEPAK_1*/ WriteHandler(GAMEPAK_Write<uint8_t, E_WS1>, GAMEPAK_Write<uint16_t, E_WS1>, GAMEPAK_Write<uint32_t, E_WS1>),
-            /*0xC GAMEPAK_2*/ WriteHandler(GAMEPAK_Write<uint8_t, E_WS2>, GAMEPAK_Write<uint16_t, E_WS2>, GAMEPAK_Write<uint32_t, E_WS2>),
-            /*0xD GAMEPAK_2*/ WriteHandler(GAMEPAK_Write<uint8_t, E_WS2>, GAMEPAK_Write<uint16_t, E_WS2>, GAMEPAK_Write<uint32_t, E_WS2>),
-            /*0xE SRAM*/      WriteHandler(GAMEPAK_Write<uint8_t, E_SRAM>, GAMEPAK_Write<uint16_t, E_SRAM>, GAMEPAK_Write<uint32_t, E_SRAM>),
-            /*0xF NO USED*/   WriteHandler(NoUsed_Write<uint8_t>, NoUsed_Write<uint16_t>, NoUsed_Write<uint32_t>)
+        /*0x0 BIOS*/      WriteHandler(BIOS_Write<uint8_t>, BIOS_Write<uint16_t>, BIOS_Write<uint32_t>),
+        /*0x1 NO USED*/   WriteHandler(NoUsed_Write<uint8_t>, NoUsed_Write<uint16_t>, NoUsed_Write<uint32_t>),
+        /*0x2 EWRAM*/     WriteHandler(EWRAM_Write<uint8_t>, EWRAM_Write<uint16_t>, EWRAM_Write<uint32_t>),
+        /*0x3 IWRAM*/     WriteHandler(IWRAM_Write<uint8_t>, IWRAM_Write<uint16_t>, IWRAM_Write<uint32_t>),
+        /*0x4 IO*/        WriteHandler(IO_Write<uint8_t>, IO_Write<uint16_t>, IO_Write<uint32_t>),
+        /*0x5 Palette*/   WriteHandler(Palette_Write<uint8_t>, Palette_Write<uint16_t>, Palette_Write<uint32_t>),
+        /*0x6 VRAM*/      WriteHandler(VRAM_Write<uint8_t>, VRAM_Write<uint16_t>, VRAM_Write<uint32_t>),
+        /*0x7 OAM*/       WriteHandler(OAM_Write<uint8_t>, OAM_Write<uint16_t>, OAM_Write<uint32_t>),
+        /*0x8 GAMEPAK_0*/ WriteHandler(GAMEPAK_Write<uint8_t, E_WS0>, GAMEPAK_Write<uint16_t, E_WS0>, GAMEPAK_Write<uint32_t, E_WS0>),
+        /*0x9 GAMEPAK_0*/ WriteHandler(GAMEPAK_Write<uint8_t, E_WS0>, GAMEPAK_Write<uint16_t, E_WS0>, GAMEPAK_Write<uint32_t, E_WS0>),
+        /*0xA GAMEPAK_1*/ WriteHandler(GAMEPAK_Write<uint8_t, E_WS1>, GAMEPAK_Write<uint16_t, E_WS1>, GAMEPAK_Write<uint32_t, E_WS1>),
+        /*0xB GAMEPAK_1*/ WriteHandler(GAMEPAK_Write<uint8_t, E_WS1>, GAMEPAK_Write<uint16_t, E_WS1>, GAMEPAK_Write<uint32_t, E_WS1>),
+        /*0xC GAMEPAK_2*/ WriteHandler(GAMEPAK_Write<uint8_t, E_WS2>, GAMEPAK_Write<uint16_t, E_WS2>, GAMEPAK_Write<uint32_t, E_WS2>),
+        /*0xD GAMEPAK_2*/ WriteHandler(GAMEPAK_Write<uint8_t, E_WS2>, GAMEPAK_Write<uint16_t, E_WS2>, GAMEPAK_Write<uint32_t, E_WS2>),
+        /*0xE SRAM*/      WriteHandler(GAMEPAK_Write<uint8_t, E_SRAM>, GAMEPAK_Write<uint16_t, E_SRAM>, GAMEPAK_Write<uint32_t, E_SRAM>),
+        /*0xF SRAM_MIRROR*/WriteHandler(GAMEPAK_Write<uint8_t, E_SRAM>, GAMEPAK_Write<uint16_t, E_SRAM>, GAMEPAK_Write<uint32_t, E_SRAM>)
     };
 }
 
