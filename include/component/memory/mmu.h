@@ -87,19 +87,18 @@ namespace gg_core::gg_mem {
             if (addrTrait > 0xf)
                 addrTrait = 0xf ;
 
-            std::get<(sizeof(W) >> 1)>(WriteHandlers[ addrTrait ])(this, addr, value) ;
+            std::get<(sizeof(W) >> 1)>(WriteHandlers[ addrTrait ])(this, alignedAddr, value) ;
         } // Write()
 
         template<typename W>
         W Read(uint32_t addr) {
-
             const uint32_t alignedAddr = AlignAddr<W>(addr);
             unsigned addrTrait = (alignedAddr & 0xff000000) >> 24;
 
             if (addrTrait > 0xf)
                 addrTrait = 0xf ;
 
-            return std::get<(sizeof(W) >> 1)>(ReadHandlers[ addrTrait ])(this, addr) ;
+            return std::get<(sizeof(W) >> 1)>(ReadHandlers[ addrTrait ])(this, alignedAddr) ;
         } // Read()
     };
 }
