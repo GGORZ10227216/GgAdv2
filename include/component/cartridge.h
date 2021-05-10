@@ -133,7 +133,9 @@ namespace gg_core::gg_mem {
         Cartridge(unsigned& mmuCycleCounter, sinkType& sink) :
             logger(std::make_shared<spdlog::logger>("Cartridge", sink)),
             eeprom(mmuCycleCounter, sink)
-        {}
+        {
+            SRAM.fill(0xff) ;
+        }
 
         void LoadRom(const char* pathStr) {
             using namespace std::filesystem;
