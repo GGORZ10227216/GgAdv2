@@ -468,10 +468,6 @@ uint32_t HalfTransferInstruction(V value) {
     else if constexpr (F == F_Type::U) {
         result |= (value & 0x1) << 23;
     } // else if
-    else if constexpr (F == F_Type::I) {
-        static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
-        result |= value << 22 ;
-    } // else if
     else if constexpr (F == F_Type::W) {
         result |= (value & 0x1) << 21;
     } // else if
@@ -498,7 +494,7 @@ uint32_t HalfTransferInstruction(V value) {
         result |= value ;
     } // else if
     else if constexpr (F == F_Type::Offset) {
-        result |= (value >> 4) << 8 ;
+        result |= (value & 0xf0) ;
         result |= (value & 0xf) ;
         result |= (1 << 22) ;
     } // else if
