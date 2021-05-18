@@ -5,9 +5,10 @@
 #include <sstream>
 
 #include <spdlog/spdlog.h>
-#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/null_sink.h>
+#include <spdlog/sinks/stdout_sinks.h>
 
-using LOG = spdlog::sinks::basic_file_sink_mt ;
+using LOG = spdlog::sinks::null_sink_st ;
 using sinkType = std::shared_ptr<LOG> ;
 using loggerType = std::shared_ptr<spdlog::logger> ;
 
@@ -28,11 +29,10 @@ namespace gg_core {
     struct GbaInstance {
         GbaInstance(const char* romPath) :
             oss(),
-            logSink(std::make_shared<LOG>("log.txt")),
+            logSink(std::make_shared<LOG>()),
             mmu(romPath, logSink),
             cpu(mmu, logSink)
         {
-
         }
 
         std::ostringstream oss ;
