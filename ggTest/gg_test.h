@@ -21,6 +21,7 @@
 #include <gg_utility.h>
 #include <cpu_enum.h>
 #include <loop_tool.h>
+#include <core/core.h>
 
 #ifndef GGTEST_GG_TEST_H
 #define GGTEST_GG_TEST_H
@@ -85,7 +86,7 @@ protected:
     gg_core::GbaInstance gbaInstance ;
     gg_core::gg_mem::MMU& gg_mmu;
     gg_core::gg_cpu::CPU& instance;
-    constexpr static char* testRomPath = "/home/buildmachine/GgAdv2/ggTest/testRom.gba" ;
+    constexpr static char* testRomPath = "./testRom.gba" ;
 
     ArmAssembler gg_asm;
 
@@ -494,7 +495,7 @@ uint32_t HalfTransferInstruction(V value) {
         result |= value ;
     } // else if
     else if constexpr (F == F_Type::Offset) {
-        result |= (value & 0xf0) ;
+        result |= ((value & 0xf0) << 4);
         result |= (value & 0xf) ;
         result |= (1 << 22) ;
     } // else if

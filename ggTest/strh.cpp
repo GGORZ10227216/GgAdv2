@@ -186,7 +186,7 @@ namespace {
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
-            uint16_t memValueMine = instance._mem.Read16(targetAddr) ;
+            uint16_t memValueMine = instance._mem.Read16(targetAddr & ~0x1) ;
             uint16_t memValueRef = egg.readHalf(targetAddr) ;
 
             uint32_t memChk = memValueMine == memValueRef && memValueMine != 0 ;
@@ -248,7 +248,7 @@ namespace {
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
-            uint16_t memValueMine = instance._mem.Read16(targetAddr) ;
+            uint16_t memValueMine = instance._mem.Read16(targetAddr & ~0x1) ;
             uint16_t memValueRef = egg.readHalf(targetAddr) ;
 
             uint32_t memChk = memValueMine == memValueRef && memValueMine != 0 ;

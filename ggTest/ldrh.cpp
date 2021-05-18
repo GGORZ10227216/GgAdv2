@@ -51,9 +51,6 @@ namespace {
                     targetRm.value
             );
 
-            if (t == 473956354)
-                std::cout << std::endl ;
-
             instance._regs[targetRn.value] = addrPair[writeMode.value].first;
             instance._regs[targetRm.value] = RmValue.value;
             instance._mem.Write16(addrPair[writeMode.value].first, testValue[memValueIdx.value]);
