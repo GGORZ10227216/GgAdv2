@@ -17,7 +17,7 @@ namespace gg_core::gg_mem {
         // 04000000-040003FE   I/O Registers
         using namespace gg_io ;
 
-        const uint32_t relativeAddr = absAddr - ioStart ;
+        const uint32_t relativeAddr = AlignAddr<T>(absAddr - ioStart) ;
         T result = 0 ;
         if (relativeAddr < E_RamSize::E_IO_SIZE) {
             mmu->_cycleCounter += IO_ACCESS_CYCLE();
@@ -49,7 +49,7 @@ namespace gg_core::gg_mem {
         // 04000000-040003FE   I/O Registers
         using namespace gg_io ;
 
-        const uint32_t relativeAddr = absAddr - ioStart ;
+        const uint32_t relativeAddr = AlignAddr<T>(absAddr - ioStart) ;
         if (relativeAddr < E_RamSize::E_IO_SIZE) {
             mmu->_cycleCounter += IO_ACCESS_CYCLE();
             const auto curPolicy = static_cast<E_IO_AccessMode> (policyTable[relativeAddr]) ;

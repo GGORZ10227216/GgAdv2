@@ -17,18 +17,6 @@
 
 namespace gg_core::gg_mem {
     template<typename W>
-    inline unsigned AlignAddr(uint32_t addr) {
-        if constexpr (SameSize<W, BYTE>())
-            return addr;
-        else if constexpr (SameSize<W, WORD>())
-            return addr & ~0x1;
-        else if constexpr (SameSize<W, DWORD>())
-            return addr & ~0x3;
-        else
-            gg_core::Unreachable();
-    } // AddrAlign()
-
-    template<typename W>
     inline unsigned CountAccessRotate(uint32_t addr) {
         if constexpr (SameSize<W, BYTE>())
             return 0;
@@ -95,19 +83,19 @@ namespace gg_core::gg_mem {
         } // Write()
 
         template<typename W>
-        uint32_t Read(uint32_t addr) {
+        uint32_t Read(uint32_t absAddr) {
             // Strange behavior of "Read WORD from unaligned address":
             // According to the NO$GBA's behavior, 16bit read still need
             // rotating. And address is aligned to 16bit bus.
             // But rotating result is affect to "whole 32bit register",
             // that means we need to fixed the return type of Read() to 32bit
-            const uint32_t alignedAddr = AlignAddr<W>(addr);
-            unsigned addrTrait = (alignedAddr & 0xff000000) >> 24;
+            // const uint32_t alignedAddr = AlignAddr<W>(addr);
+            unsigned addrTrait = (absAddr & 0xff000000) >> 24;
 
             if (addrTrait > 0xf)
-                return NoUsed_Read<W>(this, alignedAddr) ;
+                return NoUsed_Read<W>(this, absAddr) ;
 
-            return std::get<(sizeof(W) >> 1)>(ReadHandlers[ addrTrait ])(this, alignedAddr) ;
+            return std::get<(sizeof(W) >> 1)>(ReadHandlers[ addrTrait ])(this, absAddr) ;
         } // Read()
     };
 }

@@ -12,6 +12,18 @@
 #define GGTEST_MMU_STATUS_H
 
 namespace gg_core::gg_mem {
+    template<typename W>
+    inline unsigned AlignAddr(uint32_t addr) {
+        if constexpr (SameSize<W, BYTE>())
+            return addr;
+        else if constexpr (SameSize<W, WORD>())
+            return addr & ~0x1;
+        else if constexpr (SameSize<W, DWORD>())
+            return addr & ~0x3;
+        else
+            gg_core::Unreachable();
+    } // AddrAlign()
+
     struct MMU_Status {
         using NS_CYCLE_VALUE = std::pair<uint8_t, uint8_t>;
 

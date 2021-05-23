@@ -12,7 +12,7 @@
 namespace gg_core::gg_mem {
     template <typename T>
     auto VRAM_Read(MMU_Status* mmu, uint32_t absAddr) {
-        const uint32_t relativeAddr = VRAM_MIRROR(absAddr);
+        const uint32_t relativeAddr = VRAM_MIRROR(AlignAddr<T>(absAddr));
         VideoRAM& vram = mmu->videoRAM ;
         mmu->_cycleCounter += VRAM_ACCESS_CYCLE<T>();
         return reinterpret_cast<T&>(vram.vram_data[relativeAddr]);
@@ -20,7 +20,7 @@ namespace gg_core::gg_mem {
 
     template <typename T>
     void VRAM_Write(MMU_Status* mmu, uint32_t absAddr, T data) {
-        const uint32_t relativeAddr = VRAM_MIRROR(absAddr);
+        const uint32_t relativeAddr = VRAM_MIRROR(AlignAddr<T>(absAddr));
         VideoRAM& vram = mmu->videoRAM ;
         mmu->_cycleCounter += VRAM_ACCESS_CYCLE<T>();
 
