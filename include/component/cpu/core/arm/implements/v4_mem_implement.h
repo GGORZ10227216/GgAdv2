@@ -140,7 +140,8 @@ namespace gg_core::gg_cpu {
             else {
                 // LDRSH
                 /// fixme: need rotate?
-                Rd = (static_cast<int32_t>(instance._mem.Read16(targetAddr)) << 16) >> 16 ; // sign extend
+                const unsigned extShiftAmount = targetAddr & 1 ? 24 : 16 ;
+                Rd = (static_cast<int32_t>(instance._mem.Read16(targetAddr)) << extShiftAmount) >> extShiftAmount ; // sign extend
                 if (RdNumber == pc)
                     instance.RefillPipeline();
             } // else
