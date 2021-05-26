@@ -4,7 +4,7 @@
 
 #include <thread>
 
-#include <framework_base.h>
+#include <gba_instance.h>
 #include <cpu.h>
 
 #ifndef GGADV_FRAMEWORK_H

@@ -17,12 +17,6 @@ namespace {
     TEST_F(ggTest, swp_test) {
         using namespace gg_core;
 
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         uint64_t t = 0 ;
         TestField targetRd(0, 0xe, 1) ;
         TestField targetRn(0, 0xe, 1) ;
@@ -69,12 +63,6 @@ egg.init();
 
     TEST_F(ggTest, swpb_test) {
         using namespace gg_core;
-
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
 
         uint64_t t = 0 ;
         TestField targetRd(0, 0xe, 1) ;

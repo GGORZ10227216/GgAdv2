@@ -11,17 +11,25 @@
 
 namespace gg_core::gg_mem {
     template <typename T>
-    auto OAM_Read(MMU_Status* mmu, uint32_t addr) {
-        const uint32_t relativeAddr = NORMAL_MIRROR(addr, E_OAM_SIZE);
-        mmu->_cycleCounter = OAM_ACCESS_CYCLE();
-        return reinterpret_cast<T&>(mmu->OAM[relativeAddr]);
+    auto OAM_Read(MMU_Status* mmu, uint32_t absAddr) {
+        const uint32_t relativeAddr = NORMAL_MIRROR(AlignAddr<T>(absAddr), E_OAM_SIZE);
+        VideoRAM& vram = mmu->videoRAM ;
+        mmu->_cycleCounter += OAM_ACCESS_CYCLE();
+        return reinterpret_cast<T&>(vram.oam_data[relativeAddr]);
     } // IWRAM_Read()
 
     template <typename T>
-    void OAM_Write(MMU_Status* mmu, uint32_t addr, T data) {
-        const uint32_t relativeAddr = NORMAL_MIRROR(addr, E_OAM_SIZE);
-        mmu->_cycleCounter = OAM_ACCESS_CYCLE();
-        reinterpret_cast<T&>(mmu->OAM[relativeAddr]) = data;
+    void OAM_Write(MMU_Status* mmu, uint32_t absAddr, T data) {
+        const uint32_t relativeAddr = NORMAL_MIRROR(AlignAddr<T>(absAddr), E_OAM_SIZE);
+        VideoRAM& vram = mmu->videoRAM ;
+        mmu->_cycleCounter += OAM_ACCESS_CYCLE();
+
+        if constexpr (sizeof(T) == 1) {
+            // byte write to OAM is ignored
+            return ;
+        } // if
+
+        reinterpret_cast<T&>(vram.oam_data[relativeAddr]) = data;
     } // IWRAM_Write()
 }
 

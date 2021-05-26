@@ -6,11 +6,24 @@
 #include <cstdint>
 
 #include <cartridge.h>
+#include <display_memory.h>
 
 #ifndef GGTEST_MMU_STATUS_H
 #define GGTEST_MMU_STATUS_H
 
 namespace gg_core::gg_mem {
+    template<typename W>
+    inline unsigned AlignAddr(uint32_t addr) {
+        if constexpr (SameSize<W, BYTE>())
+            return addr;
+        else if constexpr (SameSize<W, WORD>())
+            return addr & ~0x1;
+        else if constexpr (SameSize<W, DWORD>())
+            return addr & ~0x3;
+        else
+            gg_core::Unreachable();
+    } // AddrAlign()
+
     struct MMU_Status {
         using NS_CYCLE_VALUE = std::pair<uint8_t, uint8_t>;
 
@@ -21,12 +34,8 @@ namespace gg_core::gg_mem {
         std::array<uint8_t, 0x8000> IWRAM{};
         std::array<uint8_t, 0x400> IOReg{};
 
-        std::array<uint8_t, 0x400> palette{};
-        std::array<uint8_t, 0x18000> VRAM{};
-        std::array<uint8_t, 0x400> OAM{};
-
-        std::vector<uint8_t> ROM_WS0, ROM_WS1, ROM_WS2;
         Cartridge cartridge ;
+        VideoRAM videoRAM ;
 
         std::array<NS_CYCLE_VALUE, 4> CurrentWaitStates{
                 NS_CYCLE_VALUE(N_CYCLE_TABLE[0], S_CYCLE_TABLE[0]), // WS0
@@ -41,16 +50,17 @@ namespace gg_core::gg_mem {
         uint32_t bios_readBuf = 0 ;
         uint32_t dummy = 0 ;
 
-        gg_cpu::CPU_Status *const _cpuStatus = nullptr;
+        gg_cpu::CPU_Status * _cpuStatus = nullptr;
 
-        MMU_Status()
+        MMU_Status(const std::optional<std::filesystem::path> &romPath, sinkType& sink) :
+            cartridge(_cycleCounter, sink),
+            logger(std::make_shared<spdlog::logger>("MMU", sink))
         {
-            /*MMU without cartridge, for debug only*/
-        }
-
-        MMU_Status(const char* romPath) :
-            cartridge(romPath)
-        {
+            if (romPath.has_value())
+                cartridge.LoadRom(romPath.value().c_str()) ;
+            else {
+                logger->warn("Emulator is working under DEBUG mode(no ROM loaded!!)") ;
+            } // else
 
         }
 
@@ -61,16 +71,16 @@ namespace gg_core::gg_mem {
                 Unimplemented("thumb invalid memory access");
         } // IllegalReadValue()
 
-        void IllegalWriteBehavior(E_ErrorType errType) {
-            switch (errType) {
-                case SRAM_WIDTH_MISMATCH:
-                    Unimplemented("SRAM 16/32bit access");
-                    break;
-                default:
-                    std::cerr << "Unknown memory runtime error!!" << std::endl;
-                    exit(-1);
-            } // switch
-        } // IllegalReadBehavior()
+//        void IllegalWriteBehavior(E_ErrorType errType) {
+//            switch (errType) {
+//                case SRAM_WIDTH_MISMATCH:
+//                    Unimplemented("SRAM 16/32bit access");
+//                    break;
+//                default:
+//                    std::cerr << "Unknown memory runtime error!!" << std::endl;
+//                    exit(-1);
+//            } // switch
+//        } // IllegalReadBehavior()
 
         void UpdateWaitState() {
             const uint16_t WAITCNT = IOReg[ 0x204 ] ;
@@ -94,6 +104,8 @@ namespace gg_core::gg_mem {
             CurrentWaitStates[ E_WS2 ].first = N_CYCLE_TABLE[ wc_ws2_n ] ;
             CurrentWaitStates[ E_WS2 ].second = S_CYCLE_TABLE[ wc_ws2_s + 4 ] ;
         } // UpdateWaitState()
+
+        loggerType logger ;
     };
 }
 

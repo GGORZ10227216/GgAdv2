@@ -11,12 +11,12 @@
 #define TEST_IOREG_TYPE_H
 
 namespace gg_core::gg_io {
-    uint8_t& IO_Access(gg_mem::MMU_Status* _mmu, uint32_t addr) {
-        // read
-        switch (addr) {
-
-        }
-    }
+//    uint8_t& IO_Access(gg_mem::MMU_Status* _mmu, uint32_t addr) {
+//        // read
+//        switch (addr) {
+//
+//        }
+//    }
 }
 
 #endif //TEST_IOREG_TYPE_H

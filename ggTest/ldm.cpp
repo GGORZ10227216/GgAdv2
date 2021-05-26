@@ -12,11 +12,6 @@ namespace {
     TEST_F(ggTest, ldmib_test) {
         // ldmib -> pre-increment load, [L,P,U] == [1,1,1]
         uint32_t t = 0 ;
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
 
         TestField wFlag(0,1,1) ;
         E_RegName targetRn = r4 ;
@@ -64,11 +59,6 @@ egg.init();
     TEST_F(ggTest, ldmia_test) {
         // ldmia -> post-increment load, [L,P,U] == [1,0,1]
         uint32_t t = 0 ;
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
 
         TestField wFlag(0,1,1) ;
         E_RegName targetRn = r4 ;
@@ -116,11 +106,6 @@ egg.init();
     TEST_F(ggTest, ldmdb_test) {
         // ldmdb -> pre-decrement load, [L,P,U] == [1,1,0]
         uint32_t t = 0 ;
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
 
         TestField wFlag(0,1,1) ;
         E_RegName targetRn = r4 ;
@@ -168,11 +153,6 @@ egg.init();
     TEST_F(ggTest, ldmda_test) {
         // ldmda -> post-decrement load, [L,P,U] == [1,0,0]
         uint32_t t = 0 ;
-        Arm egg;
-egg.init();
-        gg_mem::MMU mmu(std::nullopt) ;
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
 
         TestField wFlag(0,1,1) ;
         E_RegName targetRn = r4 ;

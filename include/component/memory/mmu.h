@@ -5,36 +5,17 @@
 #include <filesystem>
 #include <optional>
 
-#include <gg_utility.h>
-#include <bit_manipulate.h>
 #include <mem_enum.h>
 #include <mmu_status.h>
-#include <display_memory.h>
 #include <gamepak_memory.h>
 #include <general_memory.h>
 #include <memory_exceptions.h>
 #include <handler/handler_table.h>
-#include <io.h>
 
 #ifndef GGADV_MMU_H
 #define GGADV_MMU_H
 
 namespace gg_core::gg_mem {
-    // todo: invalid memory access handle
-    // todo: mmu refactoring
-
-    template<typename W>
-    inline unsigned AlignAddr(uint32_t addr) {
-        if constexpr (SameSize<W, BYTE>())
-            return addr;
-        else if constexpr (SameSize<W, WORD>())
-            return addr & ~0x1;
-        else if constexpr (SameSize<W, DWORD>())
-            return addr & ~0x3;
-        else
-            gg_core::Unreachable();
-    } // AddrAlign()
-
     template<typename W>
     inline unsigned CountAccessRotate(uint32_t addr) {
         if constexpr (SameSize<W, BYTE>())
@@ -49,25 +30,22 @@ namespace gg_core::gg_mem {
 
     class MMU : public MMU_Status {
     public :
-        MMU(const std::optional<std::filesystem::path> &romPath):
-            MMU_Status(romPath.value().c_str())
+        MMU(const std::optional<std::filesystem::path> &romPath, sinkType& sink):
+            MMU_Status(romPath, sink)
         {
-            // fixme: leave bios data to all zero for debugging
-            bios_data.fill(0);
-            // memcpy( bios_data.data(), biosData.data(), biosData.size() ) ;
-
-            // fixme: open all gamepak memory area for debug only
-            ROM_WS0.reserve(0x2000000);
-            ROM_WS1.reserve(0x2000000);
-            ROM_WS2.reserve(0x2000000);
+            memcpy( bios_data.data(), biosData.data(), biosData.size() ) ;
         }
 
         uint8_t Read8(unsigned addr) {
             return Read<uint8_t>(addr);
         } // Read8()
 
-        uint16_t Read16(unsigned addr) {
-            return Read<uint16_t>(addr);
+        uint32_t Read16(unsigned addr) {
+            // fixed return type to uint32_t, see Read<uint16_t>()
+            // for detail.
+            const unsigned rotate = CountAccessRotate<WORD>(addr);
+            uint32_t result = Read<uint16_t>(addr);
+            return rotr(result, rotate);
         } // Read16()
 
         uint32_t Read32(unsigned addr) {
@@ -95,22 +73,30 @@ namespace gg_core::gg_mem {
 
         template<typename W, typename T>
         void Write(uint32_t addr, T value) requires std::is_same_v<W, T> {
-            try {
-                _addrBus = addr;
-                _dataBus = value;
-                reinterpret_cast<W &> (_Access<WRITE, W>()) = value;
-            } catch (InvalidAccessException &e) {
-                std::cout << e.what() << std::endl;
-                IllegalWriteBehavior(e._errType);
-            }
+            const uint32_t alignedAddr = AlignAddr<W>(addr);
+            unsigned addrTrait = (alignedAddr & 0xff000000) >> 24;
+
+            if (addrTrait > 0xf)
+                NoUsed_Write<W>(this, alignedAddr, value) ;
+
+            std::get<(sizeof(W) >> 1)>(WriteHandlers[ addrTrait ])(this, alignedAddr, value) ;
         } // Write()
 
         template<typename W>
-        W Read(uint32_t addr) {
-            const uint32_t alignedAddr = AlignAddr<W>(addr);
-            const unsigned addrTrait = (alignedAddr & 0x0f000000) >> 24;
-            return std::get<(sizeof(W) >> 1)>(ReadHandlers[ addrTrait ])(this, addr) ;
-        } // Write()
+        uint32_t Read(uint32_t absAddr) {
+            // Strange behavior of "Read WORD from unaligned address":
+            // According to the NO$GBA's behavior, 16bit read still need
+            // rotating. And address is aligned to 16bit bus.
+            // But rotating result is affect to "whole 32bit register",
+            // that means we need to fixed the return type of Read() to 32bit
+            // const uint32_t alignedAddr = AlignAddr<W>(addr);
+            unsigned addrTrait = (absAddr & 0xff000000) >> 24;
+
+            if (addrTrait > 0xf)
+                return NoUsed_Read<W>(this, absAddr) ;
+
+            return std::get<(sizeof(W) >> 1)>(ReadHandlers[ addrTrait ])(this, absAddr) ;
+        } // Read()
     };
 }
 

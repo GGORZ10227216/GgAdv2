@@ -19,12 +19,6 @@ namespace {
     };
 
     TEST_F(ggTest, ldrh_reg_post_offset) {
-        Arm egg;
-        egg.init();
-        gg_mem::MMU mmu(std::nullopt);
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -57,9 +51,6 @@ namespace {
                     targetRm.value
             );
 
-            if (t == 473956354)
-                std::cout << std::endl ;
-
             instance._regs[targetRn.value] = addrPair[writeMode.value].first;
             instance._regs[targetRm.value] = RmValue.value;
             instance._mem.Write16(addrPair[writeMode.value].first, testValue[memValueIdx.value]);
@@ -87,12 +78,6 @@ namespace {
     }
 
     TEST_F(ggTest, ldrh_imm_post_offset) {
-        Arm egg;
-        egg.init();
-        gg_mem::MMU mmu(std::nullopt);
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -149,12 +134,6 @@ namespace {
     }
 
     TEST_F(ggTest, ldrh_reg_pre_offset) {
-        Arm egg;
-        egg.init();
-        gg_mem::MMU mmu(std::nullopt);
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -194,9 +173,8 @@ namespace {
             egg.regs[targetRn.value] = addrPair[writeMode.value].first;
             egg.regs[targetRm.value] = RmValue.value;
 
-            uint32_t targetAddr = addrPair[writeMode.value].first;
-            targetAddr = addrPair[writeMode.value].second ? targetAddr + RmValue.value : targetAddr - RmValue.value;
-
+            uint32_t targetAddr = addrPair[ writeMode.value ].first ;
+            targetAddr = addrPair[ writeMode.value ].second ? targetAddr + RmValue.value : targetAddr - RmValue.value ;
 
             instance._mem.Write16(targetAddr, testValue[memValueIdx.value]);
             egg.writeHalf(targetAddr, testValue[memValueIdx.value]);
@@ -220,12 +198,6 @@ namespace {
     }
 
     TEST_F(ggTest, ldrh_imm_pre_offset) {
-        Arm egg;
-        egg.init();
-        gg_mem::MMU mmu(std::nullopt);
-        CPU instance(mmu);
-        ArmAssembler gg_asm;
-
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -261,9 +233,8 @@ namespace {
             instance._regs[targetRn.value] = addrPair[writeMode.value].first;
             egg.regs[targetRn.value] = addrPair[writeMode.value].first;
 
-            uint32_t targetAddr = addrPair[writeMode.value].first;
-            targetAddr = addrPair[writeMode.value].second ? targetAddr + immOffset.value : targetAddr - immOffset.value;
-
+            uint32_t targetAddr = addrPair[ writeMode.value ].first ;
+            targetAddr = addrPair[ writeMode.value ].second ? targetAddr + immOffset.value : targetAddr - immOffset.value ;
 
             instance._mem.Write16(targetAddr, testValue[memValueIdx.value]);
             egg.writeHalf(targetAddr, testValue[memValueIdx.value]);

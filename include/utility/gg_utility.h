@@ -3,6 +3,7 @@
 //
 
 #include <type_traits>
+#include <logger.h>
 
 #ifndef GGTEST_GG_UTILITY_H
 #define GGTEST_GG_UTILITY_H
@@ -28,13 +29,14 @@ namespace gg_core {
     }
 
     inline void Unimplemented(const std::string& what) {
-        std::cerr << "Unimplemented: " << what << std::endl ;
+        spdlog::error("Unimplemented: {}", what) ;
         exit(-1) ;
     }
 
-    void GGLOG(const char* what) {
+    template <typename T>
+    static inline void GG_DEBUG(const char* what, T* self) {
         // temporary implement
-        std::cout << what << std::endl ;
+        self->logger.Debug(what) ;
     }
 }
 

@@ -8,37 +8,30 @@
 #include <iostream>
 
 #include <arm_decoder.h>
-#include <cpu_status.h>
-#include <mmu.h>
-#include <io.h>
 
-#ifndef GGADV_GBA_INSTANCE_H
-#define GGADV_GBA_INSTANCE_H
+#ifndef GGADV_CPU_H
+#define GGADV_CPU_H
 
 namespace gg_core::gg_cpu {
     class CPU final : public CPU_Status {
     public :
         gg_core::gg_mem::MMU &_mem;
 
-        CPU(gg_mem::MMU &instanceMemory) :
-            _mem(instanceMemory)
+        CPU(gg_mem::MMU &instanceMemory, sinkType& sink) :
+            _mem(instanceMemory),
+            logger(std::make_shared<spdlog::logger>("CPU", sink))
         {
             _mem._cpuStatus = this ;
             fetchedBuffer[0] = _mem.Read32(0);
             fetchedBuffer[1] = _mem.Read32(4);
-            _regs[pc] = 8;
+            _regs[pc] = 4;
             fetchIdx = 1;
         } // CPU()
 
         void CPUTick() {
-            try {
-                currentInstruction = fetchedBuffer[ !fetchIdx ] ;
-                std::invoke(Fetch, this) ;
-                instructionTable[ iHash(currentInstruction) ](*this) ;
-            } catch (gg_mem::MMU::InvalidAccessException& e) {
-                std::cout << e.what() << std::endl ;
-                exit(-1) ;
-            } // try-catch()
+            currentInstruction = fetchedBuffer[ !fetchIdx ] ;
+            std::invoke(Fetch, this) ;
+            instructionTable[ iHash(currentInstruction) ](*this) ;
         } // Tick()
 
         void CPU_Test(uint32_t inst) {
@@ -67,8 +60,7 @@ namespace gg_core::gg_cpu {
         } // ChangeCpuMode()
 
     private:
-        bool pipelineFilled = false ;
-        int testCnt = 2048 ;
+        loggerType logger ;
 
         void (CPU::*RefillPipelineHandler)() = &CPU::ARM_RefillPipeline ;
 
@@ -131,4 +123,4 @@ namespace gg_core::gg_cpu {
 #include <v4_psr_implement.h>
 #include <v4_branch_implement.h>
 
-#endif //GGADV_GBA_INSTANCE_H
+#endif //GGADV_CPU_H

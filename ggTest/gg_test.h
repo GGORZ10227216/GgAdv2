@@ -16,11 +16,12 @@
 #include <capstone/capstone.h>
 #include <keystone/keystone.h>
 
-#include <component/cpu/cpu.h>
-#include <arm/arm.h>
+#include <gba_instance.h>
+#include <core/core.h>
 #include <gg_utility.h>
 #include <cpu_enum.h>
 #include <loop_tool.h>
+#include <core/core.h>
 
 #ifndef GGTEST_GG_TEST_H
 #define GGTEST_GG_TEST_H
@@ -81,6 +82,22 @@ private:
 
 class ggTest : public testing::Test {
 protected:
+    Arm& egg = arm;
+    gg_core::GbaInstance gbaInstance ;
+    gg_core::gg_mem::MMU& gg_mmu;
+    gg_core::gg_cpu::CPU& instance;
+    constexpr static char* testRomPath = "./testRom.gba" ;
+
+    ArmAssembler gg_asm;
+
+    ggTest():
+        gbaInstance(testRomPath),
+        gg_mmu(gbaInstance.mmu),
+        instance(gbaInstance.cpu)
+    {
+
+    }
+
     constexpr uint hashArm(u32 instr)
     {
         return ((instr >> 16) & 0xFF0) | ((instr >> 4) & 0xF);
@@ -98,10 +115,10 @@ protected:
         if (mine.ReadCPSR() != egg.cpsr)
             status_flag |= gg_core::_BV(16) ;
 
-//        if (egg.pipe[0] != mine.fetchedBuffer[ !mine.pipelineCnt ])
-//            status_flag |= gg_core::_BV(17) ;
-//        if (egg.pipe[1] != mine.fetchedBuffer[ mine.pipelineCnt ])
-//            status_flag |= gg_core::_BV(18) ;
+        if (egg.pipe[0] != mine.fetchedBuffer[ !mine.fetchIdx ])
+            status_flag |= gg_core::_BV(17) ;
+        if (egg.pipe[1] != mine.fetchedBuffer[ mine.fetchIdx ])
+            status_flag |= gg_core::_BV(18) ;
 
         return status_flag ;
     }
@@ -116,16 +133,32 @@ protected:
                     result += fmt::format("\t[X] r{}: mine={:x} ref={:x}\n", i, mine._regs[i], egg.regs[i]) ;
                 else if ( i == 16 )
                     result += fmt::format("\t[X] cpsr: mine={:x} ref={:x}\n", mine.ReadCPSR(), egg.cpsr) ;
-//                else if ( i == 17 )
-//                    result += fmt::format("\t[X] pipeline[0]: mine={:x} ref={:x}\n",
-//                                          mine.fetchedBuffer[ !mine.pipelineCnt ], egg.pipe[0]) ;
-//                else if ( i == 18 )
-//                    result += fmt::format("\t[X] pipeline[1]: mine={:x} ref={:x}\n",
-//                                          mine.fetchedBuffer[ mine.pipelineCnt ], egg.pipe[1]) ;
+                else if ( i == 17 )
+                    result += fmt::format("\t[X] pipeline[0]: mine={:x} ref={:x}\n",
+                                          mine.fetchedBuffer[ !mine.fetchIdx ], egg.pipe[0]) ;
+                else if ( i == 18 )
+                    result += fmt::format("\t[X] pipeline[1]: mine={:x} ref={:x}\n",
+                                          mine.fetchedBuffer[ mine.fetchIdx ], egg.pipe[1]) ;
             } // if
         } // for
 
         return result ;
+    }
+
+    virtual void SetUp() override {
+        EggInit();
+    }
+
+    void EggInit() {
+        const int argc = 2 ;
+        static const char* argv[ argc ] = {
+                "",
+                testRomPath
+        } ;
+
+        core::init(argc, argv);
+        std::copy(biosData.begin(), biosData.end(), mmu.bios.data.begin());
+        core::reset();
     }
 };
 
@@ -436,10 +469,6 @@ uint32_t HalfTransferInstruction(V value) {
     else if constexpr (F == F_Type::U) {
         result |= (value & 0x1) << 23;
     } // else if
-    else if constexpr (F == F_Type::I) {
-        static_assert(std::is_same_v<V, bool>, "Type mismatch") ;
-        result |= value << 22 ;
-    } // else if
     else if constexpr (F == F_Type::W) {
         result |= (value & 0x1) << 21;
     } // else if
@@ -466,7 +495,7 @@ uint32_t HalfTransferInstruction(V value) {
         result |= value ;
     } // else if
     else if constexpr (F == F_Type::Offset) {
-        result |= (value >> 4) << 8 ;
+        result |= ((value & 0xf0) << 4);
         result |= (value & 0xf) ;
         result |= (1 << 22) ;
     } // else if

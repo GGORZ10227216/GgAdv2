@@ -57,6 +57,10 @@ namespace gg_core::gg_mem {
         E_SRAM_SIZE = SRAM_End - SRAM_Start + 1
     };
 
+    enum E_SaveType {
+        E_SRAM32K, E_EEPROM,  E_FLASH64K, E_FLASH128K, E_UNKNOWN
+    };
+
     static constexpr std::array<const char *, 2> accessModeName{
             "Read", "Write"
     };

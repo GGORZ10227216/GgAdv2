@@ -17,13 +17,12 @@ namespace {
         auto task = [&](E_DataProcess operation) {
             using namespace gg_core;
 
-            Arm egg;
-            egg.init();
-            gg_mem::MMU mmu(std::nullopt);
-            CPU instance(mmu);
-            ArmAssembler gg_asm;
-
             unsigned int t = 0;
+
+            Arm egg_local ;
+            egg_local.init() ;
+            gg_core::GbaInstance instance_local(testRomPath) ;
+            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
 
             TestField FieldRn(0, 0xffffffff, 0x11111111);
             TestField FieldRm(0, 0xffffffff, 0x11111111);
@@ -41,25 +40,25 @@ namespace {
 
                 auto idx = std::make_tuple(RnNumber.value, RmNumber.value, r4);
                 auto val = std::make_tuple(FieldRn.value, FieldRm.value, FieldRs.value);
-                FillRegs(instance._regs, idx, val);
-                FillRegs(egg.regs, idx, val);
+                FillRegs(local_cpu._regs, idx, val);
+                FillRegs(egg_local.regs, idx, val);
 
-                egg.cpsr = (cpsr.value << 28) | 0xd3;
-                instance.WriteCPSR(cpsr.value << 28 | 0xd3);
+                egg_local.cpsr = (cpsr.value << 28) | 0xd3;
+                local_cpu.WriteCPSR(cpsr.value << 28 | 0xd3);
 
                 uint32_t inst_hash = hashArm(instruction);
 
-                std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-                instance.CPU_Test(instruction);
+                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                local_cpu.CPU_Test(instruction);
 
-                uint32_t errFlag = CheckStatus(instance, egg);
+                uint32_t errFlag = CheckStatus(local_cpu, egg_local);
                 ASSERT_TRUE(errFlag == 0)
                                             << "#" << t << " of test(" << operation << ")" << '\n'
                                             << std::hex << "Errflag: " << errFlag << '\n'
                                             << fmt::format("Rn: {:x}, Rm: {:x}, Rs: {:x}\n", FieldRn.value,
                                                            FieldRm.value, FieldRs.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
-                                            << Diagnose(instance, egg, errFlag);
+                                            << Diagnose(local_cpu, egg_local, errFlag);
             };
 
             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, FieldRs, shiftType, cpsr);
@@ -89,14 +88,13 @@ namespace {
         auto task = [&](E_DataProcess operation) {
             using namespace gg_core;
 
-            Arm egg;
-            egg.init();
-            gg_mem::MMU mmu(std::nullopt);
-            CPU instance(mmu);
-            ArmAssembler gg_asm;
-
             unsigned int t = 0;
 
+            Arm egg_local ;
+            egg_local.init() ;
+            gg_core::GbaInstance instance_local(testRomPath) ;
+            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
+            
             TestField FieldRn(0, 0xffffffff, 0x11111111);
             TestField FieldRm(0, 0xffffffff, 0x11111111);
             TestField FieldRs(0, 0x1ff, 1);
@@ -112,22 +110,22 @@ namespace {
 
                 auto idx = std::make_tuple(RnNumber.value, RmNumber.value, r4);
                 auto val = std::make_tuple(FieldRn.value, FieldRm.value, FieldRs.value);
-                FillRegs(instance._regs, idx, val);
-                FillRegs(egg.regs, idx, val);
+                FillRegs(local_cpu._regs, idx, val);
+                FillRegs(egg_local.regs, idx, val);
 
                 uint32_t inst_hash = hashArm(instruction);
 
-                std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-                instance.CPU_Test(instruction);
+                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                local_cpu.CPU_Test(instruction);
 
-                uint32_t errFlag = CheckStatus(instance, egg);
+                uint32_t errFlag = CheckStatus(local_cpu, egg_local);
                 ASSERT_TRUE(errFlag == 0)
                                             << "#" << t << " of test(" << operation << ")" << '\n'
                                             << std::hex << "Errflag: " << errFlag << '\n'
                                             << fmt::format("Rn: {:x}, Rm: {:x}, Rs: {:x}\n", FieldRn.value,
                                                            FieldRm.value, FieldRs.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
-                                            << Diagnose(instance, egg, errFlag);
+                                            << Diagnose(local_cpu, egg_local, errFlag);
             };
 
             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, FieldRs, shiftType);
@@ -159,13 +157,11 @@ namespace {
         auto task = [&](E_DataProcess operation) {
             using namespace gg_core;
 
-            Arm egg;
-            egg.init();
-            gg_mem::MMU mmu(std::nullopt);
-            CPU instance(mmu);
-            ArmAssembler gg_asm;
-
             unsigned int t = 0;
+            Arm egg_local ;
+            egg_local.init() ;
+            gg_core::GbaInstance instance_local(testRomPath) ;
+            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
 
             TestField FieldRn(0, 0xffffffff, 0x11111111);
             TestField FieldRm(0, 0xffffffff, 0x11111111);
@@ -183,24 +179,24 @@ namespace {
 
                 auto idx = std::make_tuple(RnNumber.value, RmNumber.value);
                 auto val = std::make_tuple(FieldRn.value, FieldRm.value);
-                FillRegs(instance._regs, idx, val);
-                FillRegs(egg.regs, idx, val);
+                FillRegs(local_cpu._regs, idx, val);
+                FillRegs(egg_local.regs, idx, val);
 
-                egg.cpsr = (cpsr.value << 28) | 0xd3;
-                instance.WriteCPSR(cpsr.value << 28 | 0xd3);
+                egg_local.cpsr = (cpsr.value << 28) | 0xd3;
+                local_cpu.WriteCPSR(cpsr.value << 28 | 0xd3);
 
                 uint32_t inst_hash = hashArm(instruction);
-                std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-                instance.CPU_Test(instruction);
+                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                local_cpu.CPU_Test(instruction);
 
-                uint32_t errFlag = CheckStatus(instance, egg);
+                uint32_t errFlag = CheckStatus(local_cpu, egg_local);
                 ASSERT_TRUE(errFlag == 0)
                                             << "#" << t << " of test(" << operation << ")" << '\n'
                                             << std::hex << "Errflag: " << errFlag << '\n'
                                             << fmt::format("Rn: {:x}, Rm: {:x}, shiftAmount: {:x}\n",
                                                            FieldRn.value, FieldRm.value, shiftAmount.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
-                                            << Diagnose(instance, egg, errFlag);
+                                            << Diagnose(local_cpu, egg_local, errFlag);
             };
 
             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, shiftAmount, shiftType, cpsr);
@@ -231,13 +227,11 @@ namespace {
         auto task = [&](E_DataProcess operation) {
             using namespace gg_core;
 
-            Arm egg;
-            egg.init();
-            gg_mem::MMU mmu(std::nullopt);
-            CPU instance(mmu);
-            ArmAssembler gg_asm;
-
             unsigned int t = 0;
+            Arm egg_local ;
+            egg_local.init() ;
+            gg_core::GbaInstance instance_local(testRomPath) ;
+            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
 
             TestField FieldRn(0, 0xffffffff, 0x11111111);
             TestField FieldRm(0, 0xffffffff, 0x11111111);
@@ -254,21 +248,21 @@ namespace {
 
                 auto idx = std::make_tuple(RnNumber.value, RmNumber.value);
                 auto val = std::make_tuple(FieldRn.value, FieldRm.value);
-                FillRegs(instance._regs, idx, val);
-                FillRegs(egg.regs, idx, val);
+                FillRegs(local_cpu._regs, idx, val);
+                FillRegs(egg_local.regs, idx, val);
 
                 uint32_t inst_hash = hashArm(instruction);
-                std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-                instance.CPU_Test(instruction);
+                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                local_cpu.CPU_Test(instruction);
 
-                uint32_t errFlag = CheckStatus(instance, egg);
+                uint32_t errFlag = CheckStatus(local_cpu, egg_local);
                 ASSERT_TRUE(errFlag == 0)
                                             << "#" << t << " of test(" << operation << ")" << '\n'
                                             << std::hex << "Errflag: " << errFlag << '\n'
                                             << fmt::format("Rn: {:x}, Rm: {:x}, shiftAmount: {:x}\n",
                                                            FieldRn.value, FieldRm.value, shiftAmount.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
-                                            << Diagnose(instance, egg, errFlag);
+                                            << Diagnose(local_cpu, egg_local, errFlag);
             };
 
             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, shiftAmount, shiftType);
@@ -300,13 +294,11 @@ namespace {
         auto task = [&](E_DataProcess operation) {
             using namespace gg_core;
 
-            Arm egg;
-            egg.init();
-            gg_mem::MMU mmu(std::nullopt);
-            CPU instance(mmu);
-            ArmAssembler gg_asm;
-
             unsigned int t = 0;
+            Arm egg_local ;
+            egg_local.init() ;
+            gg_core::GbaInstance instance_local(testRomPath) ;
+            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
 
             TestField FieldRn(0, 0xffffffff, 0x11111111);
             TestField RnNumber(0, 0xf, 1);
@@ -320,21 +312,21 @@ namespace {
                         AL, operation, false, RnNumber.value, RdNumber.value, rotate.value, imm.value
                 );
 
-                instance._regs[RnNumber.value] = FieldRn.value;
-                egg.regs[RnNumber.value] = FieldRn.value;
+                local_cpu._regs[RnNumber.value] = FieldRn.value;
+                egg_local.regs[RnNumber.value] = FieldRn.value;
 
                 uint32_t inst_hash = hashArm(instruction);
-                std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-                instance.CPU_Test(instruction);
+                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                local_cpu.CPU_Test(instruction);
 
-                uint32_t errFlag = CheckStatus(instance, egg);
+                uint32_t errFlag = CheckStatus(local_cpu, egg_local);
                 ASSERT_TRUE(errFlag == 0)
                                             << "#" << t << " of test(" << operation << ")" << '\n'
                                             << std::hex << "Errflag: " << errFlag << '\n'
                                             << fmt::format("Rn: {:x}, imm: {:x}, rotate: {:x}\n",
                                                            FieldRn.value, imm.value, rotate.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
-                                            << Diagnose(instance, egg, errFlag);
+                                            << Diagnose(local_cpu, egg_local, errFlag);
             };
 
             TEST_LOOPS(TestMain, RdNumber, RnNumber, FieldRn, imm, rotate);
@@ -366,13 +358,11 @@ namespace {
         auto task = [&](E_DataProcess operation) {
             using namespace gg_core;
 
-            Arm egg;
-            egg.init();
-            gg_mem::MMU mmu(std::nullopt);
-            CPU instance(mmu);
-            ArmAssembler gg_asm;
-
             unsigned int t = 0;
+            Arm egg_local ;
+            egg_local.init() ;
+            gg_core::GbaInstance instance_local(testRomPath) ;
+            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
 
             TestField FieldRn(0, 0xffffffff, 0x11111111);
             TestField RnNumber(0, 0xf, 1);
@@ -387,24 +377,24 @@ namespace {
                         AL, operation, true, RnNumber.value, RdNumber.value, rotate.value, imm.value
                 );
 
-                instance._regs[RnNumber.value] = FieldRn.value;
-                egg.regs[RnNumber.value] = FieldRn.value;
+                local_cpu._regs[RnNumber.value] = FieldRn.value;
+                egg_local.regs[RnNumber.value] = FieldRn.value;
 
-                egg.cpsr = (cpsr.value << 28) | 0xd3;
-                instance.WriteCPSR(cpsr.value << 28 | 0xd3);
+                egg_local.cpsr = (cpsr.value << 28) | 0xd3;
+                local_cpu.WriteCPSR(cpsr.value << 28 | 0xd3);
 
                 uint32_t inst_hash = hashArm(instruction);
-                std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
-                instance.CPU_Test(instruction);
+                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                local_cpu.CPU_Test(instruction);
 
-                uint32_t errFlag = CheckStatus(instance, egg);
+                uint32_t errFlag = CheckStatus(local_cpu, egg_local);
                 ASSERT_TRUE(errFlag == 0)
                                             << "#" << t << " of test(" << operation << ")" << '\n'
                                             << std::hex << "Errflag: " << errFlag << '\n'
                                             << fmt::format("Rn: {:x}, imm: {:x}, rotate: {:x}\n",
                                                            FieldRn.value, imm.value, rotate.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
-                                            << Diagnose(instance, egg, errFlag);
+                                            << Diagnose(local_cpu, egg_local, errFlag);
             };
 
             TEST_LOOPS(TestMain, RdNumber, RnNumber, FieldRn, imm, rotate, cpsr);
