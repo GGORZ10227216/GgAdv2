@@ -13,6 +13,8 @@
 #define GGADV_CPU_H
 
 namespace gg_core::gg_cpu {
+    using CycleType = gg_mem::E_AccessType ;
+
     class CPU final : public CPU_Status {
     public :
         gg_core::gg_mem::MMU &_mem;
@@ -21,16 +23,20 @@ namespace gg_core::gg_cpu {
             _mem(instanceMemory),
             logger(std::make_shared<spdlog::logger>("CPU", sink))
         {
+            // fetchIdx point to pc+4
+            // !fetchIdx point to pc
+
             _mem._cpuStatus = this ;
-            fetchedBuffer[0] = _mem.Read32(0);
-            fetchedBuffer[1] = _mem.Read32(4);
+            fetchedBuffer[0] = _mem.Read<uint32_t>(0, gg_mem::N_Cycle);
+            fetchedBuffer[1] = _mem.Read<uint32_t>(4, gg_mem::S_Cycle);
             _regs[pc] = 4;
             fetchIdx = 1;
         } // CPU()
 
         void CPUTick() {
             currentInstruction = fetchedBuffer[ !fetchIdx ] ;
-            std::invoke(Fetch, this) ;
+            // Fixme: Should I_Cycle move fetch into instruction handler?
+//            std::invoke(Fetch, this) ;
             instructionTable[ iHash(currentInstruction) ](*this) ;
         } // Tick()
 
@@ -44,58 +50,50 @@ namespace gg_core::gg_cpu {
 //            } // try-catch()
         } // Tick()
 
-        void RefillPipeline() {
-            std::invoke(RefillPipelineHandler, this) ;
-        }
-
         void ChangeCpuMode(E_CpuMode mode) {
             if (mode == THUMB) {
                 _cpsr |= 0x1 << T ;
-                RefillPipelineHandler = &CPU::THUMB_RefillPipeline ;
+                RefillPipeline = &CPU::THUMB_RefillPipeline ;
             } // if
             else {
                 _cpsr &= ~(0x1 << T);
-                RefillPipelineHandler = &CPU::ARM_RefillPipeline ;
+                RefillPipeline = &CPU::ARM_RefillPipeline ;
             } // else
         } // ChangeCpuMode()
 
-    private:
         loggerType logger ;
 
-        void (CPU::*RefillPipelineHandler)() = &CPU::ARM_RefillPipeline ;
-
-        void ARM_RefillPipeline() {
+        static void ARM_RefillPipeline(CPU* self, CycleType first, CycleType second) {
             using namespace gg_cpu;
 
-            unsigned pcBase = (_regs[pc] & ~0x3) ;
-            fetchedBuffer[0] = _mem.Read32(pcBase);
-            fetchedBuffer[1] = _mem.Read32(pcBase + 4);
+            unsigned pcBase = (self->_regs[pc] & ~0x3) ;
+            self->fetchedBuffer[!self->fetchIdx] = self->_mem.Read<uint32_t>(pcBase, first);
+            self->fetchedBuffer[self->fetchIdx] = self->_mem.Read<uint32_t>(pcBase + 4, second);
 
-            _regs[pc] = pcBase + 4;
-            fetchIdx = 1;
+            self->_regs[pc] = pcBase + 4;
         } // RefillPipeline()
 
-        void THUMB_RefillPipeline() {
+        static void THUMB_RefillPipeline(CPU* self, CycleType first, CycleType second) {
             using namespace gg_cpu;
 
-            unsigned pcBase = (_regs[pc] & ~0x1) ;
-            fetchedBuffer[0] = _mem.Read16(pcBase);
-            fetchedBuffer[1] = _mem.Read16(pcBase + 2);
+            unsigned pcBase = (self->_regs[pc] & ~0x1) ;
+            self->fetchedBuffer[0] = self->_mem.Read<uint16_t>(pcBase, first);
+            self->fetchedBuffer[1] = self->_mem.Read<uint16_t>(pcBase + 2, second);
 
-            _regs[pc] = pcBase + 2;
-            fetchIdx = 1;
+            self->_regs[pc] = pcBase + 2;
+            self->fetchIdx = 1;
         } // RefillPipeline()
 
-        void ARM_Fetch() {
-            _regs[gg_cpu::pc] += 4;
-            fetchIdx = !fetchIdx;
-            fetchedBuffer[fetchIdx] = _mem.Read32(_regs[gg_cpu::pc]);
+        static void ARM_Fetch(CPU* self, gg_mem::E_AccessType accessType) {
+            self->_regs[gg_cpu::pc] = (self->_regs[gg_cpu::pc] + 4) & ~0x3;
+            self->fetchIdx = !self->fetchIdx;
+            self->fetchedBuffer[self->fetchIdx] = self->_mem.Read<uint32_t>(self->_regs[gg_cpu::pc], accessType);
         } // ARM_Fetch()
 
-        void THUMB_Fetch() {
-            _regs[gg_cpu::pc] += 2;
-            fetchIdx = (fetchIdx + 1) % fetchedBuffer.size();
-            fetchedBuffer[fetchIdx] = _mem.Read16(_regs[gg_cpu::pc]);
+        static void THUMB_Fetch(CPU* self, gg_mem::E_AccessType accessType) {
+            self->_regs[gg_cpu::pc] = (self->_regs[gg_cpu::pc] + 2) & ~0x1;
+            self->fetchIdx = !self->fetchIdx;
+            self->fetchedBuffer[self->fetchIdx] = self->_mem.Read<uint16_t>(self->_regs[gg_cpu::pc], accessType);
         } // THUMB_Fetch()
         
         static inline auto ARM_instructionHashFunc = [](uint32_t inst) {
@@ -108,7 +106,8 @@ namespace gg_core::gg_cpu {
         };
 
         uint32_t (*iHash)(uint32_t) = ARM_instructionHashFunc ;
-        void (CPU::*Fetch)() = &CPU::ARM_Fetch ;
+        void (*Fetch)(CPU*, gg_mem::E_AccessType) = &CPU::ARM_Fetch ;
+        void (*RefillPipeline)(CPU*, CycleType, CycleType) = &CPU::ARM_RefillPipeline ;
         HandlerType const*  instructionTable = ARM_HandlerTable.data() ;
     };
 }
