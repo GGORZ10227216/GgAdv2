@@ -3,14 +3,17 @@
 //
 
 #include <cstdint>
+#include <cstring>
 #include <v4_operand2.h>
 
 #ifndef GGADV2_MEM_API_H
 #define GGADV2_MEM_API_H
 
 namespace gg_core::gg_cpu {
-    template <bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
+    template <bool I_Cycle, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
     static void SingleDataTransfer_impl(CPU &instance) {
+        instance.Fetch(&instance, gg_mem::N_Cycle) ;
+
         constexpr bool translation = !P && W ;
 
         uint8_t RnNumber = (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ;
@@ -21,7 +24,7 @@ namespace gg_core::gg_cpu {
             uint32_t &Rd = instance._regs[ RdNumber ] ;
             uint32_t offset = 0, targetAddr = Rn ;
 
-            if constexpr (I) {
+            if constexpr (I_Cycle) {
                 ParseOp2_Shift_Imm<ST>(instance, offset) ;
             } // constexpr()
             else {
@@ -41,15 +44,20 @@ namespace gg_core::gg_cpu {
                     calculateTargetAddr() ;
 
                 if constexpr (B) {
-                    Rd = instance._mem.Read8(targetAddr) ;
+                    Rd = instance._mem.Read<uint8_t>(targetAddr, gg_mem::I_Cycle) ;
                 } // if
                 else {
-                    Rd = instance._mem.Read32(targetAddr) ;
+                    Rd = instance._mem.Read<uint32_t>(targetAddr, gg_mem::I_Cycle) ;
                 } // else
 
-                if (RdNumber == pc)
-//                    (instance.*RefillPipeline)() ;
-                    instance.RefillPipeline();
+                if (RdNumber == pc) {
+                    instance._mem.Read<uint32_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::N_Cycle) ;
+                    instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+                } // if
+                else {
+                    instance._mem.Read<uint32_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::S_Cycle) ;
+                } // else
+
 
                 if constexpr (!P || W) {
                     // Info from heyrick.eu:
@@ -68,15 +76,15 @@ namespace gg_core::gg_cpu {
 
                 if constexpr (B) {
                     if (RdNumber == pc)
-                        instance._mem.Write8(targetAddr, static_cast<uint8_t>(Rd + 4)) ;
+                        instance._mem.Write<uint8_t>(targetAddr, static_cast<uint8_t>(Rd + 4), gg_mem::N_Cycle) ;
                     else
-                        instance._mem.Write8(targetAddr, static_cast<uint8_t>(Rd)) ;
+                        instance._mem.Write<uint8_t>(targetAddr, static_cast<uint8_t>(Rd), gg_mem::N_Cycle) ;
                 } // if
                 else {
                     if (RdNumber == pc)
-                        instance._mem.Write32(targetAddr, Rd + 4) ;
+                        instance._mem.Write<uint32_t>(targetAddr, Rd + 4, gg_mem::N_Cycle) ;
                     else
-                        instance._mem.Write32(targetAddr, Rd) ;
+                        instance._mem.Write<uint32_t>(targetAddr, Rd, gg_mem::N_Cycle) ;
                 } // else
 
                 if constexpr (!P || W) {
@@ -97,6 +105,8 @@ namespace gg_core::gg_cpu {
 
     template <bool P, bool U, bool W, bool L, bool S, bool H,  OFFSET_TYPE OT>
     void HalfMemAccess_impl(CPU &instance) {
+        instance.Fetch(&instance, gg_mem::N_Cycle) ;
+
         unsigned int RnNumber = (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ;
         unsigned int RdNumber = (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ;
         uint32_t &Rn = instance._regs[ RnNumber ] ;
@@ -126,24 +136,29 @@ namespace gg_core::gg_cpu {
                 gg_core::Unreachable() ;
             else if constexpr (!S && H) {
                 // LDRH
-                /// fixme: need rotate?
-                Rd = instance._mem.Read16(targetAddr) ;
-                if (RdNumber == pc)
-                    instance.RefillPipeline();
+                Rd = instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle) ;
             } // else if
             else if constexpr (S && !H) {
                 // LDRSB
-                Rd = (static_cast<int32_t>(instance._mem.Read8(targetAddr)) << 24) >> 24 ; // sign extend
-                if (RdNumber == pc)
-                    instance.RefillPipeline();
+                Rd = (static_cast<int32_t>(instance._mem.Read<uint8_t>(targetAddr, gg_mem::I_Cycle)) << 24) >> 24 ; // sign extend
             } // else if
             else {
                 // LDRSH
                 /// fixme: need rotate?
                 const unsigned extShiftAmount = targetAddr & 1 ? 24 : 16 ;
-                Rd = (static_cast<int32_t>(instance._mem.Read16(targetAddr)) << extShiftAmount) >> extShiftAmount ; // sign extend
-                if (RdNumber == pc)
-                    instance.RefillPipeline();
+                Rd = (static_cast<int32_t>(instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle)) << extShiftAmount) >> extShiftAmount ; // sign extend
+            } // else
+
+            if (RdNumber == pc) {
+                if constexpr (H)
+                    instance._mem.Read<uint16_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::N_Cycle) ;
+                else
+                    instance._mem.Read<uint8_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::N_Cycle) ;
+
+                instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+            } // if
+            else {
+                instance._mem.Read<uint16_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::S_Cycle) ;
             } // else
 
             if constexpr (!P || W) {
@@ -161,9 +176,9 @@ namespace gg_core::gg_cpu {
             if constexpr (!S && H) {
                 // STRH
                 if (RdNumber == gg_cpu::pc)
-                    instance._mem.Write16(targetAddr, static_cast<uint16_t>(Rd + 4)) ;
+                    instance._mem.Write<uint16_t>(targetAddr, static_cast<uint16_t>(Rd + 4), gg_mem::N_Cycle) ;
                 else
-                    instance._mem.Write16(targetAddr, static_cast<uint16_t>(Rd)) ;
+                    instance._mem.Write<uint16_t>(targetAddr, static_cast<uint16_t>(Rd), gg_mem::N_Cycle) ;
             } // else if
             else
                 gg_core::Unreachable();
@@ -178,6 +193,8 @@ namespace gg_core::gg_cpu {
 
     template <bool P, bool U, bool S, bool W, bool L>
     void BlockMemAccess_impl(CPU &instance) {
+        instance.Fetch(&instance, gg_mem::N_Cycle) ;
+
         // todo: undocumented behavior of ldm/stm implement
         uint32_t regList = BitFieldValue<0, 16>(CURRENT_INSTRUCTION) ;
         uint32_t &Rn = instance._regs[ BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ] ;
@@ -221,17 +238,24 @@ namespace gg_core::gg_cpu {
         for (size_t idx = 0 ; idx < 16 ; ++idx) {
             if (TestBit(regList, idx)) {
                 if constexpr (L) {
-                    CPU_REG[ idx ] = instance._mem.Read32(base) ;
+                    const auto cycleType = --registerCnt == 0 ? gg_mem::I_Cycle : gg_mem::S_Cycle ;
+                    CPU_REG[ idx ] = instance._mem.Read<uint32_t>(base, cycleType) ;
+
                     if (idx == pc) {
                         CPU_REG[ pc ] &= ~0x3 ;
-                        instance.RefillPipeline();
+                        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4, gg_mem::N_Cycle) ;
+                        instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
                     } // if
+                    else {
+                        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4, gg_mem::S_Cycle) ;
+                    } // else
                 } // if
                 else {
+                    const auto cycleType = --registerCnt == 0 ? gg_mem::N_Cycle : gg_mem::S_Cycle ;
                     uint32_t regVal = CPU_REG[ idx ] ;
                     if (idx == 15)
                         regVal = (regVal + 4) & ~0x3 ;
-                    instance._mem.Write32(base, regVal) ;
+                    instance._mem.Write<uint32_t>(base, regVal, cycleType) ;
                 } // else
 
                 base += 4 ;
@@ -257,18 +281,22 @@ namespace gg_core::gg_cpu {
 
     template <bool B>
     void Swap_impl(CPU &instance) {
+        instance.Fetch(&instance, gg_mem::N_Cycle) ;
+
         uint32_t Rn = instance._regs[ (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ] ;
         uint32_t &Rd = instance._regs[ (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ] ;
         uint32_t Rm = instance._regs[ CURRENT_INSTRUCTION & 0xf ] ;
 
         if constexpr (B) {
-            Rd = instance._mem.Read8(Rn) ;
-            instance._mem.Write8(Rn, static_cast<uint8_t>(Rm)) ;
+            Rd = instance._mem.Read<uint8_t>(Rn, gg_mem::N_Cycle) ;
+            instance._mem.Write<uint8_t>(Rn, static_cast<uint8_t>(Rm), gg_mem::I_Cycle) ;
         } // if
         else {
-            Rd = instance._mem.Read32(Rn) ;
-            instance._mem.Write32(Rn, Rm) ;
+            Rd = instance._mem.Read<uint32_t>(Rn, gg_mem::N_Cycle) ;
+            instance._mem.Write<uint32_t>(Rn, Rm, gg_mem::I_Cycle) ;
         } // if
+
+        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4, gg_mem::N_Cycle) ;
     } // Swap_impl()
 }
 

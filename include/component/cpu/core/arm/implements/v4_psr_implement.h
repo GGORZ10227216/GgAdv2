@@ -5,12 +5,16 @@
 
 namespace gg_core::gg_cpu {
     static void mrs(CPU& instance) {
+        instance.Fetch(&instance, gg_mem::S_Cycle) ;
+
         const uint32_t RdNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
         uint32_t &Rd = instance._regs[RdNumber] ;
         Rd = instance.ReadCPSR() ;
     }
 
     static void msr_Rm(CPU& instance) {
+        instance.Fetch(&instance, gg_mem::S_Cycle) ;
+
         const uint32_t RmNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
         uint32_t Rm = instance._regs[RmNumber] ;
         if (instance.GetOperationMode() == USR || !TestBit(CURRENT_INSTRUCTION, 16)) {
@@ -24,12 +28,16 @@ namespace gg_core::gg_cpu {
     }
 
     static void mrsp(CPU& instance) {
+        instance.Fetch(&instance, gg_mem::S_Cycle) ;
+
         const uint32_t RdNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
         uint32_t &Rd = instance._regs[RdNumber] ;
         Rd = instance.ReadSPSR() ;
     }
 
     static void msrp_Rm(CPU& instance) {
+        instance.Fetch(&instance, gg_mem::S_Cycle) ;
+
         const uint32_t RmNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
         uint32_t Rm = instance._regs[RmNumber] ;
         if (!TestBit(CURRENT_INSTRUCTION, 16)) {
@@ -43,6 +51,8 @@ namespace gg_core::gg_cpu {
     }
 
     static void msr_Imm(CPU& instance) {
+        instance.Fetch(&instance, gg_mem::S_Cycle) ;
+
         const uint32_t imm = CURRENT_INSTRUCTION & 0xff;
         const uint32_t rot = (CURRENT_INSTRUCTION & 0xf00) >> 8;
         const uint32_t immVal = rotr(imm, rot*2) ;
@@ -58,6 +68,8 @@ namespace gg_core::gg_cpu {
     }
 
     static void msrp_Imm(CPU& instance) {
+        instance.Fetch(&instance, gg_mem::S_Cycle) ;
+        
         const uint32_t imm = CURRENT_INSTRUCTION & 0xff;
         const uint32_t rot = (CURRENT_INSTRUCTION & 0xf00) >> 8;
         const uint32_t immVal = rotr(imm, rot*2) ;

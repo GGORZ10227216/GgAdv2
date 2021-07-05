@@ -17,7 +17,7 @@ namespace gg_core::gg_cpu {
 
         uint32_t Rm = instance._regs[ RmNumber ] ;
         uint32_t Rs = instance._regs[ RsNumber ] & 0xff ;
-        bool carry = false ;
+        bool carry = false, validShift = false ;
 
         if (RmNumber == pc)
             Rm = (Rm + 4) ;
@@ -31,10 +31,12 @@ namespace gg_core::gg_cpu {
             else if (Rs < 32) {
                 op2 = Rm << Rs ;
                 carry = TestBit(Rm, 33 - (Rs + 1)) ;
+                validShift = true ;
             } // else if
             else {
                 op2 = 0 ;
                 carry = Rs == 32 && TestBit(Rm, 0);
+                validShift = true ;
             } // else
         } // if
 
@@ -46,22 +48,27 @@ namespace gg_core::gg_cpu {
             else if (Rs < 32) {
                 op2 = Rm >> Rs ;
                 carry = TestBit(Rm, Rs - 1) ;
+                validShift = true ;
             } // else if
             else {
                 op2 = 0 ;
                 carry = Rs == 32 && TestBit(Rm, Rs - 1);
+                validShift = true ;
             } // else
         } // if
 
         if constexpr (ST == SHIFT_TYPE::ASR) {
             if (Rs >= 32) {
+                validShift = true ;
                 carry = TestBit(Rm, 31) ;
                 op2 = carry ? 0xffffffff : 0x0 ;
             } // if
             else {
                 op2 = static_cast<int32_t>(Rm) >> Rs ;
-                if (Rs != 0)
+                if (Rs != 0) {
                     carry = TestBit(Rm, Rs - 1) ;
+                    validShift = true ;
+                } // if
                 else
                     carry = instance.C() ;
             } // else if
@@ -71,9 +78,14 @@ namespace gg_core::gg_cpu {
             op2 = rotr(Rm, Rs) ;
             if (Rs == 0)
                 carry = instance.C() ;
-            else
+            else {
+                validShift = true ;
                 carry = TestBit(op2, 31) ;
+            } // else
         } // if
+
+        if (validShift)
+            instance.cycle += 1 ; // Shift by reg will add 1 I_Cycle cycle
 
         return carry ;
     } // ParseOp2_Shift_RS()

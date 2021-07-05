@@ -106,6 +106,9 @@ namespace gg_core::gg_mem {
         } // UpdateWaitState()
 
         loggerType logger ;
+
+        uint32_t lastAccessAddr = 0x0 ;
+        E_AccessType requestAccessType = N_Cycle ;
     };
 }
 

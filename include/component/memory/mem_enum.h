@@ -14,7 +14,7 @@ namespace gg_core::gg_mem {
     const unsigned WORD_SIZE = 2 ;
     const unsigned BYTE_SIZE = 1 ;
 
-    enum E_AccessType { READ, WRITE };
+    enum E_AccessType { N_Cycle, S_Cycle, I_Cycle };
     enum E_GamePakRegion {
         E_WS0, E_WS1, E_WS2, E_SRAM
     } ;

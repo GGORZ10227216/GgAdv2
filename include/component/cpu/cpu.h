@@ -86,14 +86,14 @@ namespace gg_core::gg_cpu {
 
         static void ARM_Fetch(CPU* self, gg_mem::E_AccessType accessType) {
             self->_regs[gg_cpu::pc] = (self->_regs[gg_cpu::pc] + 4) & ~0x3;
+            self->fetchedBuffer[!self->fetchIdx] = self->_mem.Read<uint32_t>(self->_regs[gg_cpu::pc], accessType);
             self->fetchIdx = !self->fetchIdx;
-            self->fetchedBuffer[self->fetchIdx] = self->_mem.Read<uint32_t>(self->_regs[gg_cpu::pc], accessType);
         } // ARM_Fetch()
 
         static void THUMB_Fetch(CPU* self, gg_mem::E_AccessType accessType) {
             self->_regs[gg_cpu::pc] = (self->_regs[gg_cpu::pc] + 2) & ~0x1;
+            self->fetchedBuffer[!self->fetchIdx] = self->_mem.Read<uint16_t>(self->_regs[gg_cpu::pc], accessType);
             self->fetchIdx = !self->fetchIdx;
-            self->fetchedBuffer[self->fetchIdx] = self->_mem.Read<uint16_t>(self->_regs[gg_cpu::pc], accessType);
         } // THUMB_Fetch()
         
         static inline auto ARM_instructionHashFunc = [](uint32_t inst) {

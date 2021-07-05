@@ -11,7 +11,7 @@
 #define GGTEST_MEMORY_ACCESS_H
 
 namespace gg_core::gg_cpu {
-    template<bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
+    template<bool I_Cycle, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
     static void SingleDataTransfer_impl(CPU &instance);
 
     template<bool P, bool U, bool W, bool L, bool S, bool H, OFFSET_TYPE OT>

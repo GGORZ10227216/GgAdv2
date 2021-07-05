@@ -141,7 +141,7 @@ namespace gg_core {
             } // GetCpuMode()
 
             bool F() { return _cpsr & 0x40u; } // F()
-            bool I() { return _cpsr & 0x80u; } // I()
+            bool I_Cycle() { return _cpsr & 0x80u; } // I()
             bool V() { return _cpsr & 0x10000000u; } // V()
             bool C() { return _cpsr & 0x20000000u; } // C()
             bool Z() { return _cpsr & 0x40000000u; } // Z()
@@ -164,6 +164,7 @@ namespace gg_core {
             uint8_t fetchIdx = 0;
             uint32_t currentInstruction = 0x00 ;
             uint32_t _cpsr = 0xd3;
+            uint32_t cycle = 0 ;
 
             std::array<unsigned, 7> _registers_usrsys{};
             std::array<unsigned, 7> _registers_fiq{};

@@ -10,6 +10,8 @@
 namespace gg_core::gg_cpu {
     template <E_OperationMode opMode>
     static void Interrupt_impl(CPU &instance) {
+        instance.Fetch(&instance, gg_mem::N_Cycle) ;
+
         const uint32_t preCPSR = instance.ReadCPSR() ;
 
         instance.WriteCPSR((preCPSR & ~0b11111u) | static_cast<uint8_t>(opMode)) ;
@@ -23,7 +25,7 @@ namespace gg_core::gg_cpu {
         else if constexpr (opMode == IRQ)
             instance._regs[ pc ] = HW_IRQ ;
 
-        instance.RefillPipeline();
+        instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
 
         instance.ChangeCpuMode(ARM);
         instance.SetI() ;

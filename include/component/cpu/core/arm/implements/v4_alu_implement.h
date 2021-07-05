@@ -8,6 +8,7 @@
 #define GGADV2_ALU_API_H
 
 namespace gg_core::gg_cpu {
+    // todo: deal with complex alu timing issue.
     // using alu_handler = void(*)(uint32_t&, uint32_t, uint32_t) ;
     template <E_DataProcess opcode>
     inline void CPSR_Arithmetic(CPU &instance, uint32_t Rn, uint32_t op2, uint64_t result) {
@@ -46,9 +47,24 @@ namespace gg_core::gg_cpu {
         const uint32_t curInst = CURRENT_INSTRUCTION ;
         const uint8_t RnNumber = (curInst & 0xf0000) >> 16 ;
 
+        bool shiftCarry = false ;
+        if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
+            instance.Fetch(&instance, gg_mem::I_Cycle) ; // pc = pc + 4
+            if (RnNumber == pc)
+                instance._mem.Read<uint32_t>(instance._regs[ pc ] + 4, gg_mem::S_Cycle);
+            else
+                instance._mem.Read<uint32_t>(instance._regs[ pc ] + 4, gg_mem::N_Cycle);
+        } // if constexpr
+        else {
+            if (RnNumber == pc)
+                instance.Fetch(&instance, gg_mem::N_Cycle) ;
+            else
+                instance.Fetch(&instance, gg_mem::S_Cycle) ;
+        } // else
+
         uint32_t RnVal = instance._regs[RnNumber] ;
         uint32_t op2 = 0 ;
-        bool shiftCarry = false ;
+        uint64_t result = 0;
 
         if constexpr (I) {
             shiftCarry = ParseOp2_Imm(instance, op2) ;
@@ -57,13 +73,11 @@ namespace gg_core::gg_cpu {
             if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
                 shiftCarry = ParseOp2_Shift_RS<ST>(instance, op2) ;
                 if (RnNumber == pc)
-                    RnVal += 4 ;
+                    RnVal = RnVal + 4 ;
             } // if
             else
                 shiftCarry = ParseOp2_Shift_Imm<ST>(instance, op2) ;
         } // else
-
-        uint64_t result = 0;
 
         if constexpr (opcode == AND || opcode == TST)
             result = static_cast<uint64_t>(RnVal) & op2 ;
@@ -107,7 +121,7 @@ namespace gg_core::gg_cpu {
             const uint8_t RdNumber = (curInst & 0xf000) >> 12 ;
             instance._regs[RdNumber] = result ;
             if (RdNumber == pc) {
-                instance.RefillPipeline();
+                instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle); // cycle += 1S + 1S
                 if constexpr (S) {
                     instance.WriteCPSR( instance.ReadSPSR() ) ;
                 } // if

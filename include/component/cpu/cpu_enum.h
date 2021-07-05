@@ -45,7 +45,7 @@ namespace gg_core::gg_cpu {
     };
 
     enum E_PSRBit {
-        T = 5, F = 6, I = 7, V = 28, C = 29, Z = 30, N = 31
+        T = 5, F = 6, I_Cycle = 7, V = 28, C = 29, Z = 30, N_Cycle = 31
     };
 
     enum E_PipelineStage {

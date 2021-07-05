@@ -1,5 +1,7 @@
 namespace gg_core::gg_cpu {
     static void BranchExchange_impl(CPU& instance) {
+        instance.Fetch(&instance, gg_mem::N_Cycle) ;
+
         const uint32_t RnNumber = instance.CurrentInstruction() & 0xf ;
         uint32_t &Rn = instance._regs[RnNumber] ;
 
@@ -9,11 +11,12 @@ namespace gg_core::gg_cpu {
             instance.ChangeCpuMode(ARM) ;
 
         instance._regs[pc] = Rn ;
-        instance.RefillPipeline();
+        instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
     }
 
     template <bool L>
     static void Branch_impl(CPU& instance) {
+        instance.Fetch(&instance, gg_mem::N_Cycle) ;
         int32_t offset = (instance.CurrentInstruction() & 0x00ffffff) << 2;
 
         if (gg_core::TestBit(offset, 25))
@@ -23,6 +26,6 @@ namespace gg_core::gg_cpu {
             instance._regs[lr] = instance._regs[pc] - 4 ;
 
         instance._regs[pc] += offset ;
-        instance.RefillPipeline();
+        instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
     }
 } // gg_core::gg_cpu

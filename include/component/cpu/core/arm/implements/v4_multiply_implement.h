@@ -1,4 +1,4 @@
-//
+ //
 // Created by jason4_lee on 2020-10-06.
 //
 
@@ -10,6 +10,8 @@
 namespace gg_core::gg_cpu {
     template<bool A, bool S>
     static void Multiply_impl(CPU &instance) {
+        instance.Fetch(&instance, gg_mem::I_Cycle) ;
+
         uint8_t RsNumber = BitFieldValue<8, 4>(CURRENT_INSTRUCTION) ;
         uint8_t RdNumber = BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ;
         uint8_t RmNumber = BitFieldValue<0, 4>(CURRENT_INSTRUCTION) ;
@@ -28,11 +30,13 @@ namespace gg_core::gg_cpu {
         } // for
 
         uint32_t result = RmValue * RsValue ;
+        instance.cycle += boothValue ; // The I_Cycle cycle
 
         if constexpr (A) {
             uint8_t RnNumber = BitFieldValue<12, 4>(CURRENT_INSTRUCTION);
             unsigned RnValue = instance._regs[ RnNumber ] ;
             result += RnValue ;
+            instance.cycle += 1 ; // The I_Cycle cycle
         } // if
 
         instance._regs[RdNumber] = result ;
@@ -42,10 +46,14 @@ namespace gg_core::gg_cpu {
             result == 0 ? instance.SetZ() : instance.ClearZ();
             TestBit(result, 31) ? instance.SetN() : instance.ClearN();
         } // if
+
+        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4,gg_mem::S_Cycle) ;
     } // Multiply()
 
     template<bool U, bool A, bool S>
     static void MultiplyLong_impl(CPU &instance) {
+        instance.Fetch(&instance, gg_mem::I_Cycle) ;
+
         uint32_t RsVal = instance._regs[BitFieldValue<8, 4>(CURRENT_INSTRUCTION)] ;
         uint32_t RmVal = instance._regs[BitFieldValue<0, 4>(CURRENT_INSTRUCTION)] ;
 
@@ -85,12 +93,13 @@ namespace gg_core::gg_cpu {
             } // else
         } // for
 
-        // EMU_CLK += CLK_CONT.S(EMU_CPU.ProgramCounter()) + CLK_CONT.I() * (boothValue + 1);
+        instance.cycle += boothValue + 1 ;
 
         if constexpr (A) {
             uint64_t RdValue = (static_cast<uint64_t>(CPU_REG[RdHiNumber]) << 32) | CPU_REG[RdLoNumber] ;
             result.qword += RdValue ;
-            // EMU_CLK += CLK_CONT.I() ;
+            instance.cycle += 1 ;
+            // EMU_CLK += CLK_CONT.I_Cycle() ;
         } // if constexpr
 
         if constexpr (S) {
@@ -100,6 +109,8 @@ namespace gg_core::gg_cpu {
 
         CPU_REG[RdLoNumber] = result.dword[0] ;
         CPU_REG[RdHiNumber] = result.dword[1] ;
+
+        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4,gg_mem::S_Cycle) ;
     }
 }
 
