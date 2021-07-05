@@ -3,7 +3,6 @@
 #include <emu_framework.h>
 
 int main() {
-    gg_core::gg_mem::MMU mmu(std::nullopt);
-    gg_core::gg_cpu::CPU emu(mmu) ;
+    gg_core::GbaInstance gbaInstance("./testRom.gba");
     return 0;
 }
