@@ -6,7 +6,7 @@
 namespace {
     using namespace gg_core::gg_cpu ;
 
-    TEST_F(ggTest, mul_cpsr_test) {
+    TEST_F(ggTest,  arm_mul_cpsr_test) {
         using namespace gg_core ;
 
         unsigned int t = 0 ;
@@ -34,7 +34,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
 
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
@@ -43,14 +43,15 @@ namespace {
                 << std::hex << "Errflag: " << errFlag << '\n'
                 << fmt::format( "Testcase: Rs: {:x}, Rm: {:x}\n", RsValue.value, RmValue.value )
                 << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
-                << Diagnose(instance, egg, errFlag) ;
+                << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, cpsr, RsValue, RmValue,targetRd, targetRs,targetRm) ;
         std::cout << "Test performed: " << t << std::endl ;
     }
 
-    TEST_F(ggTest, mul_test) {
+    TEST_F(ggTest,  arm_mul_test) {
         using namespace gg_core ;
 
         unsigned int t = 0 ;
@@ -74,7 +75,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
 
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
@@ -83,14 +84,15 @@ namespace {
                                         << std::hex << "Errflag: " << errFlag << '\n'
                                         << fmt::format( "Testcase: Rs: {:x}, Rm: {:x}\n", RsValue.value, RmValue.value )
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
-                                        << Diagnose(instance, egg, errFlag) ;
+                                        << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, RsValue, RmValue,targetRd, targetRs,targetRm) ;
         std::cout << "Test performed: " << t << std::endl ;
     }
 
-    TEST_F(ggTest, mla_cpsr_test) {
+    TEST_F(ggTest,  arm_mla_cpsr_test) {
         using namespace gg_core ;
 
         unsigned int t = 0 ;
@@ -120,7 +122,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
 
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
@@ -130,14 +132,15 @@ namespace {
                                         << fmt::format( "Testcase: Rn: {:x}, Rs: {:x}, Rm: {:x}\n",
                                                         RnValue.value, RsValue.value, RmValue.value )
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
-                                        << Diagnose(instance, egg, errFlag) ;
+                                        << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, cpsr, RnValue, RsValue, RmValue,targetRd, targetRn,targetRs,targetRm) ;
         std::cout << "Test performed: " << t << std::endl ;
     }
 
-    TEST_F(ggTest, mla_test) {
+    TEST_F(ggTest,  arm_mla_test) {
         using namespace gg_core ;
 
         unsigned int t = 0 ;
@@ -163,7 +166,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction) ;
 
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg) ;
@@ -173,7 +176,8 @@ namespace {
                                         << fmt::format( "Testcase: Rn: {:x}, Rs: {:x}, Rm: {:x}\n",
                                                         RnValue.value, RsValue.value, RmValue.value )
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
-                                        << Diagnose(instance, egg, errFlag) ;
+                                        << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, RnValue, RsValue, RmValue,targetRd, targetRn,targetRs,targetRm) ;

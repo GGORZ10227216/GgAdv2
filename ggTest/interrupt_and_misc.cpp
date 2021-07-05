@@ -9,7 +9,7 @@ namespace {
     using namespace gg_core::gg_cpu;
     using namespace gg_core::gg_mem;
 
-    TEST_F(ggTest, svc_test) {
+    TEST_F(ggTest, arm_svc_test) {
         ArmAssembler gg_asm;
 
         uint32_t instruction = 0xef000000 ;
@@ -18,7 +18,7 @@ namespace {
         egg.cpsr = 0x10 ;
 
         uint32_t inst_hash = hashArm(instruction);
-        std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+        EggRun(egg, instruction);
         instance.CPU_Test(instruction);
 
         std::cout << instance._regs[ lr ] << " " << egg.regs[ 14 ] << std::endl ;
@@ -27,9 +27,10 @@ namespace {
             << std::hex << "Errflag: " << errFlag << '\n'
             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
             << Diagnose(instance, egg, errFlag);
+        CpuPC_Reset(egg, instance);
     }
 
-    TEST_F(ggTest, ldrt_test) {
+    TEST_F(ggTest, arm_ldrt_test) {
         instance.WriteCPSR(0x10) ;
         // fill usr reg
         for (int i = 0 ; i < 16 ; ++i)
@@ -50,7 +51,7 @@ namespace {
         ASSERT_TRUE(instance._regs[ lr ] == 0xdeadbeef);
     }
 
-    TEST_F(ggTest, strt_test) {
+    TEST_F(ggTest, arm_strt_test) {
         instance.WriteCPSR(0x10) ;
         // fill usr reg
         for (int i = 0 ; i < 16 ; ++i)

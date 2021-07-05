@@ -13,7 +13,7 @@ namespace {
             "orr", "mov", "bic", "mvn"
     };
 
-    TEST_F(ggTest, alu_rd_rn_op2ShiftRs_cpsr_test) {
+    TEST_F(ggTest, arm_alu_rd_rn_op2ShiftRs_cpsr_test) {
         auto task = [&](E_DataProcess operation) {
             using namespace gg_core;
 
@@ -45,10 +45,8 @@ namespace {
 
                 egg_local.cpsr = (cpsr.value << 28) | 0xd3;
                 local_cpu.WriteCPSR(cpsr.value << 28 | 0xd3);
-
-                uint32_t inst_hash = hashArm(instruction);
-
-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                
+                EggRun(egg_local, instruction);
                 local_cpu.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
@@ -59,6 +57,8 @@ namespace {
                                                            FieldRm.value, FieldRs.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(local_cpu, egg_local, errFlag);
+
+                CpuPC_Reset(egg_local, local_cpu);
             };
 
             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, FieldRs, shiftType, cpsr);
@@ -84,7 +84,7 @@ namespace {
             fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get());
     }
 
-    TEST_F(ggTest, alu_rd_rn_op2ShiftRs_test) {
+    TEST_F(ggTest, arm_alu_rd_rn_op2ShiftRs_test) {
         auto task = [&](E_DataProcess operation) {
             using namespace gg_core;
 
@@ -115,7 +115,7 @@ namespace {
 
                 uint32_t inst_hash = hashArm(instruction);
 
-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                EggRun(egg_local, instruction);
                 local_cpu.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
@@ -126,6 +126,8 @@ namespace {
                                                            FieldRm.value, FieldRs.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(local_cpu, egg_local, errFlag);
+
+                CpuPC_Reset(egg_local, local_cpu);
             };
 
             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, FieldRs, shiftType);
@@ -153,7 +155,7 @@ namespace {
             fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get());
     }
 
-    TEST_F(ggTest, alu_rd_rn_op2ShiftImm_cpsr_test) {
+    TEST_F(ggTest, arm_alu_rd_rn_op2ShiftImm_cpsr_test) {
         auto task = [&](E_DataProcess operation) {
             using namespace gg_core;
 
@@ -186,7 +188,7 @@ namespace {
                 local_cpu.WriteCPSR(cpsr.value << 28 | 0xd3);
 
                 uint32_t inst_hash = hashArm(instruction);
-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                EggRun(egg_local, instruction);
                 local_cpu.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
@@ -197,6 +199,8 @@ namespace {
                                                            FieldRn.value, FieldRm.value, shiftAmount.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(local_cpu, egg_local, errFlag);
+
+                CpuPC_Reset(egg_local, local_cpu);
             };
 
             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, shiftAmount, shiftType, cpsr);
@@ -223,7 +227,7 @@ namespace {
             fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get());
     }
 
-    TEST_F(ggTest, alu_rd_rn_op2ShiftImm_test) {
+    TEST_F(ggTest, arm_alu_rd_rn_op2ShiftImm_test) {
         auto task = [&](E_DataProcess operation) {
             using namespace gg_core;
 
@@ -252,7 +256,7 @@ namespace {
                 FillRegs(egg_local.regs, idx, val);
 
                 uint32_t inst_hash = hashArm(instruction);
-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                EggRun(egg_local, instruction);
                 local_cpu.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
@@ -263,6 +267,8 @@ namespace {
                                                            FieldRn.value, FieldRm.value, shiftAmount.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(local_cpu, egg_local, errFlag);
+
+                CpuPC_Reset(egg_local, local_cpu);
             };
 
             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, shiftAmount, shiftType);
@@ -290,7 +296,7 @@ namespace {
             fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get());
     }
 
-    TEST_F(ggTest, alu_rd_rn_op2Imm_test) {
+    TEST_F(ggTest, arm_alu_rd_rn_op2Imm_test) {
         auto task = [&](E_DataProcess operation) {
             using namespace gg_core;
 
@@ -316,7 +322,7 @@ namespace {
                 egg_local.regs[RnNumber.value] = FieldRn.value;
 
                 uint32_t inst_hash = hashArm(instruction);
-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                EggRun(egg_local, instruction);
                 local_cpu.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
@@ -327,6 +333,8 @@ namespace {
                                                            FieldRn.value, imm.value, rotate.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(local_cpu, egg_local, errFlag);
+
+                CpuPC_Reset(egg_local, local_cpu);
             };
 
             TEST_LOOPS(TestMain, RdNumber, RnNumber, FieldRn, imm, rotate);
@@ -354,7 +362,7 @@ namespace {
             fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get());
     }
 
-    TEST_F(ggTest, alu_rd_rn_op2Imm_cpsr_test) {
+    TEST_F(ggTest, arm_alu_rd_rn_op2Imm_cpsr_test) {
         auto task = [&](E_DataProcess operation) {
             using namespace gg_core;
 
@@ -384,7 +392,7 @@ namespace {
                 local_cpu.WriteCPSR(cpsr.value << 28 | 0xd3);
 
                 uint32_t inst_hash = hashArm(instruction);
-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                EggRun(egg_local, instruction);
                 local_cpu.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
@@ -395,6 +403,8 @@ namespace {
                                                            FieldRn.value, imm.value, rotate.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(local_cpu, egg_local, errFlag);
+
+                CpuPC_Reset(egg_local, local_cpu);
             };
 
             TEST_LOOPS(TestMain, RdNumber, RnNumber, FieldRn, imm, rotate, cpsr);

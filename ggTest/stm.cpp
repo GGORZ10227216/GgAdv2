@@ -11,7 +11,7 @@ namespace {
 
     const uint32_t baseAddr = 0x0201fef0 ;
 
-    TEST_F(ggTest, stmib_test) {
+    TEST_F(ggTest, arm_stmib_test) {
         uint32_t t = 0 ;
 
         TestField wFlag(0,1,1) ;
@@ -36,7 +36,7 @@ namespace {
             instance._regs[ r4 ] = baseAddr ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -60,6 +60,7 @@ namespace {
                 << std::hex << "Errflag: " << errFlag << '\n'
                 << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                 << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
             t++;
         };
 
@@ -67,7 +68,7 @@ namespace {
         std::cout << "Test performed: " << t << std::endl;
     }
 
-    TEST_F(ggTest, stmia_test) {
+    TEST_F(ggTest, arm_stmia_test) {
         uint32_t t = 0 ;
 
         TestField wFlag(0,1,1) ;
@@ -92,7 +93,7 @@ namespace {
             instance._regs[ r4 ] = baseAddr ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -116,6 +117,7 @@ namespace {
                                         << std::hex << "Errflag: " << errFlag << '\n'
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
             t++;
         };
 
@@ -123,7 +125,7 @@ namespace {
         std::cout << "Test performed: " << t << std::endl;
     }
 
-    TEST_F(ggTest, stmdb_test) {
+    TEST_F(ggTest, arm_stmdb_test) {
         uint32_t t = 0 ;
 
         TestField wFlag(0,1,1) ;
@@ -148,7 +150,7 @@ namespace {
             instance._regs[ r4 ] = baseAddr ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -175,6 +177,7 @@ namespace {
                 << std::hex << "Errflag: " << errFlag << '\n'
                 << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                 << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
             t++;
         };
 
@@ -182,7 +185,7 @@ namespace {
         std::cout << "Test performed: " << t << std::endl;
     }
 
-    TEST_F(ggTest, stmda_test) {
+    TEST_F(ggTest, arm_stmda_test) {
         uint32_t t = 0 ;
 
         TestField wFlag(0,1,1) ;
@@ -207,7 +210,7 @@ namespace {
             instance._regs[ r4 ] = baseAddr ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -234,6 +237,7 @@ namespace {
                                         << std::hex << "Errflag: " << errFlag << '\n'
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
             t++;
         };
 

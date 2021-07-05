@@ -17,7 +17,7 @@ namespace {
             0xffffffff
     };
 
-    TEST_F(ggTest, ldr_post_imm_offset_test) {
+    TEST_F(ggTest, arm_ldr_post_imm_offset_test) {
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -47,7 +47,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction);
 
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -58,13 +58,14 @@ namespace {
                                         << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, immOffset, memValueidx);
         std::cout << "Test performed: " << t << std::endl;
     }
 
-    TEST_F(ggTest, ldr_post_reg_offset_test) {
+    TEST_F(ggTest, arm_ldr_post_reg_offset_test) {
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -125,7 +126,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction);
 
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -134,13 +135,14 @@ namespace {
                                         << std::hex << "Errflag: " << errFlag << '\n'
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue);
         std::cout << "Test performed: " << t << std::endl;
     }
 
-    TEST_F(ggTest, ldrb_post_imm_offset_test) {
+    TEST_F(ggTest, arm_ldrb_post_imm_offset_test) {
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -170,7 +172,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction);
 
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -181,13 +183,14 @@ namespace {
                                         << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, immOffset, memValueidx);
         std::cout << "Test performed: " << t << std::endl;
     }
 
-    TEST_F(ggTest, ldrb_post_reg_offset_test) {
+    TEST_F(ggTest, arm_ldrb_post_reg_offset_test) {
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -248,7 +251,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction);
 
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -257,13 +260,14 @@ namespace {
                                         << std::hex << "Errflag: " << errFlag << '\n'
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue);
         std::cout << "Test performed: " << t << std::endl;
     }
 
-    TEST_F(ggTest, ldr_pre_imm_offset_test) {
+    TEST_F(ggTest, arm_ldr_pre_imm_offset_test) {
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -298,7 +302,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction);
 
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -309,13 +313,14 @@ namespace {
                                         << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, immOffset, memValueidx);
         std::cout << "Test performed: " << t << std::endl;
     }
 
-    TEST_F(ggTest, ldr_pre_reg_offset_test) {
+    TEST_F(ggTest, arm_ldr_pre_reg_offset_test) {
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -377,7 +382,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction);
 
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -386,13 +391,14 @@ namespace {
                                         << std::hex << "Errflag: " << errFlag << '\n'
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue);
         std::cout << "Test performed: " << t << std::endl;
     }
 
-    TEST_F(ggTest, ldrb_pre_imm_offset_test) {
+    TEST_F(ggTest, arm_ldrb_pre_imm_offset_test) {
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -427,7 +433,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction);
 
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -438,13 +444,14 @@ namespace {
                                         << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, immOffset, memValueidx);
         std::cout << "Test performed: " << t << std::endl;
     }
 
-    TEST_F(ggTest, ldrb_pre_reg_offset_test) {
+    TEST_F(ggTest, arm_ldrb_pre_reg_offset_test) {
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -506,7 +513,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction);
 
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -515,6 +522,7 @@ namespace {
                                         << std::hex << "Errflag: " << errFlag << '\n'
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue);

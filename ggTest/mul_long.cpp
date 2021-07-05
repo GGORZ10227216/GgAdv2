@@ -41,15 +41,15 @@ namespace {
         return result;
     }();
 
-    TEST_F(ggTest, umull_test) {
+    TEST_F(ggTest, arm_umull_test) {
         using namespace gg_core;
 
         auto task = [&](uint8_t cpsr) {
             unsigned int t = 0;
-            Arm egg_local ;
-            egg_local.init() ;
-            gg_core::GbaInstance instance_local(testRomPath) ;
-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
+            Arm egg_local;
+            egg_local.init();
+            gg_core::GbaInstance instance_local(testRomPath);
+            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
 
             TestField targetRs(0, 0xe, 1);
             TestField RsValue(0, 0xffffffff, 0x11111111);
@@ -82,7 +82,7 @@ namespace {
 
                 uint32_t inst_hash = hashArm(instruction);
 
-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                EggRun(egg_local, instruction);
                 local_cpu.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
@@ -93,8 +93,7 @@ namespace {
                                                            RmValue.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(local_cpu, egg_local, errFlag);
-
-
+                CpuPC_Reset(egg_local , local_cpu);
             };
 
             TEST_LOOPS(TestMain, RsValue, RmValue, RegSetNum, targetRs);
@@ -117,15 +116,15 @@ namespace {
             fmt::print("[CPSR:{}] Total performed tests: {}\n", t.first, t.second.get());
     }
 
-    TEST_F(ggTest, umull_cpsr_test) {
+    TEST_F(ggTest, arm_umull_cpsr_test) {
         using namespace gg_core;
 
         auto task = [&](uint8_t cpsr) {
             unsigned int t = 0;
-            Arm egg_local ;
-            egg_local.init() ;
-            gg_core::GbaInstance instance_local(testRomPath) ;
-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
+            Arm egg_local;
+            egg_local.init();
+            gg_core::GbaInstance instance_local(testRomPath);
+            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
 
             TestField targetRs(0, 0xe, 1);
             TestField RsValue(0, 0xffffffff, 0x11111111);
@@ -158,7 +157,7 @@ namespace {
 
                 uint32_t inst_hash = hashArm(instruction);
 
-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                EggRun(egg_local, instruction);
                 local_cpu.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
@@ -169,6 +168,7 @@ namespace {
                                                            RmValue.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(local_cpu, egg_local, errFlag);
+                CpuPC_Reset(egg_local , local_cpu);
 
 
             };
@@ -193,15 +193,15 @@ namespace {
             fmt::print("[CPSR:{}] Total performed tests: {}\n", t.first, t.second.get());
     }
 
-    TEST_F(ggTest, umlal_test) {
+    TEST_F(ggTest, arm_umlal_test) {
         using namespace gg_core;
 
         auto task = [&](uint8_t cpsr) {
             unsigned int t = 0;
-            Arm egg_local ;
-            egg_local.init() ;
-            gg_core::GbaInstance instance_local(testRomPath) ;
-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
+            Arm egg_local;
+            egg_local.init();
+            gg_core::GbaInstance instance_local(testRomPath);
+            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
 
             TestField targetRs(0, 0xe, 1);
             TestField RsValue(0, 0xffffffff, 0x11111111);
@@ -234,7 +234,7 @@ namespace {
 
                 uint32_t inst_hash = hashArm(instruction);
 
-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                EggRun(egg_local, instruction);
                 local_cpu.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
@@ -245,6 +245,7 @@ namespace {
                                                            RmValue.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(local_cpu, egg_local, errFlag);
+                CpuPC_Reset(egg_local , local_cpu);
 
 
             };
@@ -269,15 +270,15 @@ namespace {
             fmt::print("[CPSR:{}] Total performed tests: {}\n", t.first, t.second.get());
     }
 
-    TEST_F(ggTest, umlal_cpsr_test) {
+    TEST_F(ggTest, arm_umlal_cpsr_test) {
         using namespace gg_core;
 
         auto task = [&](uint8_t cpsr) {
             unsigned int t = 0;
-            Arm egg_local ;
-            egg_local.init() ;
-            gg_core::GbaInstance instance_local(testRomPath) ;
-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
+            Arm egg_local;
+            egg_local.init();
+            gg_core::GbaInstance instance_local(testRomPath);
+            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
 
             TestField targetRs(0, 0xe, 1);
             TestField RsValue(0, 0xffffffff, 0x11111111);
@@ -310,7 +311,7 @@ namespace {
 
                 uint32_t inst_hash = hashArm(instruction);
 
-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                EggRun(egg_local, instruction);
                 local_cpu.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
@@ -321,6 +322,7 @@ namespace {
                                                            RmValue.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(local_cpu, egg_local, errFlag);
+                CpuPC_Reset(egg_local , local_cpu);
 
 
             };
@@ -345,15 +347,15 @@ namespace {
             fmt::print("[CPSR:{}] Total performed tests: {}\n", t.first, t.second.get());
     }
 
-    TEST_F(ggTest, smull_test) {
+    TEST_F(ggTest, arm_smull_test) {
         using namespace gg_core;
 
         auto task = [&](uint8_t cpsr) {
             unsigned int t = 0;
-            Arm egg_local ;
-            egg_local.init() ;
-            gg_core::GbaInstance instance_local(testRomPath) ;
-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
+            Arm egg_local;
+            egg_local.init();
+            gg_core::GbaInstance instance_local(testRomPath);
+            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
 
             TestField targetRs(0, 0xe, 1);
             TestField RsValue(0, 0xffffffff, 0x11111111);
@@ -386,7 +388,7 @@ namespace {
 
                 uint32_t inst_hash = hashArm(instruction);
 
-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                EggRun(egg_local, instruction);
                 local_cpu.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
@@ -397,6 +399,7 @@ namespace {
                                                            RmValue.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(local_cpu, egg_local, errFlag);
+                CpuPC_Reset(egg_local , local_cpu);
 
 
             };
@@ -421,15 +424,15 @@ namespace {
             fmt::print("[CPSR:{}] Total performed tests: {}\n", t.first, t.second.get());
     }
 
-    TEST_F(ggTest, smull_cpsr_test) {
+    TEST_F(ggTest, arm_smull_cpsr_test) {
         using namespace gg_core;
 
         auto task = [&](uint8_t cpsr) {
             unsigned int t = 0;
-            Arm egg_local ;
-            egg_local.init() ;
-            gg_core::GbaInstance instance_local(testRomPath) ;
-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
+            Arm egg_local;
+            egg_local.init();
+            gg_core::GbaInstance instance_local(testRomPath);
+            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
 
             TestField targetRs(0, 0xe, 1);
             TestField RsValue(0, 0xffffffff, 0x11111111);
@@ -462,7 +465,7 @@ namespace {
 
                 uint32_t inst_hash = hashArm(instruction);
 
-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                EggRun(egg_local, instruction);
                 local_cpu.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
@@ -473,6 +476,7 @@ namespace {
                                                            RmValue.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(local_cpu, egg_local, errFlag);
+                CpuPC_Reset(egg_local , local_cpu);
 
 
             };
@@ -497,15 +501,15 @@ namespace {
             fmt::print("[CPSR:{}] Total performed tests: {}\n", t.first, t.second.get());
     }
 
-    TEST_F(ggTest, smlal_test) {
+    TEST_F(ggTest, arm_smlal_test) {
         using namespace gg_core;
 
         auto task = [&](uint8_t cpsr) {
             unsigned int t = 0;
-            Arm egg_local ;
-            egg_local.init() ;
-            gg_core::GbaInstance instance_local(testRomPath) ;
-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
+            Arm egg_local;
+            egg_local.init();
+            gg_core::GbaInstance instance_local(testRomPath);
+            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
 
             TestField targetRs(0, 0xe, 1);
             TestField RsValue(0, 0xffffffff, 0x11111111);
@@ -538,7 +542,7 @@ namespace {
 
                 uint32_t inst_hash = hashArm(instruction);
 
-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                EggRun(egg_local, instruction);
                 local_cpu.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
@@ -549,6 +553,7 @@ namespace {
                                                            RmValue.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(local_cpu, egg_local, errFlag);
+                CpuPC_Reset(egg_local , local_cpu);
 
 
             };
@@ -573,15 +578,15 @@ namespace {
             fmt::print("[CPSR:{}] Total performed tests: {}\n", t.first, t.second.get());
     }
 
-    TEST_F(ggTest, smlal_cpsr_test) {
+    TEST_F(ggTest, arm_smlal_cpsr_test) {
         using namespace gg_core;
 
         auto task = [&](uint8_t cpsr) {
             unsigned int t = 0;
-            Arm egg_local ;
-            egg_local.init() ;
-            gg_core::GbaInstance instance_local(testRomPath) ;
-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
+            Arm egg_local;
+            egg_local.init();
+            gg_core::GbaInstance instance_local(testRomPath);
+            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
 
             TestField targetRs(0, 0xe, 1);
             TestField RsValue(0, 0xffffffff, 0x11111111);
@@ -614,7 +619,7 @@ namespace {
 
                 uint32_t inst_hash = hashArm(instruction);
 
-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+                EggRun(egg_local, instruction);
                 local_cpu.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
@@ -625,6 +630,7 @@ namespace {
                                                            RmValue.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(local_cpu, egg_local, errFlag);
+                CpuPC_Reset(egg_local , local_cpu);
 
 
             };

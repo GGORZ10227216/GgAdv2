@@ -7,7 +7,7 @@ namespace {
     using namespace gg_core::gg_cpu;
     using MULLRegSet = std::tuple<uint8_t, uint8_t, uint8_t>;
 
-    TEST_F(ggTest, b_test) {
+    TEST_F(ggTest, arm_b_test) {
         // todo: fill eggvance's bios with gba_rom.bin to test invalid access
         using namespace gg_core;
 
@@ -39,7 +39,7 @@ namespace {
             if (offsetValue.value < 0x3fffff || offsetValue.value >= 0x800000) {
                 uint32_t inst_hash = hashArm(instruction);
 
-                std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+                EggRun(egg, instruction);
                 instance.CPU_Test(instruction);
 
                 uint32_t errFlag = CheckStatus(instance, egg);
@@ -49,6 +49,7 @@ namespace {
                                             << fmt::format("Testcase: offset_raw: {:x}\n", offsetValue.value)
                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                             << Diagnose(instance, egg, errFlag);
+                CpuPC_Reset(egg, instance);
             } // if
         };
 
@@ -56,7 +57,7 @@ namespace {
         fmt::print("Total performed tests: {}\n", t);
     }
 
-    TEST_F(ggTest, bl_test) {
+    TEST_F(ggTest, arm_bl_test) {
         using namespace gg_core;
 
         unsigned int t = 0;
@@ -72,9 +73,7 @@ namespace {
             egg.regs[15] = 0 ;
             instance._regs[15] = 0 ;
 
-            uint32_t inst_hash = hashArm(instruction);
-
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -84,13 +83,14 @@ namespace {
                                         << fmt::format("Testcase: offset_raw: {:x}\n", offsetValue.value)
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, offsetValue);
         fmt::print("Total performed tests: {}\n", t);
     }
 
-    TEST_F(ggTest, bx_test) {
+    TEST_F(ggTest, arm_bx_test) {
         using namespace gg_core;
 
         unsigned int t = 0;
@@ -107,7 +107,7 @@ namespace {
 
             uint32_t inst_hash = hashArm(instruction);
 
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -117,6 +117,7 @@ namespace {
                                         << fmt::format("Testcase: Rn={:x}", RnValue.value)
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, targetRn, RnValue);

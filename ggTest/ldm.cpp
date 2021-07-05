@@ -9,7 +9,7 @@ namespace {
     using namespace gg_core::gg_cpu;
     using namespace gg_core::gg_mem;
 
-    TEST_F(ggTest, ldmib_test) {
+    TEST_F(ggTest, arm_ldmib_test) {
         // ldmib -> pre-increment load, [L,P,U] == [1,1,1]
         uint32_t t = 0 ;
 
@@ -40,7 +40,7 @@ namespace {
             instance._regs[ r4 ] = 0x03006ea0 ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -49,6 +49,8 @@ namespace {
                 << std::hex << "Errflag: " << errFlag << '\n'
                 << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                 << Diagnose(instance, egg, errFlag);
+
+            CpuPC_Reset(egg, instance);
             t++;
         };
 
@@ -56,7 +58,7 @@ namespace {
         std::cout << "Test performed: " << t << std::endl;
     }
 
-    TEST_F(ggTest, ldmia_test) {
+    TEST_F(ggTest, arm_ldmia_test) {
         // ldmia -> post-increment load, [L,P,U] == [1,0,1]
         uint32_t t = 0 ;
 
@@ -87,7 +89,7 @@ namespace {
             instance._regs[ r4 ] = 0x03006ea0 ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -96,6 +98,8 @@ namespace {
                                         << std::hex << "Errflag: " << errFlag << '\n'
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+
+            CpuPC_Reset(egg, instance);
             t++;
         };
 
@@ -103,7 +107,7 @@ namespace {
         std::cout << "Test performed: " << t << std::endl;
     }
 
-    TEST_F(ggTest, ldmdb_test) {
+    TEST_F(ggTest, arm_ldmdb_test) {
         // ldmdb -> pre-decrement load, [L,P,U] == [1,1,0]
         uint32_t t = 0 ;
 
@@ -134,7 +138,7 @@ namespace {
             instance._regs[ r4 ] = 0x03006ea0 ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -143,6 +147,8 @@ namespace {
                                         << std::hex << "Errflag: " << errFlag << '\n'
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+
+            CpuPC_Reset(egg, instance);
             t++;
         };
 
@@ -150,7 +156,7 @@ namespace {
         std::cout << "Test performed: " << t << std::endl;
     }
 
-    TEST_F(ggTest, ldmda_test) {
+    TEST_F(ggTest, arm_ldmda_test) {
         // ldmda -> post-decrement load, [L,P,U] == [1,0,0]
         uint32_t t = 0 ;
 
@@ -181,7 +187,7 @@ namespace {
             instance._regs[ r4 ] = 0x03006ea0 ; // OWRAM
 
             uint32_t inst_hash = hashArm(instruction);
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -190,6 +196,8 @@ namespace {
                                         << std::hex << "Errflag: " << errFlag << '\n'
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag);
+
+            CpuPC_Reset(egg, instance);
             t++;
         };
 

@@ -18,7 +18,7 @@ namespace {
             0x0f4f
     };
 
-    TEST_F(ggTest, ldrh_reg_post_offset) {
+    TEST_F(ggTest, arm_ldrh_reg_post_offset) {
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -60,7 +60,7 @@ namespace {
             egg.writeHalf(addrPair[writeMode.value].first, testValue[memValueIdx.value]);
 
             uint32_t inst_hash = hashArm(instruction);
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -72,12 +72,13 @@ namespace {
                                                        addrPair[writeMode.value].first, RmValue.value)
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag) << '\n';
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, targetRn, targetRd, targetRm, RmValue, writeMode, memValueIdx, sFlag);
     }
 
-    TEST_F(ggTest, ldrh_imm_post_offset) {
+    TEST_F(ggTest, arm_ldrh_imm_post_offset) {
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -116,7 +117,7 @@ namespace {
             egg.writeHalf(addrPair[writeMode.value].first, testValue[memValueIdx.value]);
 
             uint32_t inst_hash = hashArm(instruction);
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -128,12 +129,13 @@ namespace {
                                                        addrPair[writeMode.value].first, immOffset.value)
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag) << '\n';
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, targetRn, targetRd, immOffset, writeMode, memValueIdx, sFlag);
     }
 
-    TEST_F(ggTest, ldrh_reg_pre_offset) {
+    TEST_F(ggTest, arm_ldrh_reg_pre_offset) {
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -173,14 +175,14 @@ namespace {
             egg.regs[targetRn.value] = addrPair[writeMode.value].first;
             egg.regs[targetRm.value] = RmValue.value;
 
-            uint32_t targetAddr = addrPair[ writeMode.value ].first ;
-            targetAddr = addrPair[ writeMode.value ].second ? targetAddr + RmValue.value : targetAddr - RmValue.value ;
+            uint32_t targetAddr = addrPair[writeMode.value].first;
+            targetAddr = addrPair[writeMode.value].second ? targetAddr + RmValue.value : targetAddr - RmValue.value;
 
             instance._mem.Write16(targetAddr, testValue[memValueIdx.value]);
             egg.writeHalf(targetAddr, testValue[memValueIdx.value]);
 
             uint32_t inst_hash = hashArm(instruction);
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -192,12 +194,13 @@ namespace {
                                                        addrPair[writeMode.value].first, RmValue.value)
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag) << '\n';
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, targetRn, targetRd, targetRm, RmValue, writeMode, memValueIdx, wFlag, sFlag);
     }
 
-    TEST_F(ggTest, ldrh_imm_pre_offset) {
+    TEST_F(ggTest, arm_ldrh_imm_pre_offset) {
         unsigned int t = 0;
         TestField targetRn(0, 0xf, 1);
         TestField targetRd(0, 0xf, 1);
@@ -233,14 +236,14 @@ namespace {
             instance._regs[targetRn.value] = addrPair[writeMode.value].first;
             egg.regs[targetRn.value] = addrPair[writeMode.value].first;
 
-            uint32_t targetAddr = addrPair[ writeMode.value ].first ;
-            targetAddr = addrPair[ writeMode.value ].second ? targetAddr + immOffset.value : targetAddr - immOffset.value ;
+            uint32_t targetAddr = addrPair[writeMode.value].first;
+            targetAddr = addrPair[writeMode.value].second ? targetAddr + immOffset.value : targetAddr - immOffset.value;
 
             instance._mem.Write16(targetAddr, testValue[memValueIdx.value]);
             egg.writeHalf(targetAddr, testValue[memValueIdx.value]);
 
             uint32_t inst_hash = hashArm(instruction);
-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
+            EggRun(egg, instruction);
             instance.CPU_Test(instruction);
 
             uint32_t errFlag = CheckStatus(instance, egg);
@@ -252,6 +255,7 @@ namespace {
                                                        addrPair[writeMode.value].first, immOffset.value)
                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
                                         << Diagnose(instance, egg, errFlag) << '\n';
+            CpuPC_Reset(egg, instance);
         };
 
         TEST_LOOPS(TestMain, targetRn, targetRd, immOffset, writeMode, memValueIdx, wFlag, sFlag);

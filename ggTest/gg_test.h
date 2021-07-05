@@ -160,6 +160,19 @@ protected:
         std::copy(biosData.begin(), biosData.end(), mmu.bios.data.begin());
         core::reset();
     }
+
+    void EggRun(Arm& egg_local, uint32_t instruction) {
+        uint32_t inst_hash = hashArm(instruction);
+        egg_local.regs[15] = (egg_local.regs[15] + 4) & ~0x3;
+        egg_local.pipe[0] = egg_local.pipe[1];
+        egg_local.pipe[1] = egg_local.readWord(egg_local.gprs[15]);
+        std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
+    }
+
+    void CpuPC_Reset(Arm& egg_local, gg_core::gg_cpu::CPU& local_cpu) {
+        egg_local.regs[15] = 0 ;
+        local_cpu._regs[15] = 0 ;
+    }
 };
 
 
