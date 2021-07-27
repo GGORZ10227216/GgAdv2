@@ -7,12 +7,17 @@
 #include <utility>
 #include <array>
 
-#include <decoder/data_processing.h>
-#include <decoder/multiply.h>
-#include <decoder/memory_access.h>
-#include <decoder/software_interrupt.h>
-#include <decoder/psr_transfer.h>
-#include <decoder/branch.h>
+#include <arm/decoder/data_processing.h>
+#include <arm/decoder/multiply.h>
+#include <arm/decoder/memory_access.h>
+#include <arm/decoder/software_interrupt.h>
+#include <arm/decoder/psr_transfer.h>
+#include <arm/decoder/branch.h>
+
+//#include <thumb/decoder/type1.h>
+//#include <thumb/decoder/type2.h>
+//#include <thumb/decoder/type3.h>
+//#include <thumb/decoder/type4.h>
 
 #ifndef GGTEST_ARM_HANDLER_H
 #define GGTEST_ARM_HANDLER_H
@@ -103,12 +108,37 @@ namespace gg_core {
             return result ;
         }
 
+//        template <uint32_t HashCode10>
+//        constexpr inline auto DecodeThumb() -> HandlerType
+//        {
+//            constexpr uint32_t HashCode16 = HashCode10 << 6;
+//            constexpr unsigned firstStageCode = (HashCode10 & 0b1110'0000'00) >> 7;
+//            if constexpr (firstStageCode == 0b000) {
+//                constexpr unsigned secondStageCode = (HashCode10 & 0b0001'1000'00) >> 5;
+//                if constexpr(secondStageCode == 0b11){
+//
+//                }
+//            } // if
+//            return UndefinedHandler ;
+//        }
+
+//        template <size_t... Idx>
+//        constexpr auto GetThumbInstructionTable(std::index_sequence<Idx...>)
+//        -> std::array<HandlerType, sizeof...(Idx)>
+//        {
+//            constexpr std::array<HandlerType, sizeof...(Idx)> result{
+//                    DecodeThumb<Idx>()...
+//            } ;
+//            return result ;
+//        }
+
+
         constexpr static auto ARM_HandlerTable =
                 GetArmInstructionTable(std::make_index_sequence<4096>{}) ;
 
-        // todo: Thumb decoder
-        constexpr static auto Thumb_HandlerTable =
-                GetArmInstructionTable(std::make_index_sequence<4096>{}) ;
+//        // todo: Thumb decoder
+//        constexpr static auto Thumb_HandlerTable =
+//                GetArmInstructionTable(std::make_index_sequence<1024>{}) ;
     }
 }
 

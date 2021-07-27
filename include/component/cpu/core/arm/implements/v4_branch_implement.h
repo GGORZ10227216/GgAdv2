@@ -1,9 +1,6 @@
 namespace gg_core::gg_cpu {
-    static void BranchExchange_impl(CPU& instance) {
-        instance.Fetch(&instance, gg_mem::N_Cycle) ;
-
-        const uint32_t RnNumber = instance.CurrentInstruction() & 0xf ;
-        uint32_t &Rn = instance._regs[RnNumber] ;
+    static void BX(CPU& instance, unsigned targetReg) {
+        uint32_t Rn = instance._regs[targetReg] ;
 
         if (Rn & 0x1)
             instance.ChangeCpuMode(THUMB) ;
@@ -12,6 +9,12 @@ namespace gg_core::gg_cpu {
 
         instance._regs[pc] = Rn ;
         instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+    } // BX
+
+    static void BranchExchange_impl(CPU& instance) {
+        instance.Fetch(&instance, gg_mem::N_Cycle) ;
+        const uint32_t RnNumber = instance.CurrentInstruction() & 0xf ;
+        BX(instance, RnNumber);
     }
 
     template <bool L>

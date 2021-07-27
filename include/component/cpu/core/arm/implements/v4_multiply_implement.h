@@ -8,6 +8,25 @@
 #define ARM_ANALYZER_V4_MULTIPLY_API_H
 
 namespace gg_core::gg_cpu {
+    template <bool S>
+    static uint32_t ALU_Multiply(CPU& instance, uint32_t arg1, uint32_t arg2) {
+        unsigned boothValue = 4;
+        for (int i = 1; i < 4; ++i) {
+            unsigned boothCheck = arg2 >> (8 * i);
+            const uint32_t allOneMask = 0xffffffff;
+            if (boothCheck == 0 || boothCheck == allOneMask >> (8 * i)) {
+                boothValue = i;
+                break;
+            } // if
+        } // for
+
+        uint32_t result = arg1 * arg2 ;
+        instance.cycle += boothValue ; // The I_Cycle cycle
+
+        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4,gg_mem::S_Cycle) ;
+        return result ;
+    } // ALU_Multiply()
+
     template<bool A, bool S>
     static void Multiply_impl(CPU &instance) {
         instance.Fetch(&instance, gg_mem::I_Cycle) ;
@@ -19,18 +38,7 @@ namespace gg_core::gg_cpu {
         unsigned RsValue = instance._regs[ RsNumber ] ;
         unsigned RmValue = instance._regs[ RmNumber ] ;
 
-        unsigned boothValue = 4;
-        for (int i = 1; i < 4; ++i) {
-            unsigned boothCheck = RsValue >> (8 * i);
-            const uint32_t allOneMask = 0xffffffff;
-            if (boothCheck == 0 || boothCheck == allOneMask >> (8 * i)) {
-                boothValue = i;
-                break;
-            } // if
-        } // for
-
-        uint32_t result = RmValue * RsValue ;
-        instance.cycle += boothValue ; // The I_Cycle cycle
+        uint32_t result = ALU_Multiply<S>(instance, RmValue, RsValue) ;
 
         if constexpr (A) {
             uint8_t RnNumber = BitFieldValue<12, 4>(CURRENT_INSTRUCTION);
@@ -47,7 +55,7 @@ namespace gg_core::gg_cpu {
             TestBit(result, 31) ? instance.SetN() : instance.ClearN();
         } // if
 
-        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4,gg_mem::S_Cycle) ;
+//        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4,gg_mem::S_Cycle) ; // move to ALU_Multiply()
     } // Multiply()
 
     template<bool U, bool A, bool S>

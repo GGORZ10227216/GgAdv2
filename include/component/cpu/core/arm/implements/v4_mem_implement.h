@@ -10,7 +10,44 @@
 #define GGADV2_MEM_API_H
 
 namespace gg_core::gg_cpu {
-    template <bool I_Cycle, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
+    template <typename T, bool SIGNED>
+    static void MemLoad(CPU& instance, uint32_t targetAddr, unsigned targetRegNum) {
+        uint32_t& dst = instance._regs[ targetRegNum ] ;
+        // 2nd cycle
+        if constexpr (sizeof(T) == 1) {
+            if constexpr (SIGNED) // LDRSB
+                dst = (static_cast<int32_t>(instance._mem.Read<uint8_t>(targetAddr, gg_mem::I_Cycle)) << 24) >> 24 ; // sign extend
+            else // LDRB
+                dst = instance._mem.Read<uint8_t>(targetAddr, gg_mem::I_Cycle) ;
+        } // if
+        else if constexpr (sizeof(T) == 2) {
+            if constexpr (SIGNED) { // LDRSH
+                const unsigned extShiftAmount = targetAddr & 1 ? 24 : 16 ;
+                dst = (static_cast<int32_t>(instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle)) << extShiftAmount) >> extShiftAmount ; // sign extend
+            } // if
+            else { // LDRH
+                dst = instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle) ;
+            } // else
+        } // else if
+        else { // LDR
+            dst = instance._mem.Read<uint32_t>(targetAddr, gg_mem::I_Cycle) ;
+        } // else
+
+        if (targetRegNum == pc) {
+            const unsigned instructionLength = 4 ; // Rd == pc is ARM only instruction.
+            // 3th cycle
+            instance._mem.Read<uint32_t>(instance._regs[ gg_cpu::pc ] + instructionLength, gg_mem::N_Cycle) ;
+            // 4th&5th cycle, end.
+            instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+        } // if
+        else {
+            // fixme: It's possible to determine instruction length in compile time, but should we?
+            unsigned instructionLength = instance.GetCpuMode() == E_CpuMode::ARM ? 4 : 2 ;
+            instance._mem.Read<T>(instance._regs[ gg_cpu::pc ] + instructionLength, gg_mem::S_Cycle) ; // 3rd cycle, end.
+        } // else
+    } // LDR()
+
+    template <bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
     static void SingleDataTransfer_impl(CPU &instance) {
         instance.Fetch(&instance, gg_mem::N_Cycle) ;
 
@@ -24,7 +61,7 @@ namespace gg_core::gg_cpu {
             uint32_t &Rd = instance._regs[ RdNumber ] ;
             uint32_t offset = 0, targetAddr = Rn ;
 
-            if constexpr (I_Cycle) {
+            if constexpr (I) {
                 ParseOp2_Shift_Imm<ST>(instance, offset) ;
             } // constexpr()
             else {
@@ -43,21 +80,10 @@ namespace gg_core::gg_cpu {
                 if constexpr (P)
                     calculateTargetAddr() ;
 
-                if constexpr (B) {
-                    Rd = instance._mem.Read<uint8_t>(targetAddr, gg_mem::I_Cycle) ;
-                } // if
-                else {
-                    Rd = instance._mem.Read<uint32_t>(targetAddr, gg_mem::I_Cycle) ;
-                } // else
-
-                if (RdNumber == pc) {
-                    instance._mem.Read<uint32_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::N_Cycle) ;
-                    instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
-                } // if
-                else {
-                    instance._mem.Read<uint32_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::S_Cycle) ;
-                } // else
-
+                if constexpr(B)
+                    MemLoad<uint8_t, false>(instance, targetAddr, RdNumber) ;
+                else
+                    MemLoad<uint32_t, false>(instance, targetAddr, RdNumber) ;
 
                 if constexpr (!P || W) {
                     // Info from heyrick.eu:
@@ -132,34 +158,10 @@ namespace gg_core::gg_cpu {
             if constexpr (P)
                 calculateTargetAddr() ;
 
-            if constexpr (!S && !H)
-                gg_core::Unreachable() ;
-            else if constexpr (!S && H) {
-                // LDRH
-                Rd = instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle) ;
-            } // else if
-            else if constexpr (S && !H) {
-                // LDRSB
-                Rd = (static_cast<int32_t>(instance._mem.Read<uint8_t>(targetAddr, gg_mem::I_Cycle)) << 24) >> 24 ; // sign extend
-            } // else if
-            else {
-                // LDRSH
-                /// fixme: need rotate?
-                const unsigned extShiftAmount = targetAddr & 1 ? 24 : 16 ;
-                Rd = (static_cast<int32_t>(instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle)) << extShiftAmount) >> extShiftAmount ; // sign extend
-            } // else
-
-            if (RdNumber == pc) {
-                if constexpr (H)
-                    instance._mem.Read<uint16_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::N_Cycle) ;
-                else
-                    instance._mem.Read<uint8_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::N_Cycle) ;
-
-                instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
-            } // if
-            else {
-                instance._mem.Read<uint16_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::S_Cycle) ;
-            } // else
+            if constexpr (H)
+                MemLoad<uint16_t, S>(instance, targetAddr, RdNumber) ;
+            else
+                MemLoad<uint8_t, S>(instance, targetAddr, RdNumber) ;
 
             if constexpr (!P || W) {
                 if constexpr (!P)

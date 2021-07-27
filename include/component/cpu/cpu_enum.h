@@ -40,12 +40,23 @@ namespace gg_core::gg_cpu {
         AND, EOR, SUB, RSB, ADD, ADC, SBC, RSC, TST, TEQ, CMP, CMN, ORR, MOV, BIC, MVN
     };
 
+//    enum class E_ThumbType4Op {
+//        AND = E_DataProcess::AND, EOR = E_DataProcess::EOR,
+//        LSL = E_DataProcess::MOV, LSR = E_DataProcess::MOV,
+//        ASR = E_DataProcess::MOV, ADC = E_DataProcess::ADC,
+//        SBC = E_DataProcess::SBC, ROR = E_DataProcess::MOV,
+//        TST = E_DataProcess::TST, NEG = E_DataProcess::RSB,
+//        CMP = E_DataProcess::CMP, CMN = E_DataProcess::CMN,
+//        ORR = E_DataProcess::ORR, MUL,
+//        BIC = E_DataProcess::BIC, MVN = E_DataProcess::MVN
+//    };
+
     enum E_CondName {
         EQ, NE, CS, CC, MI, PL, VS, VC, HI, LS, GE, LT, GT, LE, AL
     };
 
     enum E_PSRBit {
-        T = 5, F = 6, I_Cycle = 7, V = 28, C = 29, Z = 30, N_Cycle = 31
+        T = 5, F = 6, I = 7, V = 28, C = 29, Z = 30, N = 31
     };
 
     enum E_PipelineStage {
@@ -62,6 +73,7 @@ namespace gg_core::gg_cpu {
     };
 
     enum class OFFSET_TYPE { RM, IMM };
+
 }
 
 #endif //GGADV_CPU_ENUM_H

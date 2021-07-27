@@ -7,7 +7,7 @@
 #include <filesystem>
 #include <iostream>
 
-#include <arm_decoder.h>
+#include <decoder.h>
 
 #ifndef GGADV_CPU_H
 #define GGADV_CPU_H
@@ -115,6 +115,7 @@ namespace gg_core::gg_cpu {
 #define CURRENT_INSTRUCTION instance.CurrentInstruction()
 #define CPU_REG instance._regs
 
+// ARM implementation
 #include <v4_alu_implement.h>
 #include <v4_multiply_implement.h>
 #include <v4_mem_implement.h>
@@ -122,4 +123,11 @@ namespace gg_core::gg_cpu {
 #include <v4_psr_implement.h>
 #include <v4_branch_implement.h>
 
+// Thumb implementation
+#include <v4t_format1.h>
+#include <v4t_format2.h>
+#include <v4t_format3.h>
+#include <v4t_format4.h>
+#include <v4t_format5.h>
+#include <v4t_format6.h>
 #endif //GGADV_CPU_H
