@@ -10,6 +10,14 @@
 #define GGADV2_MEM_API_H
 
 namespace gg_core::gg_cpu {
+    template <bool U>
+    void calculateTargetAddr(uint32_t& targetAddr, unsigned offset) {
+        if constexpr (U)
+            targetAddr += offset ;
+        else
+            targetAddr -= offset ;
+    } // calculateTargetAddr()
+
     template <typename T, bool SIGNED>
     static void MemLoad(CPU& instance, uint32_t targetAddr, unsigned targetRegNum) {
         uint32_t& dst = instance._regs[ targetRegNum ] ;
@@ -41,11 +49,21 @@ namespace gg_core::gg_cpu {
             instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
         } // if
         else {
-            // fixme: It's possible to determine instruction length in compile time, but should we?
+            // fixme: It's possible to determine instruction length in compile time, but should we do that?
             unsigned instructionLength = instance.GetCpuMode() == E_CpuMode::ARM ? 4 : 2 ;
             instance._mem.Read<T>(instance._regs[ gg_cpu::pc ] + instructionLength, gg_mem::S_Cycle) ; // 3rd cycle, end.
         } // else
     } // LDR()
+
+    template <typename T>
+    static void MemStore(CPU &instance, uint32_t targetAddr, unsigned targetRegNum) {
+        uint32_t &src = instance._regs[ targetRegNum ] ;
+
+        if (targetRegNum == pc) // ARM mode only, impossible for Thumb
+            instance._mem.Write<T>(targetAddr, static_cast<T>(src + 4), gg_mem::N_Cycle) ;
+        else
+            instance._mem.Write<T>(targetAddr, static_cast<T>(src), gg_mem::N_Cycle) ;
+    }
 
     template <bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
     static void SingleDataTransfer_impl(CPU &instance) {
@@ -68,17 +86,10 @@ namespace gg_core::gg_cpu {
                 offset = CURRENT_INSTRUCTION & 0xfff ;
             } // else
 
-            auto calculateTargetAddr = [&]() {
-                if constexpr (U)
-                    targetAddr += offset ;
-                else
-                    targetAddr -= offset ;
-            };
-
             if constexpr (L) {
                 // ldr
                 if constexpr (P)
-                    calculateTargetAddr() ;
+                    calculateTargetAddr<U>(targetAddr, offset) ;
 
                 if constexpr(B)
                     MemLoad<uint8_t, false>(instance, targetAddr, RdNumber) ;
@@ -90,7 +101,7 @@ namespace gg_core::gg_cpu {
                     //      Pre-indexed (any) / Post-indexed (any): Using the same register as Rd and Rn is unpredictable.
                     if (RnNumber != RdNumber) {
                         if constexpr (!P)
-                            calculateTargetAddr() ;
+                            calculateTargetAddr<U>(targetAddr, offset) ;
                         Rn = targetAddr ;
                     } // if
                 } // if
@@ -98,26 +109,18 @@ namespace gg_core::gg_cpu {
             else {
                 // str
                 if constexpr (P)
-                    calculateTargetAddr() ;
+                    calculateTargetAddr<U>(targetAddr, offset) ;
 
-                if constexpr (B) {
-                    if (RdNumber == pc)
-                        instance._mem.Write<uint8_t>(targetAddr, static_cast<uint8_t>(Rd + 4), gg_mem::N_Cycle) ;
-                    else
-                        instance._mem.Write<uint8_t>(targetAddr, static_cast<uint8_t>(Rd), gg_mem::N_Cycle) ;
-                } // if
-                else {
-                    if (RdNumber == pc)
-                        instance._mem.Write<uint32_t>(targetAddr, Rd + 4, gg_mem::N_Cycle) ;
-                    else
-                        instance._mem.Write<uint32_t>(targetAddr, Rd, gg_mem::N_Cycle) ;
-                } // else
+                if constexpr (B)
+                    MemStore<uint8_t>(instance, targetAddr, RdNumber);
+                else
+                    MemStore<uint32_t>(instance, targetAddr, RdNumber);
 
                 if constexpr (!P || W) {
                     // Info from heyrick.eu:
                     //      Pre-indexed (any) / Post-indexed (any): Using the same register as Rd and Rn is unpredictable.
                     if constexpr (!P)
-                        calculateTargetAddr() ;
+                        calculateTargetAddr<U>(targetAddr, offset) ;
                     Rn = targetAddr ;
                 } // if
             } // else
@@ -146,17 +149,10 @@ namespace gg_core::gg_cpu {
             offset = ((CURRENT_INSTRUCTION & 0xf00) >> 4) | (CURRENT_INSTRUCTION & 0xf) ;
         } // else
 
-        auto calculateTargetAddr = [&]() {
-            if constexpr (U)
-                targetAddr += offset ;
-            else
-                targetAddr -= offset ;
-        };
-
         if constexpr (L) {
             // ldr
             if constexpr (P)
-                calculateTargetAddr() ;
+                calculateTargetAddr<U>(targetAddr, offset) ;
 
             if constexpr (H)
                 MemLoad<uint16_t, S>(instance, targetAddr, RdNumber) ;
@@ -165,7 +161,7 @@ namespace gg_core::gg_cpu {
 
             if constexpr (!P || W) {
                 if constexpr (!P)
-                    calculateTargetAddr() ;
+                    calculateTargetAddr<U>(targetAddr, offset) ;
                 if (RdNumber != RnNumber)
                     Rn = targetAddr ;
             } // if
@@ -173,21 +169,17 @@ namespace gg_core::gg_cpu {
         else {
             // str
             if constexpr (P)
-                calculateTargetAddr() ;
+                calculateTargetAddr<U>(targetAddr, offset) ;
 
-            if constexpr (!S && H) {
-                // STRH
-                if (RdNumber == gg_cpu::pc)
-                    instance._mem.Write<uint16_t>(targetAddr, static_cast<uint16_t>(Rd + 4), gg_mem::N_Cycle) ;
-                else
-                    instance._mem.Write<uint16_t>(targetAddr, static_cast<uint16_t>(Rd), gg_mem::N_Cycle) ;
-            } // else if
-            else
-                gg_core::Unreachable();
+            /*
+             * Move compile time tag check to decoder
+             */
+
+            MemStore<uint16_t>(instance, targetAddr, RdNumber) ;
 
             if constexpr (!P || W) {
                 if constexpr (!P)
-                    calculateTargetAddr() ;
+                    calculateTargetAddr<U>(targetAddr, offset) ;
                 Rn = targetAddr ;
             } // if
         } // else

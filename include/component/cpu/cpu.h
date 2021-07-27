@@ -130,4 +130,8 @@ namespace gg_core::gg_cpu {
 #include <v4t_format4.h>
 #include <v4t_format5.h>
 #include <v4t_format6.h>
+#include <v4t_format7.h>
+#include <v4t_format8.h>
+#include <v4t_format9.h>
+#include <v4t_format10.h>
 #endif //GGADV_CPU_H
