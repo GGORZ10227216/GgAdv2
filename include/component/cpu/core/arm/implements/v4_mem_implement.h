@@ -266,7 +266,7 @@ namespace gg_core::gg_cpu {
         if constexpr (S)
             instance.WriteCPSR( (originalCPSR & ~0b11111) | static_cast<uint32_t>(E_OperationMode::USR) ) ;
 
-        LDSTM<U, P, W, L>(instance, Rn, regList);
+        LDSTM<L, P, U, W>(instance, Rn, regList);
 
         if constexpr (S) {
             if constexpr (L) {
