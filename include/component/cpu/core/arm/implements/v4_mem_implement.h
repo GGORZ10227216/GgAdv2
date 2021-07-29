@@ -65,6 +65,73 @@ namespace gg_core::gg_cpu {
             instance._mem.Write<T>(targetAddr, static_cast<T>(src), gg_mem::N_Cycle) ;
     }
 
+    template <bool L, bool P, bool U, bool W>
+    static void LDSTM(CPU& instance, uint32_t& baseReg, unsigned regList) {
+        uint32_t base = 0, offset = 0 ;
+        unsigned int registerCnt = PopCount32(regList) ;
+        offset = registerCnt * 4 ;
+
+        if (registerCnt == 0) {
+            regList = 0x8000 ; // pc only
+            offset = 0x40 ;
+        } // if
+
+        if constexpr (U) {
+            if constexpr (P) {
+                // pre-increment
+                base = baseReg + 4 ;
+            } // if
+            else {
+                // post-increment
+                base = baseReg ;
+            } // else
+        } // if
+        else {
+            if constexpr (P) {
+                // pre-decrement
+                base = baseReg - offset ;
+            } // if
+            else {
+                // post-decrement
+                base = baseReg - offset + 4 ;
+            } // else
+        } // else
+
+        for (size_t idx = 0 ; idx < 16 ; ++idx) {
+            if (TestBit(regList, idx)) {
+                if constexpr (L) {
+                    const auto cycleType = --registerCnt == 0 ? gg_mem::I_Cycle : gg_mem::S_Cycle ;
+                    CPU_REG[ idx ] = instance._mem.Read<uint32_t>(base, cycleType) ;
+
+                    if (idx == pc) {
+                        CPU_REG[ pc ] &= ~0x3 ;
+                        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4, gg_mem::N_Cycle) ;
+                        instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+                    } // if
+                    else {
+                        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4, gg_mem::S_Cycle) ;
+                    } // else
+                } // if
+                else {
+                    const auto cycleType = --registerCnt == 0 ? gg_mem::N_Cycle : gg_mem::S_Cycle ;
+                    uint32_t regVal = CPU_REG[ idx ] ;
+                    if (idx == 15)
+                        regVal = (regVal + 4) & ~0x3 ;
+                    instance._mem.Write<uint32_t>(base, regVal, cycleType) ;
+                } // else
+
+                base += 4 ;
+            } // if
+        } // for
+
+        if constexpr (W) {
+            if constexpr (U)
+                baseReg += offset ;
+            else
+                baseReg -= offset ;
+        } // if
+    }
+    
     template <bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
     static void SingleDataTransfer_impl(CPU &instance) {
         instance.Fetch(&instance, gg_mem::N_Cycle) ;
@@ -193,68 +260,13 @@ namespace gg_core::gg_cpu {
         uint32_t regList = BitFieldValue<0, 16>(CURRENT_INSTRUCTION) ;
         uint32_t &Rn = instance._regs[ BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ] ;
 
-        uint32_t base = 0 ;
-        unsigned int registerCnt = PopCount32(regList) ;
-        uint32_t offset = registerCnt * 4 ;
-
-        if (registerCnt == 0) {
-            regList = 0x8000 ; // pc only
-            offset = 0x40 ;
-        } // if
-
         uint32_t originalCPSR = instance.ReadCPSR() ;
         uint32_t originalMode = instance.GetOperationMode() ;
 
         if constexpr (S)
             instance.WriteCPSR( (originalCPSR & ~0b11111) | static_cast<uint32_t>(E_OperationMode::USR) ) ;
 
-        if constexpr (U) {
-            if constexpr (P) {
-                // pre-increment
-                base = Rn + 4 ;
-            } // if
-            else {
-                // post-increment
-                base = Rn ;
-            } // else
-        } // if
-        else {
-            if constexpr (P) {
-                // pre-decrement
-                base = Rn - offset ;
-            } // if
-            else {
-                // post-decrement
-                base = Rn - offset + 4 ;
-            } // else
-        } // else
-
-        for (size_t idx = 0 ; idx < 16 ; ++idx) {
-            if (TestBit(regList, idx)) {
-                if constexpr (L) {
-                    const auto cycleType = --registerCnt == 0 ? gg_mem::I_Cycle : gg_mem::S_Cycle ;
-                    CPU_REG[ idx ] = instance._mem.Read<uint32_t>(base, cycleType) ;
-
-                    if (idx == pc) {
-                        CPU_REG[ pc ] &= ~0x3 ;
-                        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4, gg_mem::N_Cycle) ;
-                        instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
-                    } // if
-                    else {
-                        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4, gg_mem::S_Cycle) ;
-                    } // else
-                } // if
-                else {
-                    const auto cycleType = --registerCnt == 0 ? gg_mem::N_Cycle : gg_mem::S_Cycle ;
-                    uint32_t regVal = CPU_REG[ idx ] ;
-                    if (idx == 15)
-                        regVal = (regVal + 4) & ~0x3 ;
-                    instance._mem.Write<uint32_t>(base, regVal, cycleType) ;
-                } // else
-
-                base += 4 ;
-            } // if
-        } // for
+        LDSTM<U, P, W, L>(instance, Rn, regList);
 
         if constexpr (S) {
             if constexpr (L) {
@@ -263,13 +275,6 @@ namespace gg_core::gg_cpu {
             } // if
 
             instance.WriteCPSR( (originalCPSR & ~0b11111) | originalMode ) ;
-        } // if
-
-        if constexpr (W) {
-            if constexpr (U)
-                Rn += offset ;
-            else
-                Rn -= offset ;
         } // if
     } // BlockMemAccess_impl()
 
