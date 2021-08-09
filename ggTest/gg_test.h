@@ -168,6 +168,7 @@ protected:
         egg_local.regs[15] = (egg_local.regs[15] + 4) & ~0x3;
         egg_local.pipe[0] = egg_local.pipe[1];
         egg_local.pipe[1] = egg_local.readWord(egg_local.gprs[15]);
+
         std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
     }
 

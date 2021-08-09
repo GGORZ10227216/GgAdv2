@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     enum F_Type {
-        Cond, I, OpCode, S, Rn, Rd, ShiftType, ShiftAmount, Rm, Rs, Rotate, Imm,
+        Cond, FlagI, OpCode, S, Rn, Rd, ShiftType, ShiftAmount, Rm, Rs, Rotate, Imm,
         U, A, RdHi, RdLo, L, Offset, B, P, W, H, RegList
     };
 
@@ -205,7 +205,7 @@ namespace gg_core::gg_cpu {
             static_assert(std::is_same_v<V, gg_core::gg_cpu::E_CondName>) ;
             result |= value << 28 ;
         } // else if
-        else if constexpr (F == F_Type::I) {
+        else if constexpr (F == F_Type::FlagI) {
             result |= (value & 0x1) << 25 ;
         } // if
         else if constexpr (F == F_Type::P) {

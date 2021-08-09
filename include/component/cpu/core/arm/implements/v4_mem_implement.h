@@ -42,16 +42,13 @@ namespace gg_core::gg_cpu {
         } // else
 
         if (targetRegNum == pc) {
-            const unsigned instructionLength = 4 ; // Rd == pc is ARM only instruction.
             // 3th cycle
-            instance._mem.Read<uint32_t>(instance._regs[ gg_cpu::pc ] + instructionLength, gg_mem::N_Cycle) ;
+            instance._mem.Read<uint32_t>(instance._regs[ gg_cpu::pc ] + instance.instructionLength, gg_mem::N_Cycle) ;
             // 4th&5th cycle, end.
             instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
         } // if
         else {
-            // fixme: It's possible to determine instruction length in compile time, but should we do that?
-            unsigned instructionLength = instance.GetCpuMode() == E_CpuMode::ARM ? 4 : 2 ;
-            instance._mem.Read<T>(instance._regs[ gg_cpu::pc ] + instructionLength, gg_mem::S_Cycle) ; // 3rd cycle, end.
+            instance._mem.Read<T>(instance._regs[ gg_cpu::pc ] + instance.instructionLength, gg_mem::S_Cycle) ; // 3rd cycle, end.
         } // else
     } // LDR()
 

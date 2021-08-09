@@ -93,6 +93,7 @@ namespace gg_core::gg_cpu {
         constexpr bool TEST = opcode == TST || opcode == TEQ || opcode == CMP || opcode == CMN ;
 
         const uint32_t curInst = CURRENT_INSTRUCTION ;
+
         const uint8_t RnNumber = (curInst & 0xf0000) >> 16 ;
 
         bool shiftCarry = false ;

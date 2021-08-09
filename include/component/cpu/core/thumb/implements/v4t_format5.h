@@ -21,7 +21,7 @@ namespace gg_core::gg_cpu {
         uint32_t result = 0 ;
         if constexpr (std::is_same_v<decltype(OP), E_DataProcess>) {
             instance.Fetch(&instance, S_Cycle) ;
-            instance._regs[ targetRd ] = ALU_Calculate<true, OP>(instance, RdValue, RsValue, false)  ;
+            instance._regs[ targetRd ] = ALU_Calculate<false, OP>(instance, RdValue, RsValue, false)  ;
         } // if
         else {
             instance.Fetch(&instance, N_Cycle) ;

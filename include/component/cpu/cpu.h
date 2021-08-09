@@ -26,6 +26,8 @@ namespace gg_core::gg_cpu {
             // fetchIdx point to pc+4
             // !fetchIdx point to pc
 
+            // fetchidx always point to last fetched instruction
+
             _mem._cpuStatus = this ;
             fetchedBuffer[0] = _mem.Read<uint32_t>(0, gg_mem::N_Cycle);
             fetchedBuffer[1] = _mem.Read<uint32_t>(4, gg_mem::S_Cycle);
@@ -54,12 +56,27 @@ namespace gg_core::gg_cpu {
             if (mode == THUMB) {
                 _cpsr |= 0x1 << T ;
                 RefillPipeline = &CPU::THUMB_RefillPipeline ;
+                instructionLength = 4 ;
             } // if
             else {
                 _cpsr &= ~(0x1 << T);
                 RefillPipeline = &CPU::ARM_RefillPipeline ;
+                instructionLength = 2 ;
             } // else
         } // ChangeCpuMode()
+
+        void ChangeOperationMode(E_OperationMode newMode) {
+            uint32_t oldStatus = _cpsr & ~0x1f ;
+            WriteCPSR(oldStatus | newMode) ;
+        }
+
+        template <typename T>
+        void AccessUsrRegBankInPrivilege(T Action) {
+            uint32_t originalOpMode = _cpsr & 0x1f ;
+            ChangeOperationMode(USR) ;
+            Action() ;
+            ChangeOperationMode(static_cast<E_OperationMode>(originalOpMode)) ;
+        }
 
         loggerType logger ;
 
@@ -139,4 +156,8 @@ namespace gg_core::gg_cpu {
 #include <v4t_format13.h>
 #include <v4t_format14.h>
 #include <v4t_format15.h>
+#include <v4t_format16.h>
+#include <v4t_format17.h>
+#include <v4t_format18.h>
+#include <v4t_format19.h>
 #endif //GGADV_CPU_H

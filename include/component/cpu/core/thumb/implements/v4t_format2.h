@@ -19,7 +19,6 @@ namespace gg_core::gg_cpu {
         const unsigned offset = (curInst & (0b111 << 6)) >> 6 ;
 
         const uint32_t RsValue = instance._regs[ targetRs ] ;
-        uint32_t op = 0;
         uint64_t result = 0 ;
 
         if constexpr (IS_IMMEDIATE)

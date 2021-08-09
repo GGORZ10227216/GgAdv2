@@ -8,20 +8,17 @@
 #define GGTEST_TYPE1_H
 
 namespace gg_core::gg_cpu {
+    template <E_ShiftType ST>
+    static void MoveShift(CPU& instance) ;
+
     template <uint32_t HashCode10>
     static constexpr auto ThumbType1() {
-        constexpr unsigned op = (HashCode10 & (0b11 << 5)) >> 5 ;
-        constexpr std::array<E_ShiftType, 3> shiftType {LSL, LSR, ASR} ;
+        constexpr unsigned OP = (HashCode10 & (0b11 << 5)) >> 5 ;
 
-        constexpr uint32_t equivalentArmCode = MakeALUInstruction(
-                std::pair(op_filed::Cond(), AL),
-                std::pair(op_filed::Imm(), 0), // 0x0 is ok, just enable I bit
-                std::pair(op_filed::OpCode(), MOV),
-                std::pair(op_filed::S(), true),
-                std::pair(op_filed::ShiftType(), shiftType[op])
-        ) ;
+        if constexpr (OP == ROR)
+            gg_core::Unreachable() ; // ROR is not allow in thumb type1 instruction.
 
-        return DataProcessing<equivalentArmCode>();
+        return &MoveShift<static_cast<E_ShiftType>(OP)>;
     }
 }
 

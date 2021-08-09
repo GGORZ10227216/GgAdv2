@@ -17,17 +17,16 @@ namespace gg_core::gg_cpu {
         instance.WriteCPSR((preCPSR & ~0b11111u) | static_cast<uint8_t>(opMode)) ;
         instance.WriteSPSR(preCPSR) ;
 
-        // both SVC & IRQ have same offset(4) in ARM mode
-        instance._regs[ lr ] = instance._regs[ pc ] - 4 ;
+        instance._regs[ lr ] = instance._regs[ pc ] - instance.instructionLength ;
 
         if constexpr (opMode == SVC)
             instance._regs[ pc ] = SW_IRQ ;
         else if constexpr (opMode == IRQ)
             instance._regs[ pc ] = HW_IRQ ;
 
-        instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
-
         instance.ChangeCpuMode(ARM);
+
+        instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
         instance.SetI() ;
     } // Interrupt_impl()
 }
