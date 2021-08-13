@@ -10,7 +10,7 @@ namespace gg_core::gg_cpu {
     static void LoadAddress(CPU& instance) ;
 
     template <uint32_t HashCode10>
-    static constexpr auto ThumbType10() {
+    static constexpr auto ThumbType12() {
         constexpr bool SP = TestBit(HashCode10, 5) ;
         return &LoadAddress<SP>;
     }

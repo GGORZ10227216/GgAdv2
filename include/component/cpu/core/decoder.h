@@ -123,17 +123,88 @@ namespace gg_core {
             return result ;
         }
 
+        constexpr static auto ARM_HandlerTable =
+                GetArmInstructionTable(std::make_index_sequence<4096>{}) ;
+
+        // todo: Thumb decoder
         template <uint32_t HashCode10>
         constexpr inline auto DecodeThumb() -> HandlerType
         {
-            constexpr uint32_t HashCode16 = HashCode10 << 6;
             constexpr unsigned firstStageCode = (HashCode10 & 0b1110'0000'00) >> 7;
             if constexpr (firstStageCode == 0b000) {
-                constexpr unsigned secondStageCode = (HashCode10 & 0b0001'1000'00) >> 5;
-                if constexpr(secondStageCode == 0b11){
-
-                }
+                constexpr unsigned Op = (HashCode10 & 0b0001'1000'00) >> 5 ;
+                if constexpr (Op == 0b11)
+                return ThumbType2<HashCode10>() ;
+                else
+                    return ThumbType1<HashCode10>() ;
             } // if
+            else if constexpr (firstStageCode == 0b001) {
+                return ThumbType3<HashCode10>() ;
+            } // else if
+            else if constexpr (firstStageCode == 0b010) {
+                constexpr unsigned secondStageCode = (HashCode10 & 0b0001'1100'00) >> 4;
+                if constexpr (secondStageCode == 0b000) {
+                    return ThumbType4<HashCode10>() ;
+                } // if
+                else if constexpr (secondStageCode == 0b001) {
+                    return ThumbType5<HashCode10>() ;
+                } // else if
+                else if constexpr (secondStageCode == 0b010 || secondStageCode == 0b011) {
+                    return ThumbType6<HashCode10>() ;
+                } // else
+                else {
+                    constexpr unsigned thirdStageCode = (HashCode10 & 0b0000'0010'00) >> 3 ;
+                    if constexpr (thirdStageCode == 0) {
+                        return ThumbType7<HashCode10>() ;
+                    } // if
+                    else {
+                        return ThumbType8<HashCode10>() ;
+                    } // else
+                } // return
+            } // else if
+            else if constexpr (firstStageCode == 0b011) {
+                return ThumbType9<HashCode10>() ;
+            } // else if
+            else if constexpr (firstStageCode == 0b100) {
+                constexpr unsigned secondStageCode = (HashCode10 & 0b0001'0000'00) >> 6;
+                if constexpr (secondStageCode == 0)
+                return ThumbType10<HashCode10>() ;
+                else
+                    return ThumbType11<HashCode10>() ;
+            } // else if
+            else if (firstStageCode == 0b101) {
+                constexpr unsigned secondStageCode = (HashCode10 & 0b0001'0000'00) >> 6;
+                if constexpr (secondStageCode == 0)
+                return ThumbType12<HashCode10>() ;
+                else {
+                    constexpr unsigned thirdStageCode = (HashCode10 & 0b0000'0100'00) >> 4 ;
+                    if constexpr (thirdStageCode == 0)
+                    return ThumbType13<HashCode10>() ;
+                    else
+                        return ThumbType14<HashCode10>() ;
+                } // else
+            } // else if
+            else if constexpr (firstStageCode == 0b110) {
+                constexpr bool bit6 = TestBit(HashCode10, 6) ;
+                if constexpr (bit6) {
+                    constexpr unsigned cond = (HashCode10 & (0b1111 << 2)) >> 2 ;
+                    if constexpr (cond == 0b1111)
+                    return ThumbType17<HashCode10>() ;
+                    else
+                        return ThumbType16<HashCode10>() ;
+                } // if
+                else {
+                    return ThumbType15<HashCode10>() ;
+                } // else
+            } // else if
+            else if constexpr (firstStageCode == 0b111){
+                constexpr bool bit6 = TestBit(HashCode10, 6) ;
+                if constexpr (bit6)
+                return ThumbType19<HashCode10>();
+                else
+                    return ThumbType18<HashCode10>();
+            } // else
+
             return UndefinedHandler ;
         }
 
@@ -142,18 +213,14 @@ namespace gg_core {
         -> std::array<HandlerType, sizeof...(Idx)>
         {
             constexpr std::array<HandlerType, sizeof...(Idx)> result{
-                    DecodeThumb<Idx>()...
+                DecodeThumb<Idx>()...
             } ;
+
             return result ;
         }
 
-
-        constexpr static auto ARM_HandlerTable =
-                GetArmInstructionTable(std::make_index_sequence<4096>{}) ;
-
-        // todo: Thumb decoder
         constexpr static auto Thumb_HandlerTable =
-                GetArmInstructionTable(std::make_index_sequence<1024>{}) ;
+                GetThumbInstructionTable(std::make_index_sequence<1024>{}) ;
     }
 }
 

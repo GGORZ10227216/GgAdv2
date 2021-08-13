@@ -2,8 +2,6 @@
 // Created by orzgg on 2021-07-11.
 //
 
-#include <arm_encoder_v2.h>
-
 #ifndef GGTEST_TYPE1_H
 #define GGTEST_TYPE1_H
 
