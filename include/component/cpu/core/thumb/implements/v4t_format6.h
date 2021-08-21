@@ -13,7 +13,7 @@ namespace gg_core::gg_cpu {
         const unsigned targetRd = (curInst & (0b111 << 8)) >> 8;
         const unsigned immOffset = (curInst & 0xff) << 2 ; // 10bit offset
 
-        const uint32_t pcValue = instance._regs[ pc ] & ~0x1; // force pc's bit 1 is zero
+        const uint32_t pcValue = instance._regs[ pc ] & ~0b11; // force pc's to word aligned
 
         MemLoad<uint32_t, false>(instance, pcValue + immOffset, targetRd) ;
     } // MovCmpAddSub()
