@@ -15,7 +15,7 @@ namespace gg_core::gg_cpu {
     static void msr_Rm(CPU& instance) {
         instance.Fetch(&instance, gg_mem::S_Cycle) ;
 
-        const uint32_t RmNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
+        const uint32_t RmNumber = CURRENT_INSTRUCTION & 0xf;
         uint32_t Rm = instance._regs[RmNumber] ;
         if (instance.GetOperationMode() == USR || !TestBit(CURRENT_INSTRUCTION, 16)) {
             uint32_t protectedCpsr = instance.ReadCPSR() & 0x0fffffff ;
