@@ -74,24 +74,17 @@ namespace gg_core {
                 E_OperationMode originalMode = static_cast<E_OperationMode>(_cpsr & 0x1fu);
                 E_OperationMode newMode = static_cast<E_OperationMode>(newCPSR & 0x1fu);
 
-                if (originalMode != newMode) {
-                    unsigned *currentBank = GetBankRegDataPtr(originalMode),
-                            *targetBank = GetBankRegDataPtr(newMode);
+                bool needBankSwap = (originalMode != newMode) && ((originalMode^newMode) != 0b01111) ;
 
-                    const int cpStart_old = (originalMode == FIQ) ? r8 : sp;
-                    const int cpStart_new = (newMode == FIQ) ? r8 : sp;
-                    const unsigned cpSize_old = lr - cpStart_old + 1;
-                    const unsigned cpSize_new = lr - cpStart_new + 1;
+                if (needBankSwap) {
+                    // specialize the swap logic for GBA's cpu(NO FIQ mode)
+                    unsigned *currentBank = GetBankRegDataPtr(originalMode);
+                    unsigned *targetBank  = GetBankRegDataPtr(newMode) ;
+
                     // Store back current content to reg bank
-                    memcpy(currentBank, _regs.data() + cpStart_old, sizeof(unsigned) * cpSize_old);
-                    if (cpStart_old - cpStart_new < 0 && newMode == FIQ) {
-                        // switch from a bank which is smaller than current mode's bank
-                        // r8~r12 need to restored from usersys bank
-                        memcpy(_regs.data() + r8, _registers_usrsys.data() + r8, sizeof(unsigned) * 5);
-                    } // if
-
+                    *reinterpret_cast<uint64_t*>(currentBank) = *reinterpret_cast<uint64_t*>(_regs.data() + sp);
                     // Load banked register from new mode's reg bank
-                    memcpy(_regs.data() + cpStart_new, targetBank, sizeof(unsigned) * cpSize_new);
+                    *reinterpret_cast<uint64_t*>(_regs.data() + sp) = *reinterpret_cast<uint64_t*>(targetBank);
                 } // if
 
                 _cpsr = newCPSR;
