@@ -68,12 +68,15 @@ namespace gg_core::gg_cpu {
     enum class SHIFT_BY {
         RS, IMM, NONE
     };
-    enum class SHIFT_TYPE {
-        LSL, LSR, ASR, ROR, NONE
-    };
 
     enum class OFFSET_TYPE { RM, IMM };
 
+    constexpr char reg4InfoStr[] =
+            "\tr0:  {:>#010x} r1:  {:>#010x}  r2:  {:>#010x} r3:  {:>#010x}\n"
+            "\tr4:  {:>#010x} r5:  {:>#010x}  r6:  {:>#010x} r7:  {:>#010x}\n"
+            "\tr8:  {:>#010x} r9:  {:>#010x}  r10: {:>#010x} r11: {:>#010x}\n"
+            "\tr12: {:>#010x} sp:  {:>#010x}  lr:  {:>#010x} pc:  {:>#010x}"
+    ;
 }
 
 #endif //GGADV_CPU_ENUM_H

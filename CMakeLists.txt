@@ -52,8 +52,15 @@ project(ggAdv)
 
     set(src_core)
     # include/component/cpu/core/arm_encoder_v2.h include/component/cpu/core/thumb/decoder/type1.h
-    add_executable(ggAdv main.cpp ${header_core} ${v4_arm_core_src} ${src_core} include/component/memory/memory_exceptions.h include/component/io/io_enum.h include/component/memory/handler/bios_handler.h include/component/memory/handler/ewram_handler.h include/component/memory/handler/iwram_handler.h include/component/memory/handler/io_handler.h include/component/memory/handler/palette_handler.h include/component/memory/handler/mirror.h include/component/memory/handler/vram_handler.h include/component/memory/handler/oam_handler.h include/component/memory/handler/handler_table.h include/component/memory/handler/gamepak_handler.h include/component/memory/handler/sram_handler.h include/component/cartridge.h include/component/memory/eeprom.h include/component/cpu/core/thumb/implements/v4t_format1.h include/component/cpu/opcode_fields.h)
-    target_link_libraries(ggAdv /usr/local/lib/libfmt.a)
+    add_executable(ggAdv main.cpp ${header_core} ${v4_arm_core_src} ${src_core} include/component/memory/memory_exceptions.h include/component/io/io_enum.h include/component/memory/handler/bios_handler.h include/component/memory/handler/ewram_handler.h include/component/memory/handler/iwram_handler.h include/component/memory/handler/io_handler.h include/component/memory/handler/palette_handler.h include/component/memory/handler/mirror.h include/component/memory/handler/vram_handler.h include/component/memory/handler/oam_handler.h include/component/memory/handler/handler_table.h include/component/memory/handler/gamepak_handler.h include/component/memory/handler/sram_handler.h include/component/cartridge.h include/component/memory/eeprom.h include/component/cpu/core/thumb/implements/v4t_format1.h include/component/cpu/opcode_fields.h include/utility/arm_asm.h)
+    target_link_libraries(ggAdv
+            /usr/local/lib/libfmt.a
+            /usr/local/lib/libfmt.a
+            /usr/local/lib/libgtest.a
+            /usr/local/lib/libgtest_main.a
+            /usr/local/lib/libkeystone.so
+            /usr/local/lib/libcapstone.a)
+
     target_include_directories(ggAdv PUBLIC
         include
         include/component
@@ -111,7 +118,7 @@ file(GLOB_RECURSE SOURCE_FILES
         ./eggvance/eggvance/src/*.cpp
         )
 
-add_executable(ggTest ${SOURCE_FILES} ${header_core} ${header_arm_implement} ${src_core} ggTest/gg_test.h ggTest/include/loop_tool.h ggTest/alu.cpp ggTest/multiply.cpp ggTest/mul_long.cpp ggTest/branch.cpp ggTest/swap.cpp ggTest/ldr.cpp ggTest/str.cpp ggTest/ldrh.cpp ggTest/strh.cpp ggTest/ldm.cpp ggTest/stm.cpp ggTest/interrupt_and_misc.cpp ggTest/unpredictable.cpp)
+add_executable(ggTest ${SOURCE_FILES} ${header_core} ${header_arm_implement} ${src_core} ggTest/gg_test.h ggTest/include/loop_tool.h ggTest/alu.cpp ggTest/multiply.cpp ggTest/mul_long.cpp ggTest/branch.cpp ggTest/swap.cpp ggTest/ldr.cpp ggTest/str.cpp ggTest/ldrh.cpp ggTest/strh.cpp ggTest/ldm.cpp ggTest/stm.cpp ggTest/interrupt_and_misc.cpp ggTest/unpredictable.cpp include/utility/arm_asm.h)
 
 target_include_directories(ggTest PUBLIC
         include
