@@ -129,7 +129,7 @@ namespace gg_core::gg_cpu {
         } // if
     }
     
-    template <bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
+    template <bool I, bool P, bool U, bool B, bool W, bool L, E_ShiftType ST>
     static void SingleDataTransfer_impl(CPU &instance) {
         instance.Fetch(&instance, gg_mem::N_Cycle) ;
 

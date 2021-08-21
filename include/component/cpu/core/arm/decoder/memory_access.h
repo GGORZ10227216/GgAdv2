@@ -11,7 +11,7 @@
 #define GGTEST_MEMORY_ACCESS_H
 
 namespace gg_core::gg_cpu {
-    template<bool I_Cycle, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
+    template<bool I, bool P, bool U, bool B, bool W, bool L, E_ShiftType ST>
     static void SingleDataTransfer_impl(CPU &instance);
 
     template<bool P, bool U, bool W, bool L, bool S, bool H, OFFSET_TYPE OT>
@@ -25,8 +25,8 @@ namespace gg_core::gg_cpu {
 
     template<uint32_t HashCode32>
     static constexpr auto SingleDataTransfer() {
-        constexpr enum SHIFT_TYPE ST =
-                static_cast<SHIFT_TYPE>(BitFieldValue<5, 2>(HashCode32));
+        constexpr enum E_ShiftType ST =
+                static_cast<E_ShiftType>(BitFieldValue<5, 2>(HashCode32));
         return &SingleDataTransfer_impl<
                 TestBit(HashCode32, 25),
                 TestBit(HashCode32, 24),

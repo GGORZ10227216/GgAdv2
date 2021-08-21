@@ -9,11 +9,11 @@
 #define GGTEST_V4_OPERAND2_H
 
 namespace gg_core::gg_cpu {
-    template <SHIFT_TYPE ST>
+    template <E_ShiftType ST>
     inline bool Op2ShiftReg(CPU& instance, uint32_t& result, unsigned shiftBase, unsigned shiftAmount) {
         bool validShift = false, carrySet = false ;
         
-        if constexpr (ST == SHIFT_TYPE::LSL) {
+        if constexpr (ST == E_ShiftType::LSL) {
             // todo: Does the behavior of shift_by_Rs_eq_zero and shift_by_imm_eq_zero same?
             if (shiftAmount == 0) {
                 carrySet = instance.C() ;
@@ -31,7 +31,7 @@ namespace gg_core::gg_cpu {
             } // else
         } // if
 
-        if constexpr (ST == SHIFT_TYPE::LSR) {
+        if constexpr (ST == E_ShiftType::LSR) {
             if (shiftAmount == 0) {
                 result = shiftBase ;
                 carrySet = instance.C() ;
@@ -48,7 +48,7 @@ namespace gg_core::gg_cpu {
             } // else
         } // if
 
-        if constexpr (ST == SHIFT_TYPE::ASR) {
+        if constexpr (ST == E_ShiftType::ASR) {
             if (shiftAmount >= 32) {
                 validShift = true ;
                 carrySet = TestBit(shiftBase, 31) ;
@@ -65,7 +65,7 @@ namespace gg_core::gg_cpu {
             } // else if
         } // if
 
-        if constexpr (ST == SHIFT_TYPE::ROR) {
+        if constexpr (ST == E_ShiftType::ROR) {
             result = rotr(shiftBase, shiftAmount) ;
             if (shiftAmount == 0)
                 carrySet = instance.C() ;
@@ -81,10 +81,10 @@ namespace gg_core::gg_cpu {
         return carrySet ;
     } // Op2Shift()
 
-    template <SHIFT_TYPE ST>
+    template <E_ShiftType ST>
     inline bool Op2ShiftImm(CPU& instance, uint32_t& result, unsigned shiftBase, unsigned shiftAmount) {
         bool carry = false ;
-        if constexpr (ST == SHIFT_TYPE::LSL) {
+        if constexpr (ST == E_ShiftType::LSL) {
             result = shiftBase << shiftAmount ;
             if (shiftAmount != 0)
                 carry = TestBit(shiftBase, 33 - (shiftAmount + 1)) ;
@@ -92,7 +92,7 @@ namespace gg_core::gg_cpu {
                 carry = instance.C() ;
         } // if
 
-        if constexpr (ST == SHIFT_TYPE::LSR) {
+        if constexpr (ST == E_ShiftType::LSR) {
             if (shiftAmount == 0) {
                 result = 0 ;
                 carry = TestBit(shiftBase, 31) ;
@@ -103,7 +103,7 @@ namespace gg_core::gg_cpu {
             } // else
         } // if
 
-        if constexpr (ST == SHIFT_TYPE::ASR) {
+        if constexpr (ST == E_ShiftType::ASR) {
             if (shiftAmount == 0) {
                 carry = TestBit(shiftBase, 31) ;
                 result = carry ? 0xffffffff : 0x0 ;
@@ -114,7 +114,7 @@ namespace gg_core::gg_cpu {
             } // else
         } // if
 
-        if constexpr (ST == SHIFT_TYPE::ROR) {
+        if constexpr (ST == E_ShiftType::ROR) {
             if (shiftAmount == 0) {
                 // RRX
                 carry = TestBit(shiftBase, 0) ;
@@ -129,7 +129,7 @@ namespace gg_core::gg_cpu {
         return carry ;
     }
     
-    template <SHIFT_TYPE ST>
+    template <E_ShiftType ST>
     inline bool ParseOp2_Shift_RS(CPU &instance, uint32_t &op2) {
         const uint32_t curInst = CURRENT_INSTRUCTION ;
         const uint8_t RmNumber = curInst & 0b1111 ;
@@ -145,7 +145,7 @@ namespace gg_core::gg_cpu {
         return Op2ShiftReg<ST>(instance, op2, Rm, Rs);
     } // ParseOp2_Shift_RS()
 
-    template <SHIFT_TYPE ST>
+    template <E_ShiftType ST>
     inline bool ParseOp2_Shift_Imm(CPU &instance, uint32_t &op2) {
         const uint32_t curInst = CURRENT_INSTRUCTION ;
         uint32_t Rm = instance._regs[ curInst & 0b1111 ] ;

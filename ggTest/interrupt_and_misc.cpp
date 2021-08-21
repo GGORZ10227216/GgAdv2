@@ -10,6 +10,8 @@ namespace {
     using namespace gg_core::gg_mem;
 
     TEST_F(ggTest, arm_svc_test) {
+        // fixme: not strict enough, need reinforcement
+
         ArmAssembler gg_asm;
 
         uint32_t instruction = 0xef000000 ;

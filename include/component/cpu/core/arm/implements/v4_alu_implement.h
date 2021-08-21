@@ -88,7 +88,7 @@ namespace gg_core::gg_cpu {
         return result ;
     }
 
-    template<bool I, bool S, SHIFT_BY SHIFT_SRC, SHIFT_TYPE ST, E_DataProcess opcode>
+    template<bool I, bool S, SHIFT_BY SHIFT_SRC, E_ShiftType ST, E_DataProcess opcode>
     static void Alu_impl(CPU &instance) {
         constexpr bool TEST = opcode == TST || opcode == TEQ || opcode == CMP || opcode == CMN ;
 

@@ -13,14 +13,14 @@
 namespace gg_core::gg_cpu {
     class CPU ; // Forward declaration of cpu class
 
-    template<bool I, bool S, SHIFT_BY SHIFT_SRC, SHIFT_TYPE ST, E_DataProcess opcode>
+    template<bool I, bool S, SHIFT_BY SHIFT_SRC, E_ShiftType ST, E_DataProcess opcode>
     static void Alu_impl(CPU &instance) ;
 
     template <uint32_t HashCode32>
     static constexpr auto DataProcessing() {
         constexpr auto opcode = static_cast<const E_DataProcess>(BitFieldValue<21, 4>(HashCode32));
         constexpr auto SHIFT_SRC = TestBit(HashCode32, 4) ? SHIFT_BY::RS : SHIFT_BY::IMM ;
-        constexpr auto ST = static_cast<SHIFT_TYPE>(BitFieldValue<5,2>(HashCode32)) ;
+        constexpr auto ST = static_cast<E_ShiftType>(BitFieldValue<5,2>(HashCode32)) ;
         return &Alu_impl<
                 TestBit(HashCode32, 25),
                 TestBit(HashCode32, 20),
