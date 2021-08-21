@@ -1,0 +1,3187 @@
+diff --git a/ggTest/alu.cpp b/ggTest/alu.cpp
+index ccb5986..f68bc95 100644
+--- a/ggTest/alu.cpp
++++ b/ggTest/alu.cpp
+@@ -13,7 +13,7 @@ namespace {
+             "orr", "mov", "bic", "mvn"
+     };
+ 
+-    TEST_F(ggTest, alu_rd_rn_op2ShiftRs_cpsr_test) {
++    TEST_F(ggTest, arm_alu_rd_rn_op2ShiftRs_cpsr_test) {
+         auto task = [&](E_DataProcess operation) {
+             using namespace gg_core;
+ 
+@@ -45,10 +45,8 @@ namespace {
+ 
+                 egg_local.cpsr = (cpsr.value << 28) | 0xd3;
+                 local_cpu.WriteCPSR(cpsr.value << 28 | 0xd3);
+-
+-                uint32_t inst_hash = hashArm(instruction);
+-
+-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++                
++                EggRun(egg_local, instruction);
+                 local_cpu.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+@@ -59,6 +57,8 @@ namespace {
+                                                            FieldRm.value, FieldRs.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(local_cpu, egg_local, errFlag);
++
++                CpuPC_Reset(egg_local, local_cpu);
+             };
+ 
+             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, FieldRs, shiftType, cpsr);
+@@ -84,7 +84,7 @@ namespace {
+             fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get());
+     }
+ 
+-    TEST_F(ggTest, alu_rd_rn_op2ShiftRs_test) {
++    TEST_F(ggTest, arm_alu_rd_rn_op2ShiftRs_test) {
+         auto task = [&](E_DataProcess operation) {
+             using namespace gg_core;
+ 
+@@ -115,7 +115,7 @@ namespace {
+ 
+                 uint32_t inst_hash = hashArm(instruction);
+ 
+-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++                EggRun(egg_local, instruction);
+                 local_cpu.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+@@ -126,6 +126,8 @@ namespace {
+                                                            FieldRm.value, FieldRs.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(local_cpu, egg_local, errFlag);
++
++                CpuPC_Reset(egg_local, local_cpu);
+             };
+ 
+             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, FieldRs, shiftType);
+@@ -153,7 +155,7 @@ namespace {
+             fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get());
+     }
+ 
+-    TEST_F(ggTest, alu_rd_rn_op2ShiftImm_cpsr_test) {
++    TEST_F(ggTest, arm_alu_rd_rn_op2ShiftImm_cpsr_test) {
+         auto task = [&](E_DataProcess operation) {
+             using namespace gg_core;
+ 
+@@ -186,7 +188,7 @@ namespace {
+                 local_cpu.WriteCPSR(cpsr.value << 28 | 0xd3);
+ 
+                 uint32_t inst_hash = hashArm(instruction);
+-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++                EggRun(egg_local, instruction);
+                 local_cpu.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+@@ -197,6 +199,8 @@ namespace {
+                                                            FieldRn.value, FieldRm.value, shiftAmount.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(local_cpu, egg_local, errFlag);
++
++                CpuPC_Reset(egg_local, local_cpu);
+             };
+ 
+             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, shiftAmount, shiftType, cpsr);
+@@ -223,7 +227,7 @@ namespace {
+             fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get());
+     }
+ 
+-    TEST_F(ggTest, alu_rd_rn_op2ShiftImm_test) {
++    TEST_F(ggTest, arm_alu_rd_rn_op2ShiftImm_test) {
+         auto task = [&](E_DataProcess operation) {
+             using namespace gg_core;
+ 
+@@ -252,7 +256,7 @@ namespace {
+                 FillRegs(egg_local.regs, idx, val);
+ 
+                 uint32_t inst_hash = hashArm(instruction);
+-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++                EggRun(egg_local, instruction);
+                 local_cpu.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+@@ -263,6 +267,8 @@ namespace {
+                                                            FieldRn.value, FieldRm.value, shiftAmount.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(local_cpu, egg_local, errFlag);
++
++                CpuPC_Reset(egg_local, local_cpu);
+             };
+ 
+             TEST_LOOPS(TestMain, RmNumber, RnNumber, FieldRn, FieldRm, shiftAmount, shiftType);
+@@ -290,7 +296,7 @@ namespace {
+             fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get());
+     }
+ 
+-    TEST_F(ggTest, alu_rd_rn_op2Imm_test) {
++    TEST_F(ggTest, arm_alu_rd_rn_op2Imm_test) {
+         auto task = [&](E_DataProcess operation) {
+             using namespace gg_core;
+ 
+@@ -316,7 +322,7 @@ namespace {
+                 egg_local.regs[RnNumber.value] = FieldRn.value;
+ 
+                 uint32_t inst_hash = hashArm(instruction);
+-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++                EggRun(egg_local, instruction);
+                 local_cpu.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+@@ -327,6 +333,8 @@ namespace {
+                                                            FieldRn.value, imm.value, rotate.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(local_cpu, egg_local, errFlag);
++
++                CpuPC_Reset(egg_local, local_cpu);
+             };
+ 
+             TEST_LOOPS(TestMain, RdNumber, RnNumber, FieldRn, imm, rotate);
+@@ -354,7 +362,7 @@ namespace {
+             fmt::print("[{}] Total performed tests: {}\n", t.first, t.second.get());
+     }
+ 
+-    TEST_F(ggTest, alu_rd_rn_op2Imm_cpsr_test) {
++    TEST_F(ggTest, arm_alu_rd_rn_op2Imm_cpsr_test) {
+         auto task = [&](E_DataProcess operation) {
+             using namespace gg_core;
+ 
+@@ -384,7 +392,7 @@ namespace {
+                 local_cpu.WriteCPSR(cpsr.value << 28 | 0xd3);
+ 
+                 uint32_t inst_hash = hashArm(instruction);
+-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++                EggRun(egg_local, instruction);
+                 local_cpu.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+@@ -395,6 +403,8 @@ namespace {
+                                                            FieldRn.value, imm.value, rotate.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(local_cpu, egg_local, errFlag);
++
++                CpuPC_Reset(egg_local, local_cpu);
+             };
+ 
+             TEST_LOOPS(TestMain, RdNumber, RnNumber, FieldRn, imm, rotate, cpsr);
+diff --git a/ggTest/branch.cpp b/ggTest/branch.cpp
+index edecddb..c04513e 100644
+--- a/ggTest/branch.cpp
++++ b/ggTest/branch.cpp
+@@ -7,7 +7,7 @@ namespace {
+     using namespace gg_core::gg_cpu;
+     using MULLRegSet = std::tuple<uint8_t, uint8_t, uint8_t>;
+ 
+-    TEST_F(ggTest, b_test) {
++    TEST_F(ggTest, arm_b_test) {
+         // todo: fill eggvance's bios with gba_rom.bin to test invalid access
+         using namespace gg_core;
+ 
+@@ -39,7 +39,7 @@ namespace {
+             if (offsetValue.value < 0x3fffff || offsetValue.value >= 0x800000) {
+                 uint32_t inst_hash = hashArm(instruction);
+ 
+-                std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++                EggRun(egg, instruction);
+                 instance.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(instance, egg);
+@@ -49,6 +49,7 @@ namespace {
+                                             << fmt::format("Testcase: offset_raw: {:x}\n", offsetValue.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(instance, egg, errFlag);
++                CpuPC_Reset(egg, instance);
+             } // if
+         };
+ 
+@@ -56,7 +57,7 @@ namespace {
+         fmt::print("Total performed tests: {}\n", t);
+     }
+ 
+-    TEST_F(ggTest, bl_test) {
++    TEST_F(ggTest, arm_bl_test) {
+         using namespace gg_core;
+ 
+         unsigned int t = 0;
+@@ -72,9 +73,7 @@ namespace {
+             egg.regs[15] = 0 ;
+             instance._regs[15] = 0 ;
+ 
+-            uint32_t inst_hash = hashArm(instruction);
+-
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -84,13 +83,14 @@ namespace {
+                                         << fmt::format("Testcase: offset_raw: {:x}\n", offsetValue.value)
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, offsetValue);
+         fmt::print("Total performed tests: {}\n", t);
+     }
+ 
+-    TEST_F(ggTest, bx_test) {
++    TEST_F(ggTest, arm_bx_test) {
+         using namespace gg_core;
+ 
+         unsigned int t = 0;
+@@ -107,7 +107,7 @@ namespace {
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -117,6 +117,7 @@ namespace {
+                                         << fmt::format("Testcase: Rn={:x}", RnValue.value)
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, targetRn, RnValue);
+diff --git a/ggTest/gg_test.h b/ggTest/gg_test.h
+index 0dd8aec..d7281d0 100644
+--- a/ggTest/gg_test.h
++++ b/ggTest/gg_test.h
+@@ -160,6 +160,19 @@ protected:
+         std::copy(biosData.begin(), biosData.end(), mmu.bios.data.begin());
+         core::reset();
+     }
++
++    void EggRun(Arm& egg_local, uint32_t instruction) {
++        uint32_t inst_hash = hashArm(instruction);
++        egg_local.regs[15] = (egg_local.regs[15] + 4) & ~0x3;
++        egg_local.pipe[0] = egg_local.pipe[1];
++        egg_local.pipe[1] = egg_local.readWord(egg_local.gprs[15]);
++        std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++    }
++
++    void CpuPC_Reset(Arm& egg_local, gg_core::gg_cpu::CPU& local_cpu) {
++        egg_local.regs[15] = 0 ;
++        local_cpu._regs[15] = 0 ;
++    }
+ };
+ 
+ 
+diff --git a/ggTest/interrupt_and_misc.cpp b/ggTest/interrupt_and_misc.cpp
+index 4233b0c..66027e5 100644
+--- a/ggTest/interrupt_and_misc.cpp
++++ b/ggTest/interrupt_and_misc.cpp
+@@ -9,7 +9,7 @@ namespace {
+     using namespace gg_core::gg_cpu;
+     using namespace gg_core::gg_mem;
+ 
+-    TEST_F(ggTest, svc_test) {
++    TEST_F(ggTest, arm_svc_test) {
+         ArmAssembler gg_asm;
+ 
+         uint32_t instruction = 0xef000000 ;
+@@ -18,7 +18,7 @@ namespace {
+         egg.cpsr = 0x10 ;
+ 
+         uint32_t inst_hash = hashArm(instruction);
+-        std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++        EggRun(egg, instruction);
+         instance.CPU_Test(instruction);
+ 
+         std::cout << instance._regs[ lr ] << " " << egg.regs[ 14 ] << std::endl ;
+@@ -27,9 +27,10 @@ namespace {
+             << std::hex << "Errflag: " << errFlag << '\n'
+             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+             << Diagnose(instance, egg, errFlag);
++        CpuPC_Reset(egg, instance);
+     }
+ 
+-    TEST_F(ggTest, ldrt_test) {
++    TEST_F(ggTest, arm_ldrt_test) {
+         instance.WriteCPSR(0x10) ;
+         // fill usr reg
+         for (int i = 0 ; i < 16 ; ++i)
+@@ -50,7 +51,7 @@ namespace {
+         ASSERT_TRUE(instance._regs[ lr ] == 0xdeadbeef);
+     }
+ 
+-    TEST_F(ggTest, strt_test) {
++    TEST_F(ggTest, arm_strt_test) {
+         instance.WriteCPSR(0x10) ;
+         // fill usr reg
+         for (int i = 0 ; i < 16 ; ++i)
+diff --git a/ggTest/ldm.cpp b/ggTest/ldm.cpp
+index fc96765..0376666 100644
+--- a/ggTest/ldm.cpp
++++ b/ggTest/ldm.cpp
+@@ -9,7 +9,7 @@ namespace {
+     using namespace gg_core::gg_cpu;
+     using namespace gg_core::gg_mem;
+ 
+-    TEST_F(ggTest, ldmib_test) {
++    TEST_F(ggTest, arm_ldmib_test) {
+         // ldmib -> pre-increment load, [L,P,U] == [1,1,1]
+         uint32_t t = 0 ;
+ 
+@@ -40,7 +40,7 @@ namespace {
+             instance._regs[ r4 ] = 0x03006ea0 ; // OWRAM
+ 
+             uint32_t inst_hash = hashArm(instruction);
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -49,6 +49,8 @@ namespace {
+                 << std::hex << "Errflag: " << errFlag << '\n'
+                 << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                 << Diagnose(instance, egg, errFlag);
++
++            CpuPC_Reset(egg, instance);
+             t++;
+         };
+ 
+@@ -56,7 +58,7 @@ namespace {
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, ldmia_test) {
++    TEST_F(ggTest, arm_ldmia_test) {
+         // ldmia -> post-increment load, [L,P,U] == [1,0,1]
+         uint32_t t = 0 ;
+ 
+@@ -87,7 +89,7 @@ namespace {
+             instance._regs[ r4 ] = 0x03006ea0 ; // OWRAM
+ 
+             uint32_t inst_hash = hashArm(instruction);
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -96,6 +98,8 @@ namespace {
+                                         << std::hex << "Errflag: " << errFlag << '\n'
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++
++            CpuPC_Reset(egg, instance);
+             t++;
+         };
+ 
+@@ -103,7 +107,7 @@ namespace {
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, ldmdb_test) {
++    TEST_F(ggTest, arm_ldmdb_test) {
+         // ldmdb -> pre-decrement load, [L,P,U] == [1,1,0]
+         uint32_t t = 0 ;
+ 
+@@ -134,7 +138,7 @@ namespace {
+             instance._regs[ r4 ] = 0x03006ea0 ; // OWRAM
+ 
+             uint32_t inst_hash = hashArm(instruction);
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -143,6 +147,8 @@ namespace {
+                                         << std::hex << "Errflag: " << errFlag << '\n'
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++
++            CpuPC_Reset(egg, instance);
+             t++;
+         };
+ 
+@@ -150,7 +156,7 @@ namespace {
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, ldmda_test) {
++    TEST_F(ggTest, arm_ldmda_test) {
+         // ldmda -> post-decrement load, [L,P,U] == [1,0,0]
+         uint32_t t = 0 ;
+ 
+@@ -181,7 +187,7 @@ namespace {
+             instance._regs[ r4 ] = 0x03006ea0 ; // OWRAM
+ 
+             uint32_t inst_hash = hashArm(instruction);
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -190,6 +196,8 @@ namespace {
+                                         << std::hex << "Errflag: " << errFlag << '\n'
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++
++            CpuPC_Reset(egg, instance);
+             t++;
+         };
+ 
+diff --git a/ggTest/ldr.cpp b/ggTest/ldr.cpp
+index 9507745..fd65d2a 100644
+--- a/ggTest/ldr.cpp
++++ b/ggTest/ldr.cpp
+@@ -17,7 +17,7 @@ namespace {
+             0xffffffff
+     };
+ 
+-    TEST_F(ggTest, ldr_post_imm_offset_test) {
++    TEST_F(ggTest, arm_ldr_post_imm_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -47,7 +47,7 @@ namespace {
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -58,13 +58,14 @@ namespace {
+                                         << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, immOffset, memValueidx);
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, ldr_post_reg_offset_test) {
++    TEST_F(ggTest, arm_ldr_post_reg_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -125,7 +126,7 @@ namespace {
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -134,13 +135,14 @@ namespace {
+                                         << std::hex << "Errflag: " << errFlag << '\n'
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue);
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, ldrb_post_imm_offset_test) {
++    TEST_F(ggTest, arm_ldrb_post_imm_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -170,7 +172,7 @@ namespace {
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -181,13 +183,14 @@ namespace {
+                                         << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, immOffset, memValueidx);
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, ldrb_post_reg_offset_test) {
++    TEST_F(ggTest, arm_ldrb_post_reg_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -248,7 +251,7 @@ namespace {
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -257,13 +260,14 @@ namespace {
+                                         << std::hex << "Errflag: " << errFlag << '\n'
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue);
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, ldr_pre_imm_offset_test) {
++    TEST_F(ggTest, arm_ldr_pre_imm_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -298,7 +302,7 @@ namespace {
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -309,13 +313,14 @@ namespace {
+                                         << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, immOffset, memValueidx);
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, ldr_pre_reg_offset_test) {
++    TEST_F(ggTest, arm_ldr_pre_reg_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -377,7 +382,7 @@ namespace {
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -386,13 +391,14 @@ namespace {
+                                         << std::hex << "Errflag: " << errFlag << '\n'
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue);
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, ldrb_pre_imm_offset_test) {
++    TEST_F(ggTest, arm_ldrb_pre_imm_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -427,7 +433,7 @@ namespace {
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -438,13 +444,14 @@ namespace {
+                                         << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, immOffset, memValueidx);
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, ldrb_pre_reg_offset_test) {
++    TEST_F(ggTest, arm_ldrb_pre_reg_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -506,7 +513,7 @@ namespace {
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -515,6 +522,7 @@ namespace {
+                                         << std::hex << "Errflag: " << errFlag << '\n'
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue);
+diff --git a/ggTest/ldrh.cpp b/ggTest/ldrh.cpp
+index 031267b..5973257 100644
+--- a/ggTest/ldrh.cpp
++++ b/ggTest/ldrh.cpp
+@@ -18,7 +18,7 @@ namespace {
+             0x0f4f
+     };
+ 
+-    TEST_F(ggTest, ldrh_reg_post_offset) {
++    TEST_F(ggTest, arm_ldrh_reg_post_offset) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -60,7 +60,7 @@ namespace {
+             egg.writeHalf(addrPair[writeMode.value].first, testValue[memValueIdx.value]);
+ 
+             uint32_t inst_hash = hashArm(instruction);
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -72,12 +72,13 @@ namespace {
+                                                        addrPair[writeMode.value].first, RmValue.value)
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag) << '\n';
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, targetRn, targetRd, targetRm, RmValue, writeMode, memValueIdx, sFlag);
+     }
+ 
+-    TEST_F(ggTest, ldrh_imm_post_offset) {
++    TEST_F(ggTest, arm_ldrh_imm_post_offset) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -116,7 +117,7 @@ namespace {
+             egg.writeHalf(addrPair[writeMode.value].first, testValue[memValueIdx.value]);
+ 
+             uint32_t inst_hash = hashArm(instruction);
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -128,12 +129,13 @@ namespace {
+                                                        addrPair[writeMode.value].first, immOffset.value)
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag) << '\n';
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, targetRn, targetRd, immOffset, writeMode, memValueIdx, sFlag);
+     }
+ 
+-    TEST_F(ggTest, ldrh_reg_pre_offset) {
++    TEST_F(ggTest, arm_ldrh_reg_pre_offset) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -173,14 +175,14 @@ namespace {
+             egg.regs[targetRn.value] = addrPair[writeMode.value].first;
+             egg.regs[targetRm.value] = RmValue.value;
+ 
+-            uint32_t targetAddr = addrPair[ writeMode.value ].first ;
+-            targetAddr = addrPair[ writeMode.value ].second ? targetAddr + RmValue.value : targetAddr - RmValue.value ;
++            uint32_t targetAddr = addrPair[writeMode.value].first;
++            targetAddr = addrPair[writeMode.value].second ? targetAddr + RmValue.value : targetAddr - RmValue.value;
+ 
+             instance._mem.Write16(targetAddr, testValue[memValueIdx.value]);
+             egg.writeHalf(targetAddr, testValue[memValueIdx.value]);
+ 
+             uint32_t inst_hash = hashArm(instruction);
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -192,12 +194,13 @@ namespace {
+                                                        addrPair[writeMode.value].first, RmValue.value)
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag) << '\n';
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, targetRn, targetRd, targetRm, RmValue, writeMode, memValueIdx, wFlag, sFlag);
+     }
+ 
+-    TEST_F(ggTest, ldrh_imm_pre_offset) {
++    TEST_F(ggTest, arm_ldrh_imm_pre_offset) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -233,14 +236,14 @@ namespace {
+             instance._regs[targetRn.value] = addrPair[writeMode.value].first;
+             egg.regs[targetRn.value] = addrPair[writeMode.value].first;
+ 
+-            uint32_t targetAddr = addrPair[ writeMode.value ].first ;
+-            targetAddr = addrPair[ writeMode.value ].second ? targetAddr + immOffset.value : targetAddr - immOffset.value ;
++            uint32_t targetAddr = addrPair[writeMode.value].first;
++            targetAddr = addrPair[writeMode.value].second ? targetAddr + immOffset.value : targetAddr - immOffset.value;
+ 
+             instance._mem.Write16(targetAddr, testValue[memValueIdx.value]);
+             egg.writeHalf(targetAddr, testValue[memValueIdx.value]);
+ 
+             uint32_t inst_hash = hashArm(instruction);
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -252,6 +255,7 @@ namespace {
+                                                        addrPair[writeMode.value].first, immOffset.value)
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag) << '\n';
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, targetRn, targetRd, immOffset, writeMode, memValueIdx, wFlag, sFlag);
+diff --git a/ggTest/mul_long.cpp b/ggTest/mul_long.cpp
+index 5ac23e1..0c57618 100644
+--- a/ggTest/mul_long.cpp
++++ b/ggTest/mul_long.cpp
+@@ -41,15 +41,15 @@ namespace {
+         return result;
+     }();
+ 
+-    TEST_F(ggTest, umull_test) {
++    TEST_F(ggTest, arm_umull_test) {
+         using namespace gg_core;
+ 
+         auto task = [&](uint8_t cpsr) {
+             unsigned int t = 0;
+-            Arm egg_local ;
+-            egg_local.init() ;
+-            gg_core::GbaInstance instance_local(testRomPath) ;
+-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
++            Arm egg_local;
++            egg_local.init();
++            gg_core::GbaInstance instance_local(testRomPath);
++            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
+ 
+             TestField targetRs(0, 0xe, 1);
+             TestField RsValue(0, 0xffffffff, 0x11111111);
+@@ -82,7 +82,7 @@ namespace {
+ 
+                 uint32_t inst_hash = hashArm(instruction);
+ 
+-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++                EggRun(egg_local, instruction);
+                 local_cpu.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+@@ -93,8 +93,7 @@ namespace {
+                                                            RmValue.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(local_cpu, egg_local, errFlag);
+-
+-
++                CpuPC_Reset(egg_local , local_cpu);
+             };
+ 
+             TEST_LOOPS(TestMain, RsValue, RmValue, RegSetNum, targetRs);
+@@ -117,15 +116,15 @@ namespace {
+             fmt::print("[CPSR:{}] Total performed tests: {}\n", t.first, t.second.get());
+     }
+ 
+-    TEST_F(ggTest, umull_cpsr_test) {
++    TEST_F(ggTest, arm_umull_cpsr_test) {
+         using namespace gg_core;
+ 
+         auto task = [&](uint8_t cpsr) {
+             unsigned int t = 0;
+-            Arm egg_local ;
+-            egg_local.init() ;
+-            gg_core::GbaInstance instance_local(testRomPath) ;
+-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
++            Arm egg_local;
++            egg_local.init();
++            gg_core::GbaInstance instance_local(testRomPath);
++            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
+ 
+             TestField targetRs(0, 0xe, 1);
+             TestField RsValue(0, 0xffffffff, 0x11111111);
+@@ -158,7 +157,7 @@ namespace {
+ 
+                 uint32_t inst_hash = hashArm(instruction);
+ 
+-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++                EggRun(egg_local, instruction);
+                 local_cpu.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+@@ -169,6 +168,7 @@ namespace {
+                                                            RmValue.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(local_cpu, egg_local, errFlag);
++                CpuPC_Reset(egg_local , local_cpu);
+ 
+ 
+             };
+@@ -193,15 +193,15 @@ namespace {
+             fmt::print("[CPSR:{}] Total performed tests: {}\n", t.first, t.second.get());
+     }
+ 
+-    TEST_F(ggTest, umlal_test) {
++    TEST_F(ggTest, arm_umlal_test) {
+         using namespace gg_core;
+ 
+         auto task = [&](uint8_t cpsr) {
+             unsigned int t = 0;
+-            Arm egg_local ;
+-            egg_local.init() ;
+-            gg_core::GbaInstance instance_local(testRomPath) ;
+-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
++            Arm egg_local;
++            egg_local.init();
++            gg_core::GbaInstance instance_local(testRomPath);
++            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
+ 
+             TestField targetRs(0, 0xe, 1);
+             TestField RsValue(0, 0xffffffff, 0x11111111);
+@@ -234,7 +234,7 @@ namespace {
+ 
+                 uint32_t inst_hash = hashArm(instruction);
+ 
+-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++                EggRun(egg_local, instruction);
+                 local_cpu.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+@@ -245,6 +245,7 @@ namespace {
+                                                            RmValue.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(local_cpu, egg_local, errFlag);
++                CpuPC_Reset(egg_local , local_cpu);
+ 
+ 
+             };
+@@ -269,15 +270,15 @@ namespace {
+             fmt::print("[CPSR:{}] Total performed tests: {}\n", t.first, t.second.get());
+     }
+ 
+-    TEST_F(ggTest, umlal_cpsr_test) {
++    TEST_F(ggTest, arm_umlal_cpsr_test) {
+         using namespace gg_core;
+ 
+         auto task = [&](uint8_t cpsr) {
+             unsigned int t = 0;
+-            Arm egg_local ;
+-            egg_local.init() ;
+-            gg_core::GbaInstance instance_local(testRomPath) ;
+-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
++            Arm egg_local;
++            egg_local.init();
++            gg_core::GbaInstance instance_local(testRomPath);
++            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
+ 
+             TestField targetRs(0, 0xe, 1);
+             TestField RsValue(0, 0xffffffff, 0x11111111);
+@@ -310,7 +311,7 @@ namespace {
+ 
+                 uint32_t inst_hash = hashArm(instruction);
+ 
+-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++                EggRun(egg_local, instruction);
+                 local_cpu.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+@@ -321,6 +322,7 @@ namespace {
+                                                            RmValue.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(local_cpu, egg_local, errFlag);
++                CpuPC_Reset(egg_local , local_cpu);
+ 
+ 
+             };
+@@ -345,15 +347,15 @@ namespace {
+             fmt::print("[CPSR:{}] Total performed tests: {}\n", t.first, t.second.get());
+     }
+ 
+-    TEST_F(ggTest, smull_test) {
++    TEST_F(ggTest, arm_smull_test) {
+         using namespace gg_core;
+ 
+         auto task = [&](uint8_t cpsr) {
+             unsigned int t = 0;
+-            Arm egg_local ;
+-            egg_local.init() ;
+-            gg_core::GbaInstance instance_local(testRomPath) ;
+-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
++            Arm egg_local;
++            egg_local.init();
++            gg_core::GbaInstance instance_local(testRomPath);
++            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
+ 
+             TestField targetRs(0, 0xe, 1);
+             TestField RsValue(0, 0xffffffff, 0x11111111);
+@@ -386,7 +388,7 @@ namespace {
+ 
+                 uint32_t inst_hash = hashArm(instruction);
+ 
+-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++                EggRun(egg_local, instruction);
+                 local_cpu.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+@@ -397,6 +399,7 @@ namespace {
+                                                            RmValue.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(local_cpu, egg_local, errFlag);
++                CpuPC_Reset(egg_local , local_cpu);
+ 
+ 
+             };
+@@ -421,15 +424,15 @@ namespace {
+             fmt::print("[CPSR:{}] Total performed tests: {}\n", t.first, t.second.get());
+     }
+ 
+-    TEST_F(ggTest, smull_cpsr_test) {
++    TEST_F(ggTest, arm_smull_cpsr_test) {
+         using namespace gg_core;
+ 
+         auto task = [&](uint8_t cpsr) {
+             unsigned int t = 0;
+-            Arm egg_local ;
+-            egg_local.init() ;
+-            gg_core::GbaInstance instance_local(testRomPath) ;
+-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
++            Arm egg_local;
++            egg_local.init();
++            gg_core::GbaInstance instance_local(testRomPath);
++            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
+ 
+             TestField targetRs(0, 0xe, 1);
+             TestField RsValue(0, 0xffffffff, 0x11111111);
+@@ -462,7 +465,7 @@ namespace {
+ 
+                 uint32_t inst_hash = hashArm(instruction);
+ 
+-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++                EggRun(egg_local, instruction);
+                 local_cpu.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+@@ -473,6 +476,7 @@ namespace {
+                                                            RmValue.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(local_cpu, egg_local, errFlag);
++                CpuPC_Reset(egg_local , local_cpu);
+ 
+ 
+             };
+@@ -497,15 +501,15 @@ namespace {
+             fmt::print("[CPSR:{}] Total performed tests: {}\n", t.first, t.second.get());
+     }
+ 
+-    TEST_F(ggTest, smlal_test) {
++    TEST_F(ggTest, arm_smlal_test) {
+         using namespace gg_core;
+ 
+         auto task = [&](uint8_t cpsr) {
+             unsigned int t = 0;
+-            Arm egg_local ;
+-            egg_local.init() ;
+-            gg_core::GbaInstance instance_local(testRomPath) ;
+-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
++            Arm egg_local;
++            egg_local.init();
++            gg_core::GbaInstance instance_local(testRomPath);
++            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
+ 
+             TestField targetRs(0, 0xe, 1);
+             TestField RsValue(0, 0xffffffff, 0x11111111);
+@@ -538,7 +542,7 @@ namespace {
+ 
+                 uint32_t inst_hash = hashArm(instruction);
+ 
+-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++                EggRun(egg_local, instruction);
+                 local_cpu.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+@@ -549,6 +553,7 @@ namespace {
+                                                            RmValue.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(local_cpu, egg_local, errFlag);
++                CpuPC_Reset(egg_local , local_cpu);
+ 
+ 
+             };
+@@ -573,15 +578,15 @@ namespace {
+             fmt::print("[CPSR:{}] Total performed tests: {}\n", t.first, t.second.get());
+     }
+ 
+-    TEST_F(ggTest, smlal_cpsr_test) {
++    TEST_F(ggTest, arm_smlal_cpsr_test) {
+         using namespace gg_core;
+ 
+         auto task = [&](uint8_t cpsr) {
+             unsigned int t = 0;
+-            Arm egg_local ;
+-            egg_local.init() ;
+-            gg_core::GbaInstance instance_local(testRomPath) ;
+-            gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
++            Arm egg_local;
++            egg_local.init();
++            gg_core::GbaInstance instance_local(testRomPath);
++            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
+ 
+             TestField targetRs(0, 0xe, 1);
+             TestField RsValue(0, 0xffffffff, 0x11111111);
+@@ -614,7 +619,7 @@ namespace {
+ 
+                 uint32_t inst_hash = hashArm(instruction);
+ 
+-                std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
++                EggRun(egg_local, instruction);
+                 local_cpu.CPU_Test(instruction);
+ 
+                 uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+@@ -625,6 +630,7 @@ namespace {
+                                                            RmValue.value)
+                                             << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                             << Diagnose(local_cpu, egg_local, errFlag);
++                CpuPC_Reset(egg_local , local_cpu);
+ 
+ 
+             };
+diff --git a/ggTest/multiply.cpp b/ggTest/multiply.cpp
+index 151a8fd..868a1d6 100644
+--- a/ggTest/multiply.cpp
++++ b/ggTest/multiply.cpp
+@@ -6,7 +6,7 @@
+ namespace {
+     using namespace gg_core::gg_cpu ;
+ 
+-    TEST_F(ggTest, mul_cpsr_test) {
++    TEST_F(ggTest,  arm_mul_cpsr_test) {
+         using namespace gg_core ;
+ 
+         unsigned int t = 0 ;
+@@ -34,7 +34,7 @@ namespace {
+ 
+             uint32_t inst_hash = hashArm(instruction) ;
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg) ;
+@@ -43,14 +43,15 @@ namespace {
+                 << std::hex << "Errflag: " << errFlag << '\n'
+                 << fmt::format( "Testcase: Rs: {:x}, Rm: {:x}\n", RsValue.value, RmValue.value )
+                 << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                << Diagnose(instance, egg, errFlag) ;
++                << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, cpsr, RsValue, RmValue,targetRd, targetRs,targetRm) ;
+         std::cout << "Test performed: " << t << std::endl ;
+     }
+ 
+-    TEST_F(ggTest, mul_test) {
++    TEST_F(ggTest,  arm_mul_test) {
+         using namespace gg_core ;
+ 
+         unsigned int t = 0 ;
+@@ -74,7 +75,7 @@ namespace {
+ 
+             uint32_t inst_hash = hashArm(instruction) ;
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg) ;
+@@ -83,14 +84,15 @@ namespace {
+                                         << std::hex << "Errflag: " << errFlag << '\n'
+                                         << fmt::format( "Testcase: Rs: {:x}, Rm: {:x}\n", RsValue.value, RmValue.value )
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                                        << Diagnose(instance, egg, errFlag) ;
++                                        << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, RsValue, RmValue,targetRd, targetRs,targetRm) ;
+         std::cout << "Test performed: " << t << std::endl ;
+     }
+ 
+-    TEST_F(ggTest, mla_cpsr_test) {
++    TEST_F(ggTest,  arm_mla_cpsr_test) {
+         using namespace gg_core ;
+ 
+         unsigned int t = 0 ;
+@@ -120,7 +122,7 @@ namespace {
+ 
+             uint32_t inst_hash = hashArm(instruction) ;
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg) ;
+@@ -130,14 +132,15 @@ namespace {
+                                         << fmt::format( "Testcase: Rn: {:x}, Rs: {:x}, Rm: {:x}\n",
+                                                         RnValue.value, RsValue.value, RmValue.value )
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                                        << Diagnose(instance, egg, errFlag) ;
++                                        << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, cpsr, RnValue, RsValue, RmValue,targetRd, targetRn,targetRs,targetRm) ;
+         std::cout << "Test performed: " << t << std::endl ;
+     }
+ 
+-    TEST_F(ggTest, mla_test) {
++    TEST_F(ggTest,  arm_mla_test) {
+         using namespace gg_core ;
+ 
+         unsigned int t = 0 ;
+@@ -163,7 +166,7 @@ namespace {
+ 
+             uint32_t inst_hash = hashArm(instruction) ;
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg) ;
+@@ -173,7 +176,8 @@ namespace {
+                                         << fmt::format( "Testcase: Rn: {:x}, Rs: {:x}, Rm: {:x}\n",
+                                                         RnValue.value, RsValue.value, RmValue.value )
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                                        << Diagnose(instance, egg, errFlag) ;
++                                        << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, RnValue, RsValue, RmValue,targetRd, targetRn,targetRs,targetRm) ;
+diff --git a/ggTest/stm.cpp b/ggTest/stm.cpp
+index e60d407..13d8288 100644
+--- a/ggTest/stm.cpp
++++ b/ggTest/stm.cpp
+@@ -11,7 +11,7 @@ namespace {
+ 
+     const uint32_t baseAddr = 0x0201fef0 ;
+ 
+-    TEST_F(ggTest, stmib_test) {
++    TEST_F(ggTest, arm_stmib_test) {
+         uint32_t t = 0 ;
+ 
+         TestField wFlag(0,1,1) ;
+@@ -36,7 +36,7 @@ namespace {
+             instance._regs[ r4 ] = baseAddr ; // OWRAM
+ 
+             uint32_t inst_hash = hashArm(instruction);
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -60,6 +60,7 @@ namespace {
+                 << std::hex << "Errflag: " << errFlag << '\n'
+                 << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                 << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+             t++;
+         };
+ 
+@@ -67,7 +68,7 @@ namespace {
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, stmia_test) {
++    TEST_F(ggTest, arm_stmia_test) {
+         uint32_t t = 0 ;
+ 
+         TestField wFlag(0,1,1) ;
+@@ -92,7 +93,7 @@ namespace {
+             instance._regs[ r4 ] = baseAddr ; // OWRAM
+ 
+             uint32_t inst_hash = hashArm(instruction);
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -116,6 +117,7 @@ namespace {
+                                         << std::hex << "Errflag: " << errFlag << '\n'
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+             t++;
+         };
+ 
+@@ -123,7 +125,7 @@ namespace {
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, stmdb_test) {
++    TEST_F(ggTest, arm_stmdb_test) {
+         uint32_t t = 0 ;
+ 
+         TestField wFlag(0,1,1) ;
+@@ -148,7 +150,7 @@ namespace {
+             instance._regs[ r4 ] = baseAddr ; // OWRAM
+ 
+             uint32_t inst_hash = hashArm(instruction);
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -175,6 +177,7 @@ namespace {
+                 << std::hex << "Errflag: " << errFlag << '\n'
+                 << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                 << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+             t++;
+         };
+ 
+@@ -182,7 +185,7 @@ namespace {
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, stmda_test) {
++    TEST_F(ggTest, arm_stmda_test) {
+         uint32_t t = 0 ;
+ 
+         TestField wFlag(0,1,1) ;
+@@ -207,7 +210,7 @@ namespace {
+             instance._regs[ r4 ] = baseAddr ; // OWRAM
+ 
+             uint32_t inst_hash = hashArm(instruction);
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+@@ -234,6 +237,7 @@ namespace {
+                                         << std::hex << "Errflag: " << errFlag << '\n'
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+             t++;
+         };
+ 
+diff --git a/ggTest/str.cpp b/ggTest/str.cpp
+index a6ed9ce..0ccaa05 100644
+--- a/ggTest/str.cpp
++++ b/ggTest/str.cpp
+@@ -17,7 +17,7 @@ namespace {
+             0xffffffff
+     };
+ 
+-    TEST_F(ggTest, str_post_imm_offset_test) {
++    TEST_F(ggTest, arm_str_post_imm_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xe, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -30,7 +30,7 @@ namespace {
+             ++t;
+ 
+             if (targetRd.value == targetRn.value)
+-                return ;
++                return;
+ 
+             uint32_t targetAddr = baseAddr;
+ 
+@@ -42,30 +42,33 @@ namespace {
+             instance._regs[targetRn.value] = baseAddr;
+             egg.regs[targetRn.value] = baseAddr;
+ 
+-            instance._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
+-            egg.regs[ targetRd.value ] = testValue[ memValueidx.value ]  ;
++            instance._regs[targetRd.value] = testValue[memValueidx.value];
++            egg.regs[targetRd.value] = testValue[memValueidx.value];
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+             uint32_t memChk = instance._mem.Read32(baseAddr) == egg.readWordRotate(baseAddr);
+             ASSERT_TRUE(errFlag == 0 && memChk)
+-                << "#" << t << '\n'
+-                << std::hex << "Errflag: " << errFlag << std::boolalpha << " memChk: " << memChk << '\n'
+-                << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
+-                << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                << Diagnose(instance, egg, errFlag) << '\n'
+-                << "memread_mine:" << instance._mem.Read32(baseAddr) << " ref: " << egg.readWordRotate(baseAddr) << '\n';
++                                        << "#" << t << '\n'
++                                        << std::hex << "Errflag: " << errFlag << std::boolalpha << " memChk: " << memChk
++                                        << '\n'
++                                        << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
++                                        << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
++                                        << Diagnose(instance, egg, errFlag) << '\n'
++                                        << "memread_mine:" << instance._mem.Read32(baseAddr) << " ref: "
++                                        << egg.readWordRotate(baseAddr) << '\n';
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, immOffset, memValueidx);
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, str_post_reg_offset_test) {
++    TEST_F(ggTest, arm_str_post_reg_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xe, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -83,7 +86,7 @@ namespace {
+             if (targetRd.value == targetRn.value || r4 == targetRn.value)
+                 return;
+ 
+-            uint32_t offset = RmValue.value, targetAddr = 0 ;
++            uint32_t offset = RmValue.value, targetAddr = 0;
+             switch (shiftType.value) {
+                 case LSL:
+                     offset <<= shiftAmount.value;
+@@ -99,7 +102,7 @@ namespace {
+                     break;
+             }
+ 
+-            targetAddr = uFlag.value ? baseAddr + offset : baseAddr - offset ;
++            targetAddr = uFlag.value ? baseAddr + offset : baseAddr - offset;
+ 
+             if (targetAddr < 0x2000000 || targetAddr > 0x203ffff)
+                 return;
+@@ -113,31 +116,33 @@ namespace {
+             instance._regs[targetRn.value] = baseAddr;
+             egg.regs[targetRn.value] = baseAddr;
+ 
+-            instance._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
+-            egg.regs[ targetRd.value ] = testValue[ memValueidx.value ]  ;
++            instance._regs[targetRd.value] = testValue[memValueidx.value];
++            egg.regs[targetRd.value] = testValue[memValueidx.value];
+ 
+             instance._regs[r4] = RmValue.value;
+             egg.regs[r4] = RmValue.value;
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+             uint32_t memChk = instance._mem.Read32(baseAddr) == egg.readWordRotate(baseAddr);
+-            ASSERT_TRUE(errFlag == 0 && memChk )
+-                << "#" << t << '\n'
+-                << std::hex << "Errflag: " << errFlag << " memChk: " << std::boolalpha << memChk << '\n'
+-                << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                << Diagnose(instance, egg, errFlag);
++            ASSERT_TRUE(errFlag == 0 && memChk)
++                                        << "#" << t << '\n'
++                                        << std::hex << "Errflag: " << errFlag << " memChk: " << std::boolalpha << memChk
++                                        << '\n'
++                                        << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
++                                        << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue, memValueidx);
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, strb_post_imm_offset_test) {
++    TEST_F(ggTest, arm_strb_post_imm_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xe, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -146,9 +151,9 @@ namespace {
+ 
+         TestField uFlag(0, 1, 1);
+ 
+-        for (int i = 0x2000000 ; i <= 0x203ffff ; i += 4) {
+-            instance._mem.Write32(i, 0u) ;
+-            egg.writeWord(i, 0) ;
++        for (int i = 0x2000000; i <= 0x203ffff; i += 4) {
++            instance._mem.Write32(i, 0u);
++            egg.writeWord(i, 0);
+         } // for
+ 
+         auto TestMain = [&]() {
+@@ -164,29 +169,31 @@ namespace {
+             instance._regs[targetRn.value] = baseAddr;
+             egg.regs[targetRn.value] = baseAddr;
+ 
+-            instance._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
+-            egg.regs[ targetRd.value ] = testValue[ memValueidx.value ]  ;
++            instance._regs[targetRd.value] = testValue[memValueidx.value];
++            egg.regs[targetRd.value] = testValue[memValueidx.value];
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+             uint32_t memChk = instance._mem.Read32(baseAddr) == egg.readWordRotate(baseAddr);
+             ASSERT_TRUE(errFlag == 0 && memChk)
+-                << "#" << t << '\n'
+-                << std::hex << "Errflag: " << errFlag << std::boolalpha << " memChk: " << memChk << '\n'
+-                << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
+-                << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                << Diagnose(instance, egg, errFlag);
++                                        << "#" << t << '\n'
++                                        << std::hex << "Errflag: " << errFlag << std::boolalpha << " memChk: " << memChk
++                                        << '\n'
++                                        << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
++                                        << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
++                                        << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, immOffset, memValueidx);
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, strb_post_reg_offset_test) {
++    TEST_F(ggTest, arm_strb_post_reg_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xe, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -198,9 +205,9 @@ namespace {
+ 
+         TestField uFlag(0, 1, 1);
+ 
+-        for (int i = 0x2000000 ; i <= 0x203ffff ; i += 4) {
+-            instance._mem.Write32(i, 0u) ;
+-            egg.writeWord(i, 0) ;
++        for (int i = 0x2000000; i <= 0x203ffff; i += 4) {
++            instance._mem.Write32(i, 0u);
++            egg.writeWord(i, 0);
+         } // for
+ 
+         auto TestMain = [&]() {
+@@ -209,7 +216,7 @@ namespace {
+             if (targetRd.value == targetRn.value || r4 == targetRn.value)
+                 return;
+ 
+-            uint32_t offset = RmValue.value, targetAddr = 0 ;
++            uint32_t offset = RmValue.value, targetAddr = 0;
+             switch (shiftType.value) {
+                 case LSL:
+                     offset <<= shiftAmount.value;
+@@ -225,7 +232,7 @@ namespace {
+                     break;
+             }
+ 
+-            targetAddr = uFlag.value ? baseAddr + offset : baseAddr - offset ;
++            targetAddr = uFlag.value ? baseAddr + offset : baseAddr - offset;
+ 
+             if (targetAddr < 0x2000000 || targetAddr > 0x203ffff)
+                 return;
+@@ -239,31 +246,33 @@ namespace {
+             instance._regs[targetRn.value] = baseAddr;
+             egg.regs[targetRn.value] = baseAddr;
+ 
+-            instance._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
+-            egg.regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
++            instance._regs[targetRd.value] = testValue[memValueidx.value];
++            egg.regs[targetRd.value] = testValue[memValueidx.value];
+ 
+             instance._regs[r4] = RmValue.value;
+             egg.regs[r4] = RmValue.value;
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+             uint32_t memChk = instance._mem.Read32(baseAddr) == egg.readWordRotate(baseAddr);
+-            ASSERT_TRUE(errFlag == 0 && memChk )
+-                << "#" << t << '\n'
+-                << std::hex << "Errflag: " << errFlag << " memChk: " << std::boolalpha << memChk << '\n'
+-                << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                << Diagnose(instance, egg, errFlag);
++            ASSERT_TRUE(errFlag == 0 && memChk)
++                                        << "#" << t << '\n'
++                                        << std::hex << "Errflag: " << errFlag << " memChk: " << std::boolalpha << memChk
++                                        << '\n'
++                                        << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
++                                        << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue, memValueidx);
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, str_pre_imm_offset_test) {
++    TEST_F(ggTest, arm_str_pre_imm_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -277,12 +286,12 @@ namespace {
+             ++t;
+ 
+             if (targetRn.value == targetRd.value)
+-                return ;
++                return;
+ 
+             if (wFlag.value && targetRn.value == pc)
+                 return;
+ 
+-            uint32_t targetAddr = uFlag.value ? baseAddr + immOffset.value : baseAddr - immOffset.value ;
++            uint32_t targetAddr = uFlag.value ? baseAddr + immOffset.value : baseAddr - immOffset.value;
+ 
+             uint32_t instruction = MakeSingleTransferInstruction<Cond, F_Type::I, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
+                     AL, false, true, uFlag.value, false, wFlag.value, false,
+@@ -292,29 +301,34 @@ namespace {
+             instance._regs[targetRn.value] = baseAddr;
+             egg.regs[targetRn.value] = baseAddr;
+ 
+-            instance._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
+-            egg.regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
++            instance._regs[targetRd.value] = testValue[memValueIdx.value];
++            egg.regs[targetRd.value] = testValue[memValueIdx.value];
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            if (t == 16389)
++                std::cout << std::endl;
++
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+-            uint32_t memChk = instance._mem.Read32(targetAddr) == egg.readWordRotate(targetAddr) ;
++            uint32_t memChk = instance._mem.Read32(targetAddr) == egg.readWordRotate(targetAddr);
+             ASSERT_TRUE(errFlag == 0 && memChk)
+-                << "#" << t << '\n'
+-                << std::hex << "Errflag: " << errFlag << " memChk: " << std::boolalpha << memChk << '\n'
+-                << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
+-                << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                << Diagnose(instance, egg, errFlag);
++                                        << "#" << t << '\n'
++                                        << std::hex << "Errflag: " << errFlag << " memChk: " << std::boolalpha << memChk
++                                        << '\n'
++                                        << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
++                                        << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
++                                        << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, immOffset, memValueIdx);
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, str_pre_reg_offset_test) {
++    TEST_F(ggTest, arm_str_pre_reg_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -351,7 +365,7 @@ namespace {
+                     break;
+             }
+ 
+-            uint32_t targetAddr = uFlag.value ? baseAddr + offset : baseAddr - offset ;
++            uint32_t targetAddr = uFlag.value ? baseAddr + offset : baseAddr - offset;
+             if (targetAddr < 0x2000000 || targetAddr > 0x203ffff)
+                 return;
+ 
+@@ -364,31 +378,33 @@ namespace {
+             instance._regs[targetRn.value] = baseAddr;
+             egg.regs[targetRn.value] = baseAddr;
+ 
+-            instance._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
+-            egg.regs[ targetRd.value ] = testValue[ memValueIdx.value ]  ;
++            instance._regs[targetRd.value] = testValue[memValueIdx.value];
++            egg.regs[targetRd.value] = testValue[memValueIdx.value];
+ 
+             instance._regs[r4] = RmValue.value;
+             egg.regs[r4] = RmValue.value;
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+             uint32_t memChk = instance._mem.Read32(targetAddr) == egg.readWordRotate(targetAddr);
+-            ASSERT_TRUE(errFlag == 0 && memChk )
+-                << "#" << t << '\n'
+-                << std::hex << "Errflag: " << errFlag << " memChk: " << std::boolalpha << memChk << '\n'
+-                << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                << Diagnose(instance, egg, errFlag);
++            ASSERT_TRUE(errFlag == 0 && memChk)
++                                        << "#" << t << '\n'
++                                        << std::hex << "Errflag: " << errFlag << " memChk: " << std::boolalpha << memChk
++                                        << '\n'
++                                        << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
++                                        << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue, memValueIdx);
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, strb_pre_imm_offset_test) {
++    TEST_F(ggTest, arm_strb_pre_imm_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -398,9 +414,9 @@ namespace {
+         TestField uFlag(0, 1, 1);
+         TestField wFlag(0, 1, 1);
+ 
+-        for (int i = 0x2000000 ; i <= 0x203ffff ; i += 4) {
+-            instance._mem.Write32(i, 0u) ;
+-            egg.writeWord(i, 0) ;
++        for (int i = 0x2000000; i <= 0x203ffff; i += 4) {
++            instance._mem.Write32(i, 0u);
++            egg.writeWord(i, 0);
+         } // for
+ 
+         auto TestMain = [&]() {
+@@ -409,7 +425,7 @@ namespace {
+             if (wFlag.value && targetRn.value == pc)
+                 return;
+ 
+-            uint32_t targetAddr = uFlag.value ? baseAddr + immOffset.value : baseAddr - immOffset.value ;
++            uint32_t targetAddr = uFlag.value ? baseAddr + immOffset.value : baseAddr - immOffset.value;
+ 
+             uint32_t instruction = MakeSingleTransferInstruction<Cond, F_Type::I, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
+                     AL, false, true, uFlag.value, true, wFlag.value, false,
+@@ -419,29 +435,31 @@ namespace {
+             instance._regs[targetRn.value] = baseAddr;
+             egg.regs[targetRn.value] = baseAddr;
+ 
+-            instance._regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
+-            egg.regs[ targetRd.value ] = testValue[ memValueidx.value ] ;
++            instance._regs[targetRd.value] = testValue[memValueidx.value];
++            egg.regs[targetRd.value] = testValue[memValueidx.value];
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+             uint32_t memChk = instance._mem.Read32(targetAddr) == egg.readWordRotate(targetAddr);
+             ASSERT_TRUE(errFlag == 0)
+-                << "#" << t << '\n'
+-                << std::hex << "Errflag: " << errFlag << " memChk: " << std::boolalpha << memChk << '\n'
+-                << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
+-                << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                << Diagnose(instance, egg, errFlag);
++                                        << "#" << t << '\n'
++                                        << std::hex << "Errflag: " << errFlag << " memChk: " << std::boolalpha << memChk
++                                        << '\n'
++                                        << fmt::format("Testcase: offset: {:x}\n", immOffset.value)
++                                        << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
++                                        << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, immOffset, memValueidx);
+         std::cout << "Test performed: " << t << std::endl;
+     }
+ 
+-    TEST_F(ggTest, strb_pre_reg_offset_test) {
++    TEST_F(ggTest, arm_strb_pre_reg_offset_test) {
+         unsigned int t = 0;
+         TestField targetRn(0, 0xf, 1);
+         TestField targetRd(0, 0xf, 1);
+@@ -454,9 +472,9 @@ namespace {
+         TestField uFlag(0, 1, 1);
+         TestField wFlag(0, 1, 1);
+ 
+-        for (int i = 0x2000000 ; i <= 0x203ffff ; i += 4) {
+-            instance._mem.Write32(i, 0u) ;
+-            egg.writeWord(i, 0) ;
++        for (int i = 0x2000000; i <= 0x203ffff; i += 4) {
++            instance._mem.Write32(i, 0u);
++            egg.writeWord(i, 0);
+         } // for
+ 
+         auto TestMain = [&]() {
+@@ -483,7 +501,7 @@ namespace {
+                     break;
+             }
+ 
+-            uint32_t targetAddr = uFlag.value ? baseAddr + offset : baseAddr - offset ;
++            uint32_t targetAddr = uFlag.value ? baseAddr + offset : baseAddr - offset;
+             if (targetAddr < 0x2000000 || targetAddr > 0x203ffff)
+                 return;
+ 
+@@ -496,24 +514,26 @@ namespace {
+             instance._regs[targetRn.value] = baseAddr;
+             egg.regs[targetRn.value] = baseAddr;
+ 
+-            instance._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
+-            egg.regs[ targetRd.value ] = testValue[ memValueIdx.value ]  ;
++            instance._regs[targetRd.value] = testValue[memValueIdx.value];
++            egg.regs[targetRd.value] = testValue[memValueIdx.value];
+ 
+             instance._regs[r4] = RmValue.value;
+             egg.regs[r4] = RmValue.value;
+ 
+             uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+             uint32_t memChk = instance._mem.Read32(targetAddr) == egg.readWordRotate(targetAddr);
+-            ASSERT_TRUE(errFlag == 0 && memChk )
++            ASSERT_TRUE(errFlag == 0 && memChk)
+                                         << "#" << t << '\n'
+-                                        << std::hex << "Errflag: " << errFlag << " memChk: " << std::boolalpha << memChk << '\n'
++                                        << std::hex << "Errflag: " << errFlag << " memChk: " << std::boolalpha << memChk
++                                        << '\n'
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+                                         << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, uFlag, wFlag, targetRn, targetRd, shiftType, shiftAmount, RmValue, memValueIdx);
+diff --git a/ggTest/strh.cpp b/ggTest/strh.cpp
+index cde736d..018a5a1 100644
+--- a/ggTest/strh.cpp
++++ b/ggTest/strh.cpp
+@@ -16,25 +16,25 @@ namespace {
+             0x0f4f
+     };
+ 
+-    TEST_F(ggTest, strh_post_reg_offset) {
+-        unsigned int t = 0 ;
+-        TestField targetRn(0, 0xf, 1) ;
+-        TestField targetRd(0, 0xf, 1) ;
+-        TestField targetRm(0, 0xe, 1) ;
++    TEST_F(ggTest, arm_strh_post_reg_offset) {
++        unsigned int t = 0;
++        TestField targetRn(0, 0xf, 1);
++        TestField targetRd(0, 0xf, 1);
++        TestField targetRm(0, 0xe, 1);
+ 
+-        TestField RmValue(0, 0x3ffff, 2) ;
++        TestField RmValue(0, 0x3ffff, 2);
+         std::pair<uint32_t, bool> addrPair[2] = {
+                 std::make_pair(0x02000000, true),
+                 std::make_pair(0x0203fffe, false)
+         };
+ 
+-        TestField writeMode(0, 1, 1) ;
++        TestField writeMode(0, 1, 1);
+         TestField memValueIdx(0, 3, 1);
+ 
+         auto TestMain = [&]() {
+             ++t;
+             if (targetRn.value == targetRm.value || targetRn.value == targetRd.value)
+-                return ;
++                return;
+ 
+             uint32_t instruction = MakeHalfTransferInstruction<Cond, P, U, W, L, Rn, Rd, S, H, Rm>(
+                     AL,
+@@ -46,54 +46,57 @@ namespace {
+                     targetRd.value,
+                     false, true, // 01 for unsigned halfword access
+                     targetRm.value
+-            ) ;
++            );
+ 
+-            instance._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+-            instance._regs[ targetRm.value ] = RmValue.value ;
+-            instance._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
++            instance._regs[targetRn.value] = addrPair[writeMode.value].first;
++            instance._regs[targetRm.value] = RmValue.value;
++            instance._regs[targetRd.value] = testValue[memValueIdx.value];
+ 
+-            egg.regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+-            egg.regs[ targetRm.value ] = RmValue.value ;
+-            egg.regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
++            egg.regs[targetRn.value] = addrPair[writeMode.value].first;
++            egg.regs[targetRm.value] = RmValue.value;
++            egg.regs[targetRd.value] = testValue[memValueIdx.value];
+ 
+-            uint32_t inst_hash = hashArm(instruction) ;
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            uint32_t inst_hash = hashArm(instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+-            uint16_t memValueMine = instance._mem.Read16(addrPair[ writeMode.value ].first) ;
+-            uint16_t memValueRef = egg.readHalfRotate(addrPair[ writeMode.value ].first) ;
+-            uint32_t memChk = memValueMine == memValueRef && memValueMine != 0 ;
++            uint16_t memValueMine = instance._mem.Read16(addrPair[writeMode.value].first);
++            uint16_t memValueRef = egg.readHalfRotate(addrPair[writeMode.value].first);
++            uint32_t memChk = memValueMine == memValueRef && memValueMine != 0;
+             ASSERT_TRUE(errFlag == 0 && memChk)
+-                << "#" << t << '\n'
+-                << std::hex << "Errflag: " << errFlag << '\n'
+-                << fmt::format("Testcase: baseAddr: 0x{:x}, offsetRm: {:x}\n", addrPair[ writeMode.value ].first, RmValue.value)
+-                << fmt::format("MemChk: {}, mine: {:x} ref: {:x}\n", memChk, memValueMine, memValueRef )
+-                << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                << Diagnose(instance, egg, errFlag) << '\n' ;
++                                        << "#" << t << '\n'
++                                        << std::hex << "Errflag: " << errFlag << '\n'
++                                        << fmt::format("Testcase: baseAddr: 0x{:x}, offsetRm: {:x}\n",
++                                                       addrPair[writeMode.value].first, RmValue.value)
++                                        << fmt::format("MemChk: {}, mine: {:x} ref: {:x}\n", memChk, memValueMine,
++                                                       memValueRef)
++                                        << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
++                                        << Diagnose(instance, egg, errFlag) << '\n';
++            CpuPC_Reset(egg, instance);
+         };
+ 
+-        TEST_LOOPS(TestMain, targetRn, targetRd,targetRm, RmValue, writeMode, memValueIdx);
++        TEST_LOOPS(TestMain, targetRn, targetRd, targetRm, RmValue, writeMode, memValueIdx);
+     }
+ 
+-    TEST_F(ggTest, strh_imm_post_offset) {
+-        unsigned int t = 0 ;
+-        TestField targetRn(0, 0xf, 1) ;
+-        TestField targetRd(0, 0xf, 1) ;
+-        TestField immOffset(0, 0xff, 2) ;
++    TEST_F(ggTest, arm_strh_imm_post_offset) {
++        unsigned int t = 0;
++        TestField targetRn(0, 0xf, 1);
++        TestField targetRd(0, 0xf, 1);
++        TestField immOffset(0, 0xff, 2);
+ 
+         std::pair<uint32_t, bool> addrPair[2] = {
+                 std::make_pair(0x02000000, true),
+                 std::make_pair(0x0203fffe, false)
+         };
+ 
+-        TestField writeMode(0, 1, 1) ;
++        TestField writeMode(0, 1, 1);
+         TestField memValueIdx(0, 3, 1);
+ 
+         auto TestMain = [&]() {
+             ++t;
+             if (targetRn.value == targetRd.value)
+-                return ;
++                return;
+ 
+             uint32_t instruction = MakeHalfTransferInstruction<Cond, P, U, W, L, Rn, Rd, S, H, Offset>(
+                     AL,
+@@ -105,55 +108,58 @@ namespace {
+                     targetRd.value,
+                     false, true, // 01 for unsigned halfword access
+                     immOffset.value
+-            ) ;
++            );
+ 
+-            instance._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+-            instance._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
++            instance._regs[targetRn.value] = addrPair[writeMode.value].first;
++            instance._regs[targetRd.value] = testValue[memValueIdx.value];
+ 
+-            egg.regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+-            egg.regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
++            egg.regs[targetRn.value] = addrPair[writeMode.value].first;
++            egg.regs[targetRd.value] = testValue[memValueIdx.value];
+ 
+-            uint32_t inst_hash = hashArm(instruction) ;
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            uint32_t inst_hash = hashArm(instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+-            uint16_t memValueMine = instance._mem.Read16(addrPair[ writeMode.value ].first) ;
+-            uint16_t memValueRef = egg.readHalfRotate(addrPair[ writeMode.value ].first) ;
+-            uint32_t memChk = memValueMine == memValueRef && memValueMine != 0 ;
++            uint16_t memValueMine = instance._mem.Read16(addrPair[writeMode.value].first);
++            uint16_t memValueRef = egg.readHalfRotate(addrPair[writeMode.value].first);
++            uint32_t memChk = memValueMine == memValueRef && memValueMine != 0;
+ 
+             ASSERT_TRUE(errFlag == 0 && memChk)
+-                << "#" << t << '\n'
+-                << std::hex << "Errflag: " << errFlag << '\n'
+-                << fmt::format("Testcase: baseAddr: 0x{:x}, immOffset: {:x}\n", addrPair[ writeMode.value ].first, immOffset.value)
+-                << fmt::format("MemChk: {}, mine: {:x} ref: {:x}\n", memChk, memValueMine, memValueRef )
+-                << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                << Diagnose(instance, egg, errFlag) << '\n' ;
++                                        << "#" << t << '\n'
++                                        << std::hex << "Errflag: " << errFlag << '\n'
++                                        << fmt::format("Testcase: baseAddr: 0x{:x}, immOffset: {:x}\n",
++                                                       addrPair[writeMode.value].first, immOffset.value)
++                                        << fmt::format("MemChk: {}, mine: {:x} ref: {:x}\n", memChk, memValueMine,
++                                                       memValueRef)
++                                        << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
++                                        << Diagnose(instance, egg, errFlag) << '\n';
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, targetRn, targetRd, immOffset, writeMode, memValueIdx);
+     }
+ 
+-    TEST_F(ggTest, strh_reg_pre_offset) {
+-        unsigned int t = 0 ;
+-        TestField targetRn(0, 0xf, 1) ;
+-        TestField targetRd(0, 0xf, 1) ;
+-        TestField targetRm(0, 0xe, 1) ;
++    TEST_F(ggTest, arm_strh_reg_pre_offset) {
++        unsigned int t = 0;
++        TestField targetRn(0, 0xf, 1);
++        TestField targetRd(0, 0xf, 1);
++        TestField targetRm(0, 0xe, 1);
+ 
+-        TestField RmValue(0, 0x3ffff, 2) ;
++        TestField RmValue(0, 0x3ffff, 2);
+         std::pair<uint32_t, bool> addrPair[2] = {
+                 std::make_pair(0x02000000, true),
+                 std::make_pair(0x0203fffe, false)
+         };
+ 
+-        TestField writeMode(0, 1, 1) ;
++        TestField writeMode(0, 1, 1);
+         TestField memValueIdx(0, 3, 1);
+         TestField wFlag(0, 1, 1);
+ 
+         auto TestMain = [&]() {
+             ++t;
+             if (targetRn.value == targetRm.value || targetRn.value == targetRd.value)
+-                return ;
++                return;
+ 
+             uint32_t instruction = MakeHalfTransferInstruction<Cond, P, U, W, L, Rn, Rd, S, H, Rm>(
+                     AL,
+@@ -165,62 +171,65 @@ namespace {
+                     targetRd.value,
+                     false, true, // 01 for unsigned halfword access, 11 for singed halfword access
+                     targetRm.value
+-            ) ;
++            );
+ 
+-            instance._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+-            instance._regs[ targetRm.value ] = RmValue.value ;
++            instance._regs[targetRn.value] = addrPair[writeMode.value].first;
++            instance._regs[targetRm.value] = RmValue.value;
+ 
+-            egg.regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+-            egg.regs[ targetRm.value ] = RmValue.value ;
++            egg.regs[targetRn.value] = addrPair[writeMode.value].first;
++            egg.regs[targetRm.value] = RmValue.value;
+ 
+-            instance._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
+-            egg.regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
++            instance._regs[targetRd.value] = testValue[memValueIdx.value];
++            egg.regs[targetRd.value] = testValue[memValueIdx.value];
+ 
+-            uint32_t targetAddr = addrPair[ writeMode.value ].first ;
+-            uint32_t offset = targetRd.value == targetRm.value ? testValue[ memValueIdx.value ] : RmValue.value ;
++            uint32_t targetAddr = addrPair[writeMode.value].first;
++            uint32_t offset = targetRd.value == targetRm.value ? testValue[memValueIdx.value] : RmValue.value;
+ 
+-            targetAddr = addrPair[ writeMode.value ].second ? targetAddr + offset : targetAddr - offset ;
++            targetAddr = addrPair[writeMode.value].second ? targetAddr + offset : targetAddr - offset;
+ 
+-            uint32_t inst_hash = hashArm(instruction) ;
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            uint32_t inst_hash = hashArm(instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+-            uint16_t memValueMine = instance._mem.Read16(targetAddr & ~0x1) ;
+-            uint16_t memValueRef = egg.readHalf(targetAddr) ;
++            uint16_t memValueMine = instance._mem.Read16(targetAddr & ~0x1);
++            uint16_t memValueRef = egg.readHalf(targetAddr);
+ 
+-            uint32_t memChk = memValueMine == memValueRef && memValueMine != 0 ;
++            uint32_t memChk = memValueMine == memValueRef && memValueMine != 0;
+             ASSERT_TRUE(errFlag == 0 && memChk)
+-                << "#" << t << '\n'
+-                << std::hex << "Errflag: " << errFlag << '\n'
+-                << fmt::format("Testcase: baseAddr: 0x{:x}, offsetRm: {:x}\n", addrPair[ writeMode.value ].first, RmValue.value)
+-                << fmt::format("MemChk: {}, mine: {:x} ref: {:x}\n", memChk, memValueMine, memValueRef )
+-                << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                << Diagnose(instance, egg, errFlag) << '\n' ;
++                                        << "#" << t << '\n'
++                                        << std::hex << "Errflag: " << errFlag << '\n'
++                                        << fmt::format("Testcase: baseAddr: 0x{:x}, offsetRm: {:x}\n",
++                                                       addrPair[writeMode.value].first, RmValue.value)
++                                        << fmt::format("MemChk: {}, mine: {:x} ref: {:x}\n", memChk, memValueMine,
++                                                       memValueRef)
++                                        << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
++                                        << Diagnose(instance, egg, errFlag) << '\n';
++            CpuPC_Reset(egg, instance);
+         };
+ 
+-        TEST_LOOPS(TestMain, targetRn, targetRd,targetRm, RmValue, writeMode, memValueIdx, wFlag);
++        TEST_LOOPS(TestMain, targetRn, targetRd, targetRm, RmValue, writeMode, memValueIdx, wFlag);
+     }
+ 
+-    TEST_F(ggTest, strh_imm_pre_offset) {
+-        unsigned int t = 0 ;
+-        TestField targetRn(0, 0xf, 1) ;
+-        TestField targetRd(0, 0xf, 1) ;
++    TEST_F(ggTest, arm_strh_imm_pre_offset) {
++        unsigned int t = 0;
++        TestField targetRn(0, 0xf, 1);
++        TestField targetRd(0, 0xf, 1);
+ 
+-        TestField immOffset(0, 0xff, 2) ;
++        TestField immOffset(0, 0xff, 2);
+         std::pair<uint32_t, bool> addrPair[2] = {
+                 std::make_pair(0x02000000, true),
+                 std::make_pair(0x0203fffe, false)
+         };
+ 
+-        TestField writeMode(0, 1, 1) ;
++        TestField writeMode(0, 1, 1);
+         TestField memValueIdx(0, 3, 1);
+         TestField wFlag(0, 1, 1);
+ 
+         auto TestMain = [&]() {
+             ++t;
+             if (targetRn.value == targetRd.value)
+-                return ;
++                return;
+ 
+             uint32_t instruction = MakeHalfTransferInstruction<Cond, P, U, W, L, Rn, Rd, S, H, Offset>(
+                     AL,
+@@ -232,33 +241,36 @@ namespace {
+                     targetRd.value,
+                     false, true, // 01 for unsigned halfword access, 11 for singed halfword access
+                     immOffset.value
+-            ) ;
++            );
+ 
+-            instance._regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
+-            egg.regs[ targetRn.value ] = addrPair[ writeMode.value ].first ;
++            instance._regs[targetRn.value] = addrPair[writeMode.value].first;
++            egg.regs[targetRn.value] = addrPair[writeMode.value].first;
+ 
+-            instance._regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
+-            egg.regs[ targetRd.value ] = testValue[ memValueIdx.value ] ;
++            instance._regs[targetRd.value] = testValue[memValueIdx.value];
++            egg.regs[targetRd.value] = testValue[memValueIdx.value];
+ 
+-            uint32_t targetAddr = addrPair[ writeMode.value ].first ;
+-            targetAddr = addrPair[ writeMode.value ].second ? targetAddr + immOffset.value : targetAddr - immOffset.value ;
++            uint32_t targetAddr = addrPair[writeMode.value].first;
++            targetAddr = addrPair[writeMode.value].second ? targetAddr + immOffset.value : targetAddr - immOffset.value;
+ 
+-            uint32_t inst_hash = hashArm(instruction) ;
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            uint32_t inst_hash = hashArm(instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+             uint32_t errFlag = CheckStatus(instance, egg);
+-            uint16_t memValueMine = instance._mem.Read16(targetAddr & ~0x1) ;
+-            uint16_t memValueRef = egg.readHalf(targetAddr) ;
++            uint16_t memValueMine = instance._mem.Read16(targetAddr & ~0x1);
++            uint16_t memValueRef = egg.readHalf(targetAddr);
+ 
+-            uint32_t memChk = memValueMine == memValueRef && memValueMine != 0 ;
++            uint32_t memChk = memValueMine == memValueRef && memValueMine != 0;
+             ASSERT_TRUE(errFlag == 0 && memChk)
+                                         << "#" << t << '\n'
+                                         << std::hex << "Errflag: " << errFlag << '\n'
+-                                        << fmt::format("Testcase: baseAddr: 0x{:x}, offsetImm: {:x}\n", addrPair[ writeMode.value ].first, immOffset.value)
+-                                        << fmt::format("MemChk: {}, mine: {:x} ref: {:x}\n", memChk, memValueMine, memValueRef )
++                                        << fmt::format("Testcase: baseAddr: 0x{:x}, offsetImm: {:x}\n",
++                                                       addrPair[writeMode.value].first, immOffset.value)
++                                        << fmt::format("MemChk: {}, mine: {:x} ref: {:x}\n", memChk, memValueMine,
++                                                       memValueRef)
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                                        << Diagnose(instance, egg, errFlag) << '\n' ;
++                                        << Diagnose(instance, egg, errFlag) << '\n';
++            CpuPC_Reset(egg, instance);
+         };
+ 
+         TEST_LOOPS(TestMain, targetRn, targetRd, immOffset, writeMode, memValueIdx, wFlag);
+diff --git a/ggTest/swap.cpp b/ggTest/swap.cpp
+index 15faebc..9e4079f 100644
+--- a/ggTest/swap.cpp
++++ b/ggTest/swap.cpp
+@@ -7,107 +7,111 @@
+ namespace {
+     using namespace gg_core::gg_cpu;
+ 
+-    static constexpr std::array<uint32_t, 4> testValue {
+-        0xdeadbeef,
+-        0xa0b1c2d4,
+-        0x0c0011ab,
+-        0xffffffff
++    static constexpr std::array<uint32_t, 4> testValue{
++            0xdeadbeef,
++            0xa0b1c2d4,
++            0x0c0011ab,
++            0xffffffff
+     };
+ 
+-    TEST_F(ggTest, swp_test) {
++    TEST_F(ggTest, arm_swp_test) {
+         using namespace gg_core;
+ 
+-        uint64_t t = 0 ;
+-        TestField targetRd(0, 0xe, 1) ;
+-        TestField targetRn(0, 0xe, 1) ;
+-        TestField RnValue(0x3000000, 0x3007fff, 1) ;
+-        TestField targetRm(0, 0xe, 1) ;
+-        TestField RmValue(0, 3, 1) ;
+-        TestField memValue(0, 3, 1) ;
++        uint64_t t = 0;
++        TestField targetRd(0, 0xe, 1);
++        TestField targetRn(0, 0xe, 1);
++        TestField RnValue(0x3000000, 0x3007fff, 1);
++        TestField targetRm(0, 0xe, 1);
++        TestField RmValue(0, 3, 1);
++        TestField memValue(0, 3, 1);
+ 
+         auto TestMain = [&]() {
+-            ++ t ;
++            ++t;
+             if (targetRn.value == targetRm.value)
+-                return ;
++                return;
+ 
+             uint32_t instruction = MakeSwapInstruction<Cond, B, Rn, Rd, Rm>(
+                     AL, false, targetRn.value, targetRd.value, targetRm.value
+-            ) ;
++            );
+ 
+-            auto idx = std::make_tuple(targetRn.value, targetRm.value) ;
+-            auto val = std::make_tuple(RnValue.value, testValue[ RmValue.value ] );
+-            FillRegs(instance._regs, idx, val) ;
+-            FillRegs(egg.regs, idx, val) ;
++            auto idx = std::make_tuple(targetRn.value, targetRm.value);
++            auto val = std::make_tuple(RnValue.value, testValue[RmValue.value]);
++            FillRegs(instance._regs, idx, val);
++            FillRegs(egg.regs, idx, val);
+ 
+-            instance._mem.Write32((uint32_t)RnValue.value, testValue[ memValue.value ]) ;
+-            egg.writeWord((uint32_t)RnValue.value, testValue[ memValue.value ]) ;
++            instance._mem.Write32((uint32_t) RnValue.value, testValue[memValue.value]);
++            egg.writeWord((uint32_t) RnValue.value, testValue[memValue.value]);
+ 
+-            uint32_t inst_hash = hashArm(instruction) ;
++            uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+-            uint32_t errFlag = CheckStatus(instance, egg) ;
++            uint32_t errFlag = CheckStatus(instance, egg);
+             ASSERT_TRUE(errFlag == 0)
+-                << "#" << t << " of test" << '\n'
+-                << std::hex << "Errflag: " << errFlag << '\n'
+-                << fmt::format( "Rn: {:x}, Rm: {:x}, mem: {:x}\n", RnValue.value, RmValue.value, memValue.value )
+-                << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                << Diagnose(instance, egg, errFlag) ;
+-            ASSERT_TRUE(instance._mem.Read32(RnValue.value) == egg.readWordRotate(RnValue.value)) ;
++                                        << "#" << t << " of test" << '\n'
++                                        << std::hex << "Errflag: " << errFlag << '\n'
++                                        << fmt::format("Rn: {:x}, Rm: {:x}, mem: {:x}\n", RnValue.value, RmValue.value,
++                                                       memValue.value)
++                                        << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
++                                        << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
++            ASSERT_TRUE(instance._mem.Read32(RnValue.value) == egg.readWordRotate(RnValue.value));
+         };
+ 
+-        TEST_LOOPS(TestMain, targetRd, targetRn, targetRm, RnValue, RmValue, memValue) ;
++        TEST_LOOPS(TestMain, targetRd, targetRn, targetRm, RnValue, RmValue, memValue);
+         fmt::print("Total performed tests: {}\n", t);
+     }
+ 
+-    TEST_F(ggTest, swpb_test) {
++    TEST_F(ggTest, arm_swpb_test) {
+         using namespace gg_core;
+ 
+-        uint64_t t = 0 ;
+-        TestField targetRd(0, 0xe, 1) ;
+-        TestField targetRn(0, 0xe, 1) ;
+-        TestField RnValue(0x3000000, 0x3007fff, 1) ;
+-        TestField targetRm(0, 0xe, 1) ;
+-        TestField RmValue(0, 3, 1) ;
+-        TestField memValue(0, 3, 1) ;
++        uint64_t t = 0;
++        TestField targetRd(0, 0xe, 1);
++        TestField targetRn(0, 0xe, 1);
++        TestField RnValue(0x3000000, 0x3007fff, 1);
++        TestField targetRm(0, 0xe, 1);
++        TestField RmValue(0, 3, 1);
++        TestField memValue(0, 3, 1);
+ 
+         auto TestMain = [&]() {
+-            ++ t ;
++            ++t;
+             if (targetRn.value == targetRm.value)
+-                return ;
++                return;
+ 
+             uint32_t instruction = MakeSwapInstruction<Cond, B, Rn, Rd, Rm>(
+                     AL, true, targetRn.value, targetRd.value, targetRm.value
+-            ) ;
++            );
+ 
+-            auto idx = std::make_tuple(targetRn.value, targetRm.value) ;
+-            auto val = std::make_tuple(RnValue.value, testValue[ RmValue.value ] );
+-            FillRegs(instance._regs, idx, val) ;
+-            FillRegs(egg.regs, idx, val) ;
++            auto idx = std::make_tuple(targetRn.value, targetRm.value);
++            auto val = std::make_tuple(RnValue.value, testValue[RmValue.value]);
++            FillRegs(instance._regs, idx, val);
++            FillRegs(egg.regs, idx, val);
+ 
+-            instance._mem.Write8((uint32_t)RnValue.value, (uint8_t)testValue[ memValue.value ]) ;
+-            egg.writeByte((uint32_t)RnValue.value, testValue[ memValue.value ]) ;
++            instance._mem.Write8((uint32_t) RnValue.value, (uint8_t) testValue[memValue.value]);
++            egg.writeByte((uint32_t) RnValue.value, testValue[memValue.value]);
+ 
+-            uint32_t inst_hash = hashArm(instruction) ;
++            uint32_t inst_hash = hashArm(instruction);
+ 
+-            std::invoke(egg.instr_arm[inst_hash], &egg, instruction);
++            EggRun(egg, instruction);
+             instance.CPU_Test(instruction);
+ 
+-            uint32_t errFlag = CheckStatus(instance, egg) ;
++            uint32_t errFlag = CheckStatus(instance, egg);
+ 
+-            bool memChk = instance._mem.Read8(RnValue.value) == egg.readByte(RnValue.value) ;
++            bool memChk = instance._mem.Read8(RnValue.value) == egg.readByte(RnValue.value);
+ 
+             ASSERT_TRUE(errFlag == 0 && memChk)
+                                         << "#" << t << " of test" << '\n'
+                                         << "memory check:" << memChk << '\n'
+                                         << std::hex << "Errflag: " << errFlag << '\n'
+-                                        << fmt::format( "Rn: {:x}, Rm: {:x}, mem: {:x}\n", RnValue.value, RmValue.value, memValue.value )
++                                        << fmt::format("Rn: {:x}, Rm: {:x}, mem: {:x}\n", RnValue.value, RmValue.value,
++                                                       memValue.value)
+                                         << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+-                                        << Diagnose(instance, egg, errFlag) ;
++                                        << Diagnose(instance, egg, errFlag);
++            CpuPC_Reset(egg, instance);
+         };
+ 
+-        TEST_LOOPS(TestMain, targetRd, targetRn, targetRm, RnValue, RmValue, memValue) ;
++        TEST_LOOPS(TestMain, targetRd, targetRn, targetRm, RnValue, RmValue, memValue);
+         fmt::print("Total performed tests: {}\n", t);
+     }
+ }
+diff --git a/ggTest/unpredictable.cpp b/ggTest/unpredictable.cpp
+index bccc798..4734a1f 100644
+--- a/ggTest/unpredictable.cpp
++++ b/ggTest/unpredictable.cpp
+@@ -7,7 +7,7 @@
+ namespace {
+     using namespace gg_core::gg_cpu ;
+ 
+-    TEST_F(ggTest, unaligned_halfaccess_at_unused_test) {
++    TEST_F(ggTest, arm_unaligned_halfaccess_at_unused_test) {
+         uint32_t instruction = 0xe1d100b0 ;
+         const uint32_t answers[4] = {
+             0x0000c301,
+@@ -19,6 +19,10 @@ namespace {
+         for (int i = 0 ; i < 4 ; ++i) {
+             instance._regs[ r1 ] = 0xfffffffc + i ;
+             instance.fetchedBuffer[ 1 ] = 0xe3a0c301 ;
++
++            instance._regs[ pc ] = 0x68;
++            instance.RefillPipeline(&instance, gg_core::gg_mem::S_Cycle, gg_core::gg_mem::S_Cycle) ;
++
+             instance.CPU_Test(instruction); // ldrh r0, [r1]
+ 
+             ASSERT_TRUE(instance._regs[ 0 ] == answers[i] ) << std::hex
+@@ -28,7 +32,7 @@ namespace {
+         } // for
+     }
+ 
+-    TEST_F(ggTest, unaligned_byteaccess_at_unused_test) {
++    TEST_F(ggTest, arm_unaligned_byteaccess_at_unused_test) {
+         uint32_t instruction = 0xe5d10000 ;
+         const uint32_t answers[4] = {
+                 0x00000001,
+@@ -40,6 +44,10 @@ namespace {
+         for (int i = 0 ; i < 4 ; ++i) {
+             instance._regs[ r1 ] = 0xfffffffc + i ;
+             instance.fetchedBuffer[ 1 ] = 0xe3a0c301 ;
++
++            instance._regs[ pc ] = 0x68;
++            instance.RefillPipeline(&instance, gg_core::gg_mem::S_Cycle, gg_core::gg_mem::S_Cycle) ;
++
+             instance.CPU_Test(instruction); // ldrb r0, [r1]
+ 
+             ASSERT_TRUE(instance._regs[ 0 ] == answers[i] ) << std::hex
+@@ -49,7 +57,7 @@ namespace {
+         } // for
+     }
+ 
+-    TEST_F(ggTest, unaligned_signed_halfaccess_at_unused_test) {
++    TEST_F(ggTest, arm_unaligned_signed_halfaccess_at_unused_test) {
+         uint32_t instruction = 0xe1d100f0 ;
+         const uint32_t answers[4] = {
+                 0xffffc301,
+@@ -61,6 +69,10 @@ namespace {
+         for (int i = 0 ; i < 4 ; ++i) {
+             instance._regs[ r1 ] = 0xfffffffc + i ;
+             instance.fetchedBuffer[ 1 ] = 0xe3a0c301 ;
++
++            instance._regs[ pc ] = 0x68;
++            instance.RefillPipeline(&instance, gg_core::gg_mem::S_Cycle, gg_core::gg_mem::S_Cycle) ;
++
+             instance.CPU_Test(instruction); // ldrsh r0, [r1]
+ 
+             ASSERT_TRUE(instance._regs[ 0 ] == answers[i] ) << std::hex
+@@ -70,7 +82,7 @@ namespace {
+         } // for
+     }
+ 
+-    TEST_F(ggTest, unaligned_signed_byteaccess_at_unused_test) {
++    TEST_F(ggTest, arm_unaligned_signed_byteaccess_at_unused_test) {
+         uint32_t instruction = 0xe1d100d0 ;
+         const uint32_t answers[4] = {
+                 0x00000001,
+@@ -82,6 +94,10 @@ namespace {
+         for (int i = 0 ; i < 4 ; ++i) {
+             instance._regs[ r1 ] = 0xfffffffc + i ;
+             instance.fetchedBuffer[ 1 ] = 0xe3a0c301 ;
++
++            instance._regs[ pc ] = 0x68;
++            instance.RefillPipeline(&instance, gg_core::gg_mem::S_Cycle, gg_core::gg_mem::S_Cycle) ;
++
+             instance.CPU_Test(instruction); // ldrsb r0, [r1]
+ 
+             ASSERT_TRUE(instance._regs[ 0 ] == answers[i] ) << std::hex
+diff --git a/include/component/cpu/core/arm/decoder/data_processing.h b/include/component/cpu/core/arm/decoder/data_processing.h
+index b0e9554..2b3ebff 100644
+--- a/include/component/cpu/core/arm/decoder/data_processing.h
++++ b/include/component/cpu/core/arm/decoder/data_processing.h
+@@ -13,7 +13,7 @@
+ namespace gg_core::gg_cpu {
+     class CPU ; // Forward declaration of cpu class
+ 
+-    template<bool I, bool S, bool TEST, SHIFT_BY SHIFT_SRC, SHIFT_TYPE ST, OP_TYPE OT, E_DataProcess opcode>
++    template<bool I_Cycle, bool S, bool TEST, SHIFT_BY SHIFT_SRC, SHIFT_TYPE ST, OP_TYPE OT, E_DataProcess opcode>
+     static void Alu_impl(CPU &instance) ;
+ 
+     template <uint32_t HashCode32>
+diff --git a/include/component/cpu/core/arm/decoder/memory_access.h b/include/component/cpu/core/arm/decoder/memory_access.h
+index 342d487..d14af79 100644
+--- a/include/component/cpu/core/arm/decoder/memory_access.h
++++ b/include/component/cpu/core/arm/decoder/memory_access.h
+@@ -11,7 +11,7 @@
+ #define GGTEST_MEMORY_ACCESS_H
+ 
+ namespace gg_core::gg_cpu {
+-    template<bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
++    template<bool I_Cycle, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
+     static void SingleDataTransfer_impl(CPU &instance);
+ 
+     template<bool P, bool U, bool W, bool L, bool S, bool H, OFFSET_TYPE OT>
+diff --git a/include/component/cpu/core/arm/implements/v4_alu_implement.h b/include/component/cpu/core/arm/implements/v4_alu_implement.h
+index ee9b600..582ce42 100644
+--- a/include/component/cpu/core/arm/implements/v4_alu_implement.h
++++ b/include/component/cpu/core/arm/implements/v4_alu_implement.h
+@@ -8,6 +8,7 @@
+ #define GGADV2_ALU_API_H
+ 
+ namespace gg_core::gg_cpu {
++    // todo: deal with complex alu timing issue.
+     // using alu_handler = void(*)(uint32_t&, uint32_t, uint32_t) ;
+     template <E_DataProcess opcode>
+     inline void CPSR_Arithmetic(CPU &instance, uint32_t Rn, uint32_t op2, uint64_t result) {
+@@ -46,9 +47,24 @@ namespace gg_core::gg_cpu {
+         const uint32_t curInst = CURRENT_INSTRUCTION ;
+         const uint8_t RnNumber = (curInst & 0xf0000) >> 16 ;
+ 
++        bool shiftCarry = false ;
++        if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
++            instance.Fetch(&instance, gg_mem::I_Cycle) ; // pc = pc + 4
++            if (RnNumber == pc)
++                instance._mem.Read<uint32_t>(instance._regs[ pc ] + 4, gg_mem::S_Cycle);
++            else
++                instance._mem.Read<uint32_t>(instance._regs[ pc ] + 4, gg_mem::N_Cycle);
++        } // if constexpr
++        else {
++            if (RnNumber == pc)
++                instance.Fetch(&instance, gg_mem::N_Cycle) ;
++            else
++                instance.Fetch(&instance, gg_mem::S_Cycle) ;
++        } // else
++
+         uint32_t RnVal = instance._regs[RnNumber] ;
+         uint32_t op2 = 0 ;
+-        bool shiftCarry = false ;
++        uint64_t result = 0;
+ 
+         if constexpr (I) {
+             shiftCarry = ParseOp2_Imm(instance, op2) ;
+@@ -57,14 +73,12 @@ namespace gg_core::gg_cpu {
+             if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
+                 shiftCarry = ParseOp2_Shift_RS<ST>(instance, op2) ;
+                 if (RnNumber == pc)
+-                    RnVal += 4 ;
++                    RnVal = RnVal + 4 ;
+             } // if
+             else
+                 shiftCarry = ParseOp2_Shift_Imm<ST>(instance, op2) ;
+         } // else
+ 
+-        uint64_t result = 0;
+-
+         if constexpr (opcode == AND || opcode == TST)
+             result = static_cast<uint64_t>(RnVal) & op2 ;
+         else if constexpr (opcode == EOR || opcode == TEQ)
+@@ -107,7 +121,7 @@ namespace gg_core::gg_cpu {
+             const uint8_t RdNumber = (curInst & 0xf000) >> 12 ;
+             instance._regs[RdNumber] = result ;
+             if (RdNumber == pc) {
+-                instance.RefillPipeline();
++                instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle); // cycle += 1S + 1S
+                 if constexpr (S) {
+                     instance.WriteCPSR( instance.ReadSPSR() ) ;
+                 } // if
+diff --git a/include/component/cpu/core/arm/implements/v4_branch_implement.h b/include/component/cpu/core/arm/implements/v4_branch_implement.h
+index b81f177..3c9cdf1 100644
+--- a/include/component/cpu/core/arm/implements/v4_branch_implement.h
++++ b/include/component/cpu/core/arm/implements/v4_branch_implement.h
+@@ -1,5 +1,7 @@
+ namespace gg_core::gg_cpu {
+     static void BranchExchange_impl(CPU& instance) {
++        instance.Fetch(&instance, gg_mem::N_Cycle) ;
++
+         const uint32_t RnNumber = instance.CurrentInstruction() & 0xf ;
+         uint32_t &Rn = instance._regs[RnNumber] ;
+ 
+@@ -9,11 +11,12 @@ namespace gg_core::gg_cpu {
+             instance.ChangeCpuMode(ARM) ;
+ 
+         instance._regs[pc] = Rn ;
+-        instance.RefillPipeline();
++        instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+     }
+ 
+     template <bool L>
+     static void Branch_impl(CPU& instance) {
++        instance.Fetch(&instance, gg_mem::N_Cycle) ;
+         int32_t offset = (instance.CurrentInstruction() & 0x00ffffff) << 2;
+ 
+         if (gg_core::TestBit(offset, 25))
+@@ -23,6 +26,6 @@ namespace gg_core::gg_cpu {
+             instance._regs[lr] = instance._regs[pc] - 4 ;
+ 
+         instance._regs[pc] += offset ;
+-        instance.RefillPipeline();
++        instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+     }
+ } // gg_core::gg_cpu
+diff --git a/include/component/cpu/core/arm/implements/v4_irq_implement.h b/include/component/cpu/core/arm/implements/v4_irq_implement.h
+index 7b8464d..d565aa0 100644
+--- a/include/component/cpu/core/arm/implements/v4_irq_implement.h
++++ b/include/component/cpu/core/arm/implements/v4_irq_implement.h
+@@ -10,6 +10,8 @@
+ namespace gg_core::gg_cpu {
+     template <E_OperationMode opMode>
+     static void Interrupt_impl(CPU &instance) {
++        instance.Fetch(&instance, gg_mem::N_Cycle) ;
++
+         const uint32_t preCPSR = instance.ReadCPSR() ;
+ 
+         instance.WriteCPSR((preCPSR & ~0b11111u) | static_cast<uint8_t>(opMode)) ;
+@@ -23,7 +25,7 @@ namespace gg_core::gg_cpu {
+         else if constexpr (opMode == IRQ)
+             instance._regs[ pc ] = HW_IRQ ;
+ 
+-        instance.RefillPipeline();
++        instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+ 
+         instance.ChangeCpuMode(ARM);
+         instance.SetI() ;
+diff --git a/include/component/cpu/core/arm/implements/v4_mem_implement.h b/include/component/cpu/core/arm/implements/v4_mem_implement.h
+index bb99892..6d48668 100644
+--- a/include/component/cpu/core/arm/implements/v4_mem_implement.h
++++ b/include/component/cpu/core/arm/implements/v4_mem_implement.h
+@@ -3,14 +3,17 @@
+ //
+ 
+ #include <cstdint>
++#include <cstring>
+ #include <v4_operand2.h>
+ 
+ #ifndef GGADV2_MEM_API_H
+ #define GGADV2_MEM_API_H
+ 
+ namespace gg_core::gg_cpu {
+-    template <bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
++    template <bool I_Cycle, bool P, bool U, bool B, bool W, bool L, SHIFT_TYPE ST>
+     static void SingleDataTransfer_impl(CPU &instance) {
++        instance.Fetch(&instance, gg_mem::N_Cycle) ;
++
+         constexpr bool translation = !P && W ;
+ 
+         uint8_t RnNumber = (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ;
+@@ -21,7 +24,7 @@ namespace gg_core::gg_cpu {
+             uint32_t &Rd = instance._regs[ RdNumber ] ;
+             uint32_t offset = 0, targetAddr = Rn ;
+ 
+-            if constexpr (I) {
++            if constexpr (I_Cycle) {
+                 ParseOp2_Shift_Imm<ST>(instance, offset) ;
+             } // constexpr()
+             else {
+@@ -41,15 +44,20 @@ namespace gg_core::gg_cpu {
+                     calculateTargetAddr() ;
+ 
+                 if constexpr (B) {
+-                    Rd = instance._mem.Read8(targetAddr) ;
++                    Rd = instance._mem.Read<uint8_t>(targetAddr, gg_mem::I_Cycle) ;
++                } // if
++                else {
++                    Rd = instance._mem.Read<uint32_t>(targetAddr, gg_mem::I_Cycle) ;
++                } // else
++
++                if (RdNumber == pc) {
++                    instance._mem.Read<uint32_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::N_Cycle) ;
++                    instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+                 } // if
+                 else {
+-                    Rd = instance._mem.Read32(targetAddr) ;
++                    instance._mem.Read<uint32_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::S_Cycle) ;
+                 } // else
+ 
+-                if (RdNumber == pc)
+-//                    (instance.*RefillPipeline)() ;
+-                    instance.RefillPipeline();
+ 
+                 if constexpr (!P || W) {
+                     // Info from heyrick.eu:
+@@ -68,15 +76,15 @@ namespace gg_core::gg_cpu {
+ 
+                 if constexpr (B) {
+                     if (RdNumber == pc)
+-                        instance._mem.Write8(targetAddr, static_cast<uint8_t>(Rd + 4)) ;
++                        instance._mem.Write<uint8_t>(targetAddr, static_cast<uint8_t>(Rd + 4), gg_mem::N_Cycle) ;
+                     else
+-                        instance._mem.Write8(targetAddr, static_cast<uint8_t>(Rd)) ;
++                        instance._mem.Write<uint8_t>(targetAddr, static_cast<uint8_t>(Rd), gg_mem::N_Cycle) ;
+                 } // if
+                 else {
+                     if (RdNumber == pc)
+-                        instance._mem.Write32(targetAddr, Rd + 4) ;
++                        instance._mem.Write<uint32_t>(targetAddr, Rd + 4, gg_mem::N_Cycle) ;
+                     else
+-                        instance._mem.Write32(targetAddr, Rd) ;
++                        instance._mem.Write<uint32_t>(targetAddr, Rd, gg_mem::N_Cycle) ;
+                 } // else
+ 
+                 if constexpr (!P || W) {
+@@ -97,6 +105,8 @@ namespace gg_core::gg_cpu {
+ 
+     template <bool P, bool U, bool W, bool L, bool S, bool H,  OFFSET_TYPE OT>
+     void HalfMemAccess_impl(CPU &instance) {
++        instance.Fetch(&instance, gg_mem::N_Cycle) ;
++
+         unsigned int RnNumber = (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ;
+         unsigned int RdNumber = (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ;
+         uint32_t &Rn = instance._regs[ RnNumber ] ;
+@@ -126,24 +136,29 @@ namespace gg_core::gg_cpu {
+                 gg_core::Unreachable() ;
+             else if constexpr (!S && H) {
+                 // LDRH
+-                /// fixme: need rotate?
+-                Rd = instance._mem.Read16(targetAddr) ;
+-                if (RdNumber == pc)
+-                    instance.RefillPipeline();
++                Rd = instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle) ;
+             } // else if
+             else if constexpr (S && !H) {
+                 // LDRSB
+-                Rd = (static_cast<int32_t>(instance._mem.Read8(targetAddr)) << 24) >> 24 ; // sign extend
+-                if (RdNumber == pc)
+-                    instance.RefillPipeline();
++                Rd = (static_cast<int32_t>(instance._mem.Read<uint8_t>(targetAddr, gg_mem::I_Cycle)) << 24) >> 24 ; // sign extend
+             } // else if
+             else {
+                 // LDRSH
+                 /// fixme: need rotate?
+                 const unsigned extShiftAmount = targetAddr & 1 ? 24 : 16 ;
+-                Rd = (static_cast<int32_t>(instance._mem.Read16(targetAddr)) << extShiftAmount) >> extShiftAmount ; // sign extend
+-                if (RdNumber == pc)
+-                    instance.RefillPipeline();
++                Rd = (static_cast<int32_t>(instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle)) << extShiftAmount) >> extShiftAmount ; // sign extend
++            } // else
++
++            if (RdNumber == pc) {
++                if constexpr (H)
++                    instance._mem.Read<uint16_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::N_Cycle) ;
++                else
++                    instance._mem.Read<uint8_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::N_Cycle) ;
++
++                instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
++            } // if
++            else {
++                instance._mem.Read<uint16_t>(instance._regs[ gg_cpu::pc ] + 4, gg_mem::S_Cycle) ;
+             } // else
+ 
+             if constexpr (!P || W) {
+@@ -161,9 +176,9 @@ namespace gg_core::gg_cpu {
+             if constexpr (!S && H) {
+                 // STRH
+                 if (RdNumber == gg_cpu::pc)
+-                    instance._mem.Write16(targetAddr, static_cast<uint16_t>(Rd + 4)) ;
++                    instance._mem.Write<uint16_t>(targetAddr, static_cast<uint16_t>(Rd + 4), gg_mem::N_Cycle) ;
+                 else
+-                    instance._mem.Write16(targetAddr, static_cast<uint16_t>(Rd)) ;
++                    instance._mem.Write<uint16_t>(targetAddr, static_cast<uint16_t>(Rd), gg_mem::N_Cycle) ;
+             } // else if
+             else
+                 gg_core::Unreachable();
+@@ -178,6 +193,8 @@ namespace gg_core::gg_cpu {
+ 
+     template <bool P, bool U, bool S, bool W, bool L>
+     void BlockMemAccess_impl(CPU &instance) {
++        instance.Fetch(&instance, gg_mem::N_Cycle) ;
++
+         // todo: undocumented behavior of ldm/stm implement
+         uint32_t regList = BitFieldValue<0, 16>(CURRENT_INSTRUCTION) ;
+         uint32_t &Rn = instance._regs[ BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ] ;
+@@ -221,17 +238,24 @@ namespace gg_core::gg_cpu {
+         for (size_t idx = 0 ; idx < 16 ; ++idx) {
+             if (TestBit(regList, idx)) {
+                 if constexpr (L) {
+-                    CPU_REG[ idx ] = instance._mem.Read32(base) ;
++                    const auto cycleType = --registerCnt == 0 ? gg_mem::I_Cycle : gg_mem::S_Cycle ;
++                    CPU_REG[ idx ] = instance._mem.Read<uint32_t>(base, cycleType) ;
++
+                     if (idx == pc) {
+                         CPU_REG[ pc ] &= ~0x3 ;
+-                        instance.RefillPipeline();
++                        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4, gg_mem::N_Cycle) ;
++                        instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+                     } // if
++                    else {
++                        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4, gg_mem::S_Cycle) ;
++                    } // else
+                 } // if
+                 else {
++                    const auto cycleType = --registerCnt == 0 ? gg_mem::N_Cycle : gg_mem::S_Cycle ;
+                     uint32_t regVal = CPU_REG[ idx ] ;
+                     if (idx == 15)
+                         regVal = (regVal + 4) & ~0x3 ;
+-                    instance._mem.Write32(base, regVal) ;
++                    instance._mem.Write<uint32_t>(base, regVal, cycleType) ;
+                 } // else
+ 
+                 base += 4 ;
+@@ -257,18 +281,22 @@ namespace gg_core::gg_cpu {
+ 
+     template <bool B>
+     void Swap_impl(CPU &instance) {
++        instance.Fetch(&instance, gg_mem::N_Cycle) ;
++
+         uint32_t Rn = instance._regs[ (CURRENT_INSTRUCTION & 0xf'0000) >> 16 ] ;
+         uint32_t &Rd = instance._regs[ (CURRENT_INSTRUCTION & 0x0'f000) >> 12 ] ;
+         uint32_t Rm = instance._regs[ CURRENT_INSTRUCTION & 0xf ] ;
+ 
+         if constexpr (B) {
+-            Rd = instance._mem.Read8(Rn) ;
+-            instance._mem.Write8(Rn, static_cast<uint8_t>(Rm)) ;
++            Rd = instance._mem.Read<uint8_t>(Rn, gg_mem::N_Cycle) ;
++            instance._mem.Write<uint8_t>(Rn, static_cast<uint8_t>(Rm), gg_mem::I_Cycle) ;
+         } // if
+         else {
+-            Rd = instance._mem.Read32(Rn) ;
+-            instance._mem.Write32(Rn, Rm) ;
++            Rd = instance._mem.Read<uint32_t>(Rn, gg_mem::N_Cycle) ;
++            instance._mem.Write<uint32_t>(Rn, Rm, gg_mem::I_Cycle) ;
+         } // if
++
++        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4, gg_mem::N_Cycle) ;
+     } // Swap_impl()
+ }
+ 
+diff --git a/include/component/cpu/core/arm/implements/v4_multiply_implement.h b/include/component/cpu/core/arm/implements/v4_multiply_implement.h
+index 740443b..a14eff4 100644
+--- a/include/component/cpu/core/arm/implements/v4_multiply_implement.h
++++ b/include/component/cpu/core/arm/implements/v4_multiply_implement.h
+@@ -1,4 +1,4 @@
+-//
++ //
+ // Created by jason4_lee on 2020-10-06.
+ //
+ 
+@@ -10,6 +10,8 @@
+ namespace gg_core::gg_cpu {
+     template<bool A, bool S>
+     static void Multiply_impl(CPU &instance) {
++        instance.Fetch(&instance, gg_mem::I_Cycle) ;
++
+         uint8_t RsNumber = BitFieldValue<8, 4>(CURRENT_INSTRUCTION) ;
+         uint8_t RdNumber = BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ;
+         uint8_t RmNumber = BitFieldValue<0, 4>(CURRENT_INSTRUCTION) ;
+@@ -28,11 +30,13 @@ namespace gg_core::gg_cpu {
+         } // for
+ 
+         uint32_t result = RmValue * RsValue ;
++        instance.cycle += boothValue ; // The I_Cycle cycle
+ 
+         if constexpr (A) {
+             uint8_t RnNumber = BitFieldValue<12, 4>(CURRENT_INSTRUCTION);
+             unsigned RnValue = instance._regs[ RnNumber ] ;
+             result += RnValue ;
++            instance.cycle += 1 ; // The I_Cycle cycle
+         } // if
+ 
+         instance._regs[RdNumber] = result ;
+@@ -42,10 +46,14 @@ namespace gg_core::gg_cpu {
+             result == 0 ? instance.SetZ() : instance.ClearZ();
+             TestBit(result, 31) ? instance.SetN() : instance.ClearN();
+         } // if
++
++        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4,gg_mem::S_Cycle) ;
+     } // Multiply()
+ 
+     template<bool U, bool A, bool S>
+     static void MultiplyLong_impl(CPU &instance) {
++        instance.Fetch(&instance, gg_mem::I_Cycle) ;
++
+         uint32_t RsVal = instance._regs[BitFieldValue<8, 4>(CURRENT_INSTRUCTION)] ;
+         uint32_t RmVal = instance._regs[BitFieldValue<0, 4>(CURRENT_INSTRUCTION)] ;
+ 
+@@ -85,12 +93,13 @@ namespace gg_core::gg_cpu {
+             } // else
+         } // for
+ 
+-        // EMU_CLK += CLK_CONT.S(EMU_CPU.ProgramCounter()) + CLK_CONT.I() * (boothValue + 1);
++        instance.cycle += boothValue + 1 ;
+ 
+         if constexpr (A) {
+             uint64_t RdValue = (static_cast<uint64_t>(CPU_REG[RdHiNumber]) << 32) | CPU_REG[RdLoNumber] ;
+             result.qword += RdValue ;
+-            // EMU_CLK += CLK_CONT.I() ;
++            instance.cycle += 1 ;
++            // EMU_CLK += CLK_CONT.I_Cycle() ;
+         } // if constexpr
+ 
+         if constexpr (S) {
+@@ -100,6 +109,8 @@ namespace gg_core::gg_cpu {
+ 
+         CPU_REG[RdLoNumber] = result.dword[0] ;
+         CPU_REG[RdHiNumber] = result.dword[1] ;
++
++        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4,gg_mem::S_Cycle) ;
+     }
+ }
+ 
+diff --git a/include/component/cpu/core/arm/implements/v4_operand2.h b/include/component/cpu/core/arm/implements/v4_operand2.h
+index b9dcb11..e42299e 100644
+--- a/include/component/cpu/core/arm/implements/v4_operand2.h
++++ b/include/component/cpu/core/arm/implements/v4_operand2.h
+@@ -17,7 +17,7 @@ namespace gg_core::gg_cpu {
+ 
+         uint32_t Rm = instance._regs[ RmNumber ] ;
+         uint32_t Rs = instance._regs[ RsNumber ] & 0xff ;
+-        bool carry = false ;
++        bool carry = false, validShift = false ;
+ 
+         if (RmNumber == pc)
+             Rm = (Rm + 4) ;
+@@ -31,10 +31,12 @@ namespace gg_core::gg_cpu {
+             else if (Rs < 32) {
+                 op2 = Rm << Rs ;
+                 carry = TestBit(Rm, 33 - (Rs + 1)) ;
++                validShift = true ;
+             } // else if
+             else {
+                 op2 = 0 ;
+                 carry = Rs == 32 && TestBit(Rm, 0);
++                validShift = true ;
+             } // else
+         } // if
+ 
+@@ -46,22 +48,27 @@ namespace gg_core::gg_cpu {
+             else if (Rs < 32) {
+                 op2 = Rm >> Rs ;
+                 carry = TestBit(Rm, Rs - 1) ;
++                validShift = true ;
+             } // else if
+             else {
+                 op2 = 0 ;
+                 carry = Rs == 32 && TestBit(Rm, Rs - 1);
++                validShift = true ;
+             } // else
+         } // if
+ 
+         if constexpr (ST == SHIFT_TYPE::ASR) {
+             if (Rs >= 32) {
++                validShift = true ;
+                 carry = TestBit(Rm, 31) ;
+                 op2 = carry ? 0xffffffff : 0x0 ;
+             } // if
+             else {
+                 op2 = static_cast<int32_t>(Rm) >> Rs ;
+-                if (Rs != 0)
++                if (Rs != 0) {
+                     carry = TestBit(Rm, Rs - 1) ;
++                    validShift = true ;
++                } // if
+                 else
+                     carry = instance.C() ;
+             } // else if
+@@ -71,10 +78,15 @@ namespace gg_core::gg_cpu {
+             op2 = rotr(Rm, Rs) ;
+             if (Rs == 0)
+                 carry = instance.C() ;
+-            else
++            else {
++                validShift = true ;
+                 carry = TestBit(op2, 31) ;
++            } // else
+         } // if
+ 
++        if (validShift)
++            instance.cycle += 1 ; // Shift by reg will add 1 I_Cycle cycle
++
+         return carry ;
+     } // ParseOp2_Shift_RS()
+ 
+diff --git a/include/component/cpu/core/arm/implements/v4_psr_implement.h b/include/component/cpu/core/arm/implements/v4_psr_implement.h
+index c124638..8f32b61 100644
+--- a/include/component/cpu/core/arm/implements/v4_psr_implement.h
++++ b/include/component/cpu/core/arm/implements/v4_psr_implement.h
+@@ -5,12 +5,16 @@
+ 
+ namespace gg_core::gg_cpu {
+     static void mrs(CPU& instance) {
++        instance.Fetch(&instance, gg_mem::S_Cycle) ;
++
+         const uint32_t RdNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
+         uint32_t &Rd = instance._regs[RdNumber] ;
+         Rd = instance.ReadCPSR() ;
+     }
+ 
+     static void msr_Rm(CPU& instance) {
++        instance.Fetch(&instance, gg_mem::S_Cycle) ;
++
+         const uint32_t RmNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
+         uint32_t Rm = instance._regs[RmNumber] ;
+         if (instance.GetOperationMode() == USR || !TestBit(CURRENT_INSTRUCTION, 16)) {
+@@ -24,12 +28,16 @@ namespace gg_core::gg_cpu {
+     }
+ 
+     static void mrsp(CPU& instance) {
++        instance.Fetch(&instance, gg_mem::S_Cycle) ;
++
+         const uint32_t RdNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
+         uint32_t &Rd = instance._regs[RdNumber] ;
+         Rd = instance.ReadSPSR() ;
+     }
+ 
+     static void msrp_Rm(CPU& instance) {
++        instance.Fetch(&instance, gg_mem::S_Cycle) ;
++
+         const uint32_t RmNumber = (CURRENT_INSTRUCTION & 0xf000) >> 12 ;
+         uint32_t Rm = instance._regs[RmNumber] ;
+         if (!TestBit(CURRENT_INSTRUCTION, 16)) {
+@@ -43,6 +51,8 @@ namespace gg_core::gg_cpu {
+     }
+ 
+     static void msr_Imm(CPU& instance) {
++        instance.Fetch(&instance, gg_mem::S_Cycle) ;
++
+         const uint32_t imm = CURRENT_INSTRUCTION & 0xff;
+         const uint32_t rot = (CURRENT_INSTRUCTION & 0xf00) >> 8;
+         const uint32_t immVal = rotr(imm, rot*2) ;
+@@ -58,6 +68,8 @@ namespace gg_core::gg_cpu {
+     }
+ 
+     static void msrp_Imm(CPU& instance) {
++        instance.Fetch(&instance, gg_mem::S_Cycle) ;
++        
+         const uint32_t imm = CURRENT_INSTRUCTION & 0xff;
+         const uint32_t rot = (CURRENT_INSTRUCTION & 0xf00) >> 8;
+         const uint32_t immVal = rotr(imm, rot*2) ;
+diff --git a/include/component/cpu/cpu.h b/include/component/cpu/cpu.h
+index 7151004..085e2a4 100644
+--- a/include/component/cpu/cpu.h
++++ b/include/component/cpu/cpu.h
+@@ -86,14 +86,14 @@ namespace gg_core::gg_cpu {
+ 
+         static void ARM_Fetch(CPU* self, gg_mem::E_AccessType accessType) {
+             self->_regs[gg_cpu::pc] = (self->_regs[gg_cpu::pc] + 4) & ~0x3;
++            self->fetchedBuffer[!self->fetchIdx] = self->_mem.Read<uint32_t>(self->_regs[gg_cpu::pc], accessType);
+             self->fetchIdx = !self->fetchIdx;
+-            self->fetchedBuffer[self->fetchIdx] = self->_mem.Read<uint32_t>(self->_regs[gg_cpu::pc], accessType);
+         } // ARM_Fetch()
+ 
+         static void THUMB_Fetch(CPU* self, gg_mem::E_AccessType accessType) {
+             self->_regs[gg_cpu::pc] = (self->_regs[gg_cpu::pc] + 2) & ~0x1;
++            self->fetchedBuffer[!self->fetchIdx] = self->_mem.Read<uint16_t>(self->_regs[gg_cpu::pc], accessType);
+             self->fetchIdx = !self->fetchIdx;
+-            self->fetchedBuffer[self->fetchIdx] = self->_mem.Read<uint16_t>(self->_regs[gg_cpu::pc], accessType);
+         } // THUMB_Fetch()
+         
+         static inline auto ARM_instructionHashFunc = [](uint32_t inst) {
+diff --git a/include/component/cpu/cpu_enum.h b/include/component/cpu/cpu_enum.h
+index 87b7944..2e145d3 100644
+--- a/include/component/cpu/cpu_enum.h
++++ b/include/component/cpu/cpu_enum.h
+@@ -45,7 +45,7 @@ namespace gg_core::gg_cpu {
+     };
+ 
+     enum E_PSRBit {
+-        T = 5, F = 6, I = 7, V = 28, C = 29, Z = 30, N = 31
++        T = 5, F = 6, I_Cycle = 7, V = 28, C = 29, Z = 30, N_Cycle = 31
+     };
+ 
+     enum E_PipelineStage {
+diff --git a/include/component/cpu/cpu_status.h b/include/component/cpu/cpu_status.h
+index bbb9278..5b53aa8 100644
+--- a/include/component/cpu/cpu_status.h
++++ b/include/component/cpu/cpu_status.h
+@@ -141,7 +141,7 @@ namespace gg_core {
+             } // GetCpuMode()
+ 
+             bool F() { return _cpsr & 0x40u; } // F()
+-            bool I() { return _cpsr & 0x80u; } // I()
++            bool I_Cycle() { return _cpsr & 0x80u; } // I()
+             bool V() { return _cpsr & 0x10000000u; } // V()
+             bool C() { return _cpsr & 0x20000000u; } // C()
+             bool Z() { return _cpsr & 0x40000000u; } // Z()
+@@ -164,6 +164,7 @@ namespace gg_core {
+             uint8_t fetchIdx = 0;
+             uint32_t currentInstruction = 0x00 ;
+             uint32_t _cpsr = 0xd3;
++            uint32_t cycle = 0 ;
+ 
+             std::array<unsigned, 7> _registers_usrsys{};
+             std::array<unsigned, 7> _registers_fiq{};
+diff --git a/include/component/memory/gamepak_memory.h b/include/component/memory/gamepak_memory.h
+index ccc544b..a05fe09 100644
+--- a/include/component/memory/gamepak_memory.h
++++ b/include/component/memory/gamepak_memory.h
+@@ -15,14 +15,21 @@
+ 
+ namespace gg_core::gg_mem {
+     template<typename W, E_GamePakRegion R>
+-    inline unsigned GAMEPAK_ACCESS_CYCLE(MMU_Status* mmu) {
+-        const uint8_t &N_WaitState = mmu->CurrentWaitStates[R].first;
+-        const uint8_t &S_WaitState = mmu->CurrentWaitStates[R].second;
++    inline unsigned GAMEPAK_ACCESS_CYCLE(MMU_Status* mmu, uint32_t addr) {
++        if (mmu->requestAccessType == I_Cycle) {
++            return 1; // It's an I_Cycle cycle, count it for CPU
++        } // if
++        else {
++            const uint8_t &N_WaitState = mmu->CurrentWaitStates[R].first;
++            const uint8_t &S_WaitState = mmu->CurrentWaitStates[R].second;
+ 
+-        if constexpr (SameSize<W, DWORD>())
+-            return (1 + N_WaitState) + (1 + S_WaitState);
+-        else
+-            return (1 + N_WaitState);
++            unsigned firstAccessCycle = mmu->requestAccessType == gg_mem::S_Cycle ? S_WaitState : N_WaitState ;
++
++            if constexpr (SameSize<W, DWORD>())
++                return (1 + firstAccessCycle) + (1 + S_WaitState);
++            else
++                return (1 + firstAccessCycle);
++        } // else
+     } // ROM_ACCESS_CYCLE()
+ }
+ 
+diff --git a/include/component/memory/handler/gamepak_handler.h b/include/component/memory/handler/gamepak_handler.h
+index 1683661..7c66288 100644
+--- a/include/component/memory/handler/gamepak_handler.h
++++ b/include/component/memory/handler/gamepak_handler.h
+@@ -13,7 +13,7 @@ namespace gg_core::gg_mem {
+     template<typename T>
+     T SRAM_Read(MMU_Status *mmu, uint32_t absAddr) {
+         const uint32_t relativeAddr = SRAM_MIRROR(mmu, absAddr);
+-        mmu->_cycleCounter += GAMEPAK_ACCESS_CYCLE<uint8_t, E_SRAM>(mmu);
++        mmu->_cycleCounter += GAMEPAK_ACCESS_CYCLE<uint8_t, E_SRAM>(mmu, absAddr);
+ 
+         // SRAM is only allow byte access
+         if constexpr (sizeof(T) == 1)
+@@ -34,7 +34,7 @@ namespace gg_core::gg_mem {
+         Cartridge &cart = mmu->cartridge;
+         uint32_t relativeAddr = cart.RelativeAddr<P>(absAddr);
+ 
+-        mmu->_cycleCounter += GAMEPAK_ACCESS_CYCLE<T, P>(mmu);
++        mmu->_cycleCounter += GAMEPAK_ACCESS_CYCLE<T, P>(mmu, absAddr);
+         if constexpr (P == E_WS2) {
+             // If absAddr is in EEPROM region and cart has a EEPROM attached, 
+             // that means this access is a EEPROM access.
+@@ -56,7 +56,7 @@ namespace gg_core::gg_mem {
+     template<typename T>
+     void SRAM_Write(MMU_Status *mmu, uint32_t absAddr, T data) {
+         const uint32_t relativeAddr = SRAM_MIRROR(mmu, absAddr);
+-        mmu->_cycleCounter += GAMEPAK_ACCESS_CYCLE<uint8_t, E_SRAM>(mmu);
++        mmu->_cycleCounter += GAMEPAK_ACCESS_CYCLE<uint8_t, E_SRAM>(mmu, absAddr);
+ 
+         // SRAM is only allow byte access
+         if constexpr (sizeof(T) == 1)
+diff --git a/include/component/memory/mem_enum.h b/include/component/memory/mem_enum.h
+index 3161cda..b8b839f 100644
+--- a/include/component/memory/mem_enum.h
++++ b/include/component/memory/mem_enum.h
+@@ -14,7 +14,7 @@ namespace gg_core::gg_mem {
+     const unsigned WORD_SIZE = 2 ;
+     const unsigned BYTE_SIZE = 1 ;
+ 
+-    enum E_AccessType { READ, WRITE };
++    enum E_AccessType { N_Cycle, S_Cycle, I_Cycle };
+     enum E_GamePakRegion {
+         E_WS0, E_WS1, E_WS2, E_SRAM
+     } ;
+diff --git a/include/component/memory/mmu.h b/include/component/memory/mmu.h
+index e64265e..67adcf1 100644
+--- a/include/component/memory/mmu.h
++++ b/include/component/memory/mmu.h
+@@ -37,53 +37,55 @@ namespace gg_core::gg_mem {
+         }
+ 
+         uint8_t Read8(unsigned addr) {
+-            return Read<uint8_t>(addr);
++            return Read<uint8_t>(addr, N_Cycle);
+         } // Read8()
+ 
+         uint32_t Read16(unsigned addr) {
+             // fixed return type to uint32_t, see Read<uint16_t>()
+             // for detail.
+-            const unsigned rotate = CountAccessRotate<WORD>(addr);
+-            uint32_t result = Read<uint16_t>(addr);
+-            return rotr(result, rotate);
++//            const unsigned rotate = CountAccessRotate<WORD>(addr);
++            uint32_t result = Read<uint16_t>(addr, N_Cycle);
++            return result;
+         } // Read16()
+ 
+         uint32_t Read32(unsigned addr) {
+-            const unsigned rotate = CountAccessRotate<DWORD>(addr);
+-            uint32_t result = Read<uint32_t>(addr);
+-            return rotr(result, rotate);
++//            const unsigned rotate = CountAccessRotate<DWORD>(addr);
++            uint32_t result = Read<uint32_t>(addr, N_Cycle);
++            return result;
+         } // Read32()
+ 
+         template<typename T>
+         void Write8(unsigned addr, T value) requires std::is_same_v<T, uint8_t> {
+ //                _Access<WRITE,BYTE>() = value;
+-            Write<uint8_t>(addr, value);
++            Write<uint8_t>(addr, value, gg_mem::S_Cycle);
+         } // Write()
+ 
+         template<typename T>
+         void Write16(unsigned addr, T value) requires std::is_same_v<T, uint16_t> {
+-            Write<uint16_t>(addr, value);
++            Write<uint16_t>(addr, value, gg_mem::S_Cycle);
+         } // Write()
+ 
+         template<typename T>
+         void Write32(unsigned addr, T value) requires std::is_same_v<T, uint32_t> {
+ //                reinterpret_cast<uint32_t &> (_Access<WRITE, DWORD>()) = value;
+-            Write<uint32_t>(addr, value);
++            Write<uint32_t>(addr, value, gg_mem::S_Cycle);
+         } // Write()
+ 
+         template<typename W, typename T>
+-        void Write(uint32_t addr, T value) requires std::is_same_v<W, T> {
++        void Write(uint32_t addr, T value, E_AccessType accessType) requires std::is_same_v<W, T> {
+             const uint32_t alignedAddr = AlignAddr<W>(addr);
+             unsigned addrTrait = (alignedAddr & 0xff000000) >> 24;
++            requestAccessType = accessType ;
+ 
+             if (addrTrait > 0xf)
+                 NoUsed_Write<W>(this, alignedAddr, value) ;
+-
+-            std::get<(sizeof(W) >> 1)>(WriteHandlers[ addrTrait ])(this, alignedAddr, value) ;
++            else
++                std::get<(sizeof(W) >> 1)>(WriteHandlers[ addrTrait ])(this, alignedAddr, value) ;
++            lastAccessAddr = addr ;
+         } // Write()
+ 
+         template<typename W>
+-        uint32_t Read(uint32_t absAddr) {
++        uint32_t Read(uint32_t absAddr, E_AccessType accessType) {
+             // Strange behavior of "Read WORD from unaligned address":
+             // According to the NO$GBA's behavior, 16bit read still need
+             // rotating. And address is aligned to 16bit bus.
+@@ -91,11 +93,21 @@ namespace gg_core::gg_mem {
+             // that means we need to fixed the return type of Read() to 32bit
+             // const uint32_t alignedAddr = AlignAddr<W>(addr);
+             unsigned addrTrait = (absAddr & 0xff000000) >> 24;
++            uint32_t result = 0 ;
++            requestAccessType = accessType ;
+ 
+             if (addrTrait > 0xf)
+-                return NoUsed_Read<W>(this, absAddr) ;
+-
+-            return std::get<(sizeof(W) >> 1)>(ReadHandlers[ addrTrait ])(this, absAddr) ;
++                result = NoUsed_Read<W>(this, absAddr) ;
++            else
++                result = std::get<(sizeof(W) >> 1)>(ReadHandlers[ addrTrait ])(this, absAddr) ;
++
++            lastAccessAddr = absAddr ;
++            if constexpr (sizeof(W) == 1)
++                return result ;
++            else {
++                const unsigned rotate = CountAccessRotate<W>(absAddr);
++                return rotr(result, rotate);
++            } // else
+         } // Read()
+     };
+ }
+diff --git a/include/component/memory/mmu_status.h b/include/component/memory/mmu_status.h
+index 909a24d..d10ab31 100644
+--- a/include/component/memory/mmu_status.h
++++ b/include/component/memory/mmu_status.h
+@@ -106,6 +106,9 @@ namespace gg_core::gg_mem {
+         } // UpdateWaitState()
+ 
+         loggerType logger ;
++
++        uint32_t lastAccessAddr = 0x0 ;
++        E_AccessType requestAccessType = N_Cycle ;
+     };
+ }
+ 
+diff --git a/main.cpp b/main.cpp
+index fdb88c4..2364077 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -3,7 +3,6 @@
+ #include <emu_framework.h>
+ 
+ int main() {
+-    gg_core::gg_mem::MMU mmu(std::nullopt);
+-    gg_core::gg_cpu::CPU emu(mmu) ;
++    gg_core::GbaInstance gbaInstance("./testRom.gba");
+     return 0;
+ }

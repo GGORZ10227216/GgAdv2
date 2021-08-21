@@ -1,0 +1,165 @@
+diff --git a/ggTest/interrupt_and_misc.cpp b/ggTest/interrupt_and_misc.cpp
+index 66027e5..a8071e9 100644
+--- a/ggTest/interrupt_and_misc.cpp
++++ b/ggTest/interrupt_and_misc.cpp
+@@ -10,6 +10,8 @@ namespace {
+     using namespace gg_core::gg_mem;
+ 
+     TEST_F(ggTest, arm_svc_test) {
++        // fixme: not strict enough, need reinforcement
++
+         ArmAssembler gg_asm;
+ 
+         uint32_t instruction = 0xef000000 ;
+diff --git a/ggTest/ldr.cpp b/ggTest/ldr.cpp
+index fd65d2a..d9c9f6c 100644
+--- a/ggTest/ldr.cpp
++++ b/ggTest/ldr.cpp
+@@ -34,7 +34,7 @@ namespace {
+ 
+             uint32_t targetAddr = baseAddr;
+ 
+-            uint32_t instruction = MakeSingleTransferInstruction<Cond, F_Type::I, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
++            uint32_t instruction = MakeSingleTransferInstruction<Cond, FlagI, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
+                     AL, false, false, uFlag.value, false, false, true,
+                     targetRn.value, targetRd.value, immOffset.value
+             );
+@@ -113,7 +113,7 @@ namespace {
+                 return;
+ 
+             uint32_t instruction = MakeSingleTransferInstruction
+-                    <Cond, F_Type::I, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
++                    <Cond, FlagI, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
+                     AL, true, false, uFlag.value, false, false, true,
+                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
+             );
+@@ -159,7 +159,7 @@ namespace {
+ 
+             uint32_t targetAddr = baseAddr;
+ 
+-            uint32_t instruction = MakeSingleTransferInstruction<Cond, F_Type::I, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
++            uint32_t instruction = MakeSingleTransferInstruction<Cond, FlagI, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
+                     AL, false, false, uFlag.value, true, false, true,
+                     targetRn.value, targetRd.value, immOffset.value
+             );
+@@ -238,7 +238,7 @@ namespace {
+                 return;
+ 
+             uint32_t instruction = MakeSingleTransferInstruction
+-                    <Cond, F_Type::I, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
++                    <Cond, FlagI, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
+                     AL, true, false, uFlag.value, true, false, true,
+                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
+             );
+@@ -289,7 +289,7 @@ namespace {
+             else
+                 targetAddr -= immOffset.value;
+ 
+-            uint32_t instruction = MakeSingleTransferInstruction<Cond, F_Type::I, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
++            uint32_t instruction = MakeSingleTransferInstruction<Cond, FlagI, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
+                     AL, false, true, uFlag.value, false, wFlag.value, true,
+                     targetRn.value, targetRd.value, immOffset.value
+             );
+@@ -369,7 +369,7 @@ namespace {
+                 return;
+ 
+             uint32_t instruction = MakeSingleTransferInstruction
+-                    <Cond, F_Type::I, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
++                    <Cond, FlagI, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
+                     AL, true, true, uFlag.value, false, wFlag.value, true,
+                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
+             );
+@@ -420,7 +420,7 @@ namespace {
+             else
+                 targetAddr -= immOffset.value;
+ 
+-            uint32_t instruction = MakeSingleTransferInstruction<Cond, F_Type::I, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
++            uint32_t instruction = MakeSingleTransferInstruction<Cond, FlagI, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
+                     AL, false, true, uFlag.value, true, wFlag.value, true,
+                     targetRn.value, targetRd.value, immOffset.value
+             );
+@@ -500,7 +500,7 @@ namespace {
+                 return;
+ 
+             uint32_t instruction = MakeSingleTransferInstruction
+-                    <Cond, F_Type::I, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
++                    <Cond, FlagI, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
+                     AL, true, true, uFlag.value, true, wFlag.value, true,
+                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
+             );
+diff --git a/ggTest/str.cpp b/ggTest/str.cpp
+index 0ccaa05..ff69bcc 100644
+--- a/ggTest/str.cpp
++++ b/ggTest/str.cpp
+@@ -34,7 +34,7 @@ namespace {
+ 
+             uint32_t targetAddr = baseAddr;
+ 
+-            uint32_t instruction = MakeSingleTransferInstruction<Cond, F_Type::I, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
++            uint32_t instruction = MakeSingleTransferInstruction<Cond, FlagI, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
+                     AL, false, false, uFlag.value, false, false, false,
+                     targetRn.value, targetRd.value, immOffset.value
+             );
+@@ -108,7 +108,7 @@ namespace {
+                 return;
+ 
+             uint32_t instruction = MakeSingleTransferInstruction
+-                    <Cond, F_Type::I, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
++                    <Cond, FlagI, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
+                     AL, true, false, uFlag.value, false, false, false,
+                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
+             );
+@@ -161,7 +161,7 @@ namespace {
+ 
+             uint32_t targetAddr = baseAddr;
+ 
+-            uint32_t instruction = MakeSingleTransferInstruction<Cond, F_Type::I, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
++            uint32_t instruction = MakeSingleTransferInstruction<Cond, FlagI, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
+                     AL, false, false, uFlag.value, true, false, false,
+                     targetRn.value, targetRd.value, immOffset.value
+             );
+@@ -238,7 +238,7 @@ namespace {
+                 return;
+ 
+             uint32_t instruction = MakeSingleTransferInstruction
+-                    <Cond, F_Type::I, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
++                    <Cond, FlagI, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
+                     AL, true, false, uFlag.value, true, false, false,
+                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
+             );
+@@ -293,7 +293,7 @@ namespace {
+ 
+             uint32_t targetAddr = uFlag.value ? baseAddr + immOffset.value : baseAddr - immOffset.value;
+ 
+-            uint32_t instruction = MakeSingleTransferInstruction<Cond, F_Type::I, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
++            uint32_t instruction = MakeSingleTransferInstruction<Cond, FlagI, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
+                     AL, false, true, uFlag.value, false, wFlag.value, false,
+                     targetRn.value, targetRd.value, immOffset.value
+             );
+@@ -370,7 +370,7 @@ namespace {
+                 return;
+ 
+             uint32_t instruction = MakeSingleTransferInstruction
+-                    <Cond, F_Type::I, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
++                    <Cond, FlagI, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
+                     AL, true, true, uFlag.value, false, wFlag.value, false,
+                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
+             );
+@@ -427,7 +427,7 @@ namespace {
+ 
+             uint32_t targetAddr = uFlag.value ? baseAddr + immOffset.value : baseAddr - immOffset.value;
+ 
+-            uint32_t instruction = MakeSingleTransferInstruction<Cond, F_Type::I, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
++            uint32_t instruction = MakeSingleTransferInstruction<Cond, FlagI, P, U, B, W, L, Rn, Rd, F_Type::Imm>(
+                     AL, false, true, uFlag.value, true, wFlag.value, false,
+                     targetRn.value, targetRd.value, immOffset.value
+             );
+@@ -506,7 +506,7 @@ namespace {
+                 return;
+ 
+             uint32_t instruction = MakeSingleTransferInstruction
+-                    <Cond, F_Type::I, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
++                    <Cond, FlagI, P, U, B, W, L, Rn, Rd, ShiftAmount, ShiftType, Rm>(
+                     AL, true, true, uFlag.value, true, wFlag.value, false,
+                     targetRn.value, targetRd.value, shiftAmount.value, shiftType.value, r4
+             );
