@@ -142,12 +142,18 @@ namespace gg_core::gg_cpu {
             if (mode == THUMB) {
                 _cpsr |= 0x1 << T ;
                 RefillPipeline = &CPU::THUMB_RefillPipeline ;
-                instructionLength = 4 ;
+                Fetch = &CPU::THUMB_Fetch ;
+                iHash = THUMB_instructionHashFunc ;
+                instructionTable = Thumb_HandlerTable.data() ;
+                instructionLength = 2 ;
             } // if
             else {
                 _cpsr &= ~(0x1 << T);
                 RefillPipeline = &CPU::ARM_RefillPipeline ;
-                instructionLength = 2 ;
+                Fetch = &CPU::ARM_Fetch ;
+                iHash = ARM_instructionHashFunc ;
+                instructionTable = ARM_HandlerTable.data() ;
+                instructionLength = 4 ;
             } // else
         } // ChangeCpuMode()
 
@@ -210,7 +216,7 @@ namespace gg_core::gg_cpu {
 
         static inline auto THUMB_instructionHashFunc = [](uint32_t inst) {
             // todo: thumb hash function
-            return 0 ;
+            return (inst & 0xffff) >> 6 ;
         };
 
         uint32_t (*iHash)(uint32_t) = ARM_instructionHashFunc ;

@@ -161,6 +161,7 @@ namespace gg_core {
             bool LT() { return N() != V() ; }
             bool GT() { return !Z() && (N() == V()) ; }
             bool LE() { return Z() || (N() != V()) ; }
+            bool AL() { return true ; }
 
             std::array<bool(CPU_Status::*)(), 16> conditionChecker {
                 &CPU_Status::EQ, // 0b0000
@@ -176,7 +177,8 @@ namespace gg_core {
                 &CPU_Status::GE, // 0b1010
                 &CPU_Status::LT, // 0b1011
                 &CPU_Status::GT, // 0b1100
-                &CPU_Status::LE  // 0b1101
+                &CPU_Status::LE, // 0b1101
+                &CPU_Status::AL, // 0b1110
             };
 
             std::array<uint32_t, 2> fetchedBuffer;
@@ -184,6 +186,7 @@ namespace gg_core {
             uint32_t currentInstruction = 0x00 ;
             uint32_t _cpsr = 0xd3;
             uint32_t cycle = 0 ;
+            uint32_t lastPC = 0x0 ;
 
             unsigned instructionLength = 4 ;
 
