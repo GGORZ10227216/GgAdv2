@@ -65,10 +65,37 @@ namespace gg_core::gg_mem {
         }
 
         [[nodiscard]] uint32_t IllegalReadValue() {
+            using namespace gg_cpu ;
+
             if (_cpuStatus->GetCpuMode() == gg_cpu::E_CpuMode::ARM)
                 return _cpuStatus->fetchedBuffer[_cpuStatus->fetchIdx];
-            else
-                Unimplemented("thumb invalid memory access");
+            else {
+                const uint32_t CPU_PC = _cpuStatus->_regs[ pc ] ;
+                enum { BIOS_AREA = 0, IRAM_AREA = 3, OAM_AREA = 7 } ;
+
+                uint32_t result = _cpuStatus->fetchedBuffer[_cpuStatus->fetchIdx] & 0xffff ;
+                const uint32_t lastFetch = _cpuStatus->fetchedBuffer[!_cpuStatus->fetchIdx] & 0xffff ;
+                const unsigned addrTrait = CPU_PC >> 24 ;
+
+                switch (addrTrait) {
+                    case BIOS_AREA:
+                    case OAM_AREA:
+                        // Wait, Wat? [PC + 6] is outside the pipeline!!
+                        // using PC + 4 for now, just like mgba does.
+                        result = (result << 16) | lastFetch;
+                        break;
+                    case IRAM_AREA:
+                        if (CPU_PC & 2)
+                            result = (result << 16) | lastFetch ;
+                        else
+                            result = (lastFetch << 16) | result ;
+                        break;
+                    default:
+                            result = (result << 16) | result ;
+                } // switch()
+
+                return result ;
+            } // else
         } // IllegalReadValue()
 
 //        void IllegalWriteBehavior(E_ErrorType errType) {
