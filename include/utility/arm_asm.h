@@ -28,7 +28,7 @@ public :
             exit(-1);
     }
 
-    uint32_t ASM(std::string CODE) {
+    uint32_t ASM(const std::string& CODE) {
         if (ks_asm(ks, CODE.c_str(), 0, &encode, &size, &count_asm) != KS_ERR_OK) {
             printf("[%s] ERROR: ks_asm() failed & count_asm = %lu, error = %u\n",
                    CODE.c_str(), count_asm, ks_errno(ks));

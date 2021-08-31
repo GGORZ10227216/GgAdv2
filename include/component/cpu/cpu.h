@@ -129,13 +129,20 @@ namespace gg_core::gg_cpu {
         } // Tick()
 
         void CPU_Test(uint32_t inst) {
-//            try {
-                currentInstruction = inst ;
-                instructionTable[ iHash(currentInstruction) ](*this) ;
-//            } catch (gg_mem::MMU::InvalidAccessException& e) {
-//                std::cout << e.what() << std::endl ;
-//                // exit(-1) ;
-//            } // try-catch()
+            currentInstruction = inst ;
+
+            unsigned condition = 0x0;
+            if (GetCpuMode() == E_CpuMode::ARM)
+                condition = (inst & 0xf0000000) >> 28 ;
+            else
+                condition = E_CondName::AL ;
+
+            auto checker = conditionChecker[ condition ] ;
+
+            if ((this->*checker)())
+                instructionTable[ iHash(inst) ](*this) ;
+            else
+                Fetch(this, gg_mem::S_Cycle);
         } // Tick()
 
         void ChangeCpuMode(E_CpuMode mode) {

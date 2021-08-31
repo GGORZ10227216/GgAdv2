@@ -17,7 +17,6 @@
 #include <gba_instance.h>
 #include <core/core.h>
 #include <gg_utility.h>
-#include <cpu_enum.h>
 #include <loop_tool.h>
 #include <core/core.h>
 
@@ -35,11 +34,13 @@ protected:
     constexpr static char* testRomPath = "./testRom.gba" ;
 
     ArmAssembler gg_asm;
+    ArmAssembler gg_tasm;
 
     ggTest():
         gbaInstance(testRomPath),
         gg_mmu(gbaInstance.mmu),
-        instance(gbaInstance.cpu)
+        instance(gbaInstance.cpu),
+        gg_tasm(ASMMODE::THUMB)
     {
 
     }
@@ -49,7 +50,11 @@ protected:
         return ((instr >> 16) & 0xFF0) | ((instr >> 4) & 0xF);
     }
 
-    uint32_t CheckStatus(const gg_core::gg_cpu::CPU& mine, const Arm& egg) const {
+    constexpr uint hashThumb(u16 instr) {
+        return (instr >> 6);
+    }
+
+    uint32_t CheckStatus(const gg_core::gg_cpu::CPU& mine, const Arm& egg) {
         using namespace gg_core::gg_cpu ;
 
         uint32_t status_flag = 0 ;
@@ -116,6 +121,22 @@ protected:
         std::invoke(egg_local.instr_arm[inst_hash], &egg_local, instruction);
     }
 
+    void EggRunThumb(Arm& egg_local, uint16_t instruction) {
+        uint32_t inst_hash = hashThumb(instruction);
+        egg_local.regs[15] = (egg_local.regs[15] + 2) & ~0x1;
+        egg_local.pipe[0] = egg_local.pipe[1];
+        egg_local.pipe[1] = egg_local.readWord(egg_local.gprs[15]);
+
+        std::invoke(egg_local.instr_thumb[inst_hash], &egg_local, instruction);
+    } // EggRunThumb()
+
+    void GgInitToThumbState(gg_core::gg_cpu::CPU& local_cpu) {
+        local_cpu.ChangeCpuMode(gg_core::gg_cpu::THUMB) ;
+        local_cpu._regs[0] = 0 ;
+        local_cpu._regs[15] = 0 ;
+        local_cpu.RefillPipeline(&local_cpu, gg_core::gg_mem::S_Cycle, gg_core::gg_mem::S_Cycle) ;
+    }
+
     void CpuPC_Reset(Arm& egg_local, gg_core::gg_cpu::CPU& local_cpu) {
         egg_local.regs[15] = 0 ;
         local_cpu._regs[15] = 0 ;
@@ -148,5 +169,8 @@ void FillRegs(A& regs, std::tuple<RS...>& R, std::tuple<VS...>& V) {
 }
 
 using WorkerResult = std::pair<std::string, std::future<unsigned int>> ;
+
+template <typename T, typename S>
+using WorkerResult2 = std::pair<T, S> ;
 
 #endif //GGTEST_GG_TEST_H
