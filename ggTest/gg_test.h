@@ -124,8 +124,8 @@ protected:
     void EggRunThumb(Arm& egg_local, uint16_t instruction) {
         uint32_t inst_hash = hashThumb(instruction);
         egg_local.regs[15] = (egg_local.regs[15] + 2) & ~0x1;
-        egg_local.pipe[0] = egg_local.pipe[1];
-        egg_local.pipe[1] = egg_local.readWord(egg_local.gprs[15]);
+        egg_local.pipe[0] = egg_local.pipe[1] & 0xffff;
+        egg_local.pipe[1] = egg_local.readHalf(egg_local.gprs[15]);
 
         std::invoke(egg_local.instr_thumb[inst_hash], &egg_local, instruction);
     } // EggRunThumb()
