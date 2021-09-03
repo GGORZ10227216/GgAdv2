@@ -22,8 +22,6 @@ namespace {
             gg_core::gg_cpu::CPU& local_cpu = instance_local.cpu;
             GgInitToThumbState(local_cpu) ;
 
-            uint32_t errFlag = CheckStatus(local_cpu, egg_local);
-
             auto task = [&]() {
                 for (int Op = 0 ; Op < 3 ; ++Op) {
                     for (int Offset5 = 0 ; Offset5 < 32 ; ++Offset5) {
