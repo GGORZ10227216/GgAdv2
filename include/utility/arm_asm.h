@@ -58,14 +58,14 @@ public :
     }
 
 private:
-    ks_engine *ks;
+    ks_engine *ks = nullptr ;
     ks_err err;
     size_t count_asm;
-    unsigned char *encode;
+    unsigned char *encode = nullptr;
     size_t size;
 
     csh handle;
-    cs_insn *insn;
+    cs_insn *insn = nullptr ;
     size_t count_dasm;
 
     ks_mode ksMode ;
