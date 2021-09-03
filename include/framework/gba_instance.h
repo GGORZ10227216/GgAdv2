@@ -1,7 +1,7 @@
 //
 // Created by orzgg on 2020-09-04.
 //
-
+#include <optional>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/null_sink.h>
 #include <spdlog/sinks/stdout_sinks.h>
@@ -32,6 +32,15 @@ namespace gg_core {
             cpu(mmu, logSink)
         {
         }
+
+        GbaInstance() :
+                oss(),
+                logSink(std::make_shared<LOG>()),
+                mmu(std::nullopt, logSink),
+                cpu(mmu, logSink)
+        {
+        }
+
 
         std::ostringstream oss ;
         sinkType logSink ;
