@@ -15,6 +15,7 @@ using loggerType = std::shared_ptr<spdlog::logger> ;
 
 #include <cpu_enum.h>
 
+#include <decoder.h>
 #include <cpu_status.h>
 
 #include <mmu.h>

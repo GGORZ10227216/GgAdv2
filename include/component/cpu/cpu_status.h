@@ -182,6 +182,7 @@ namespace gg_core {
             uint32_t lastPC = 0x0 ;
 
             unsigned instructionLength = 4 ;
+            HandlerType lastCallee = nullptr ;
 
             std::array<unsigned, 7> _registers_usrsys{};
             std::array<unsigned, 7> _registers_fiq{};

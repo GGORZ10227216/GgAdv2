@@ -7,7 +7,6 @@
 #include <filesystem>
 #include <iostream>
 
-#include <decoder.h>
 #include <arm_asm.h>
 
 #ifndef GGADV_CPU_H
@@ -138,6 +137,7 @@ namespace gg_core::gg_cpu {
                 condition = E_CondName::AL ;
 
             auto checker = conditionChecker[ condition ] ;
+            lastCallee = instructionTable[ iHash(inst) ] ; // for debug purpose
 
             if ((this->*checker)())
                 instructionTable[ iHash(inst) ](*this) ;
