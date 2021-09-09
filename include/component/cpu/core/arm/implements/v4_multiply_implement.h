@@ -24,6 +24,13 @@ namespace gg_core::gg_cpu {
         instance.cycle += boothValue ; // The I_Cycle cycle
 
         instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4,gg_mem::S_Cycle) ;
+
+        if constexpr (S) {
+            // Result of C is meaningless, V is unaffected.
+            result == 0 ? instance.SetZ() : instance.ClearZ();
+            TestBit(result, 31) ? instance.SetN() : instance.ClearN();
+        } // if
+
         return result ;
     } // ALU_Multiply()
 
@@ -48,13 +55,6 @@ namespace gg_core::gg_cpu {
         } // if
 
         instance._regs[RdNumber] = result ;
-
-        if constexpr (S) {
-            // Result of C is meaningless, V is unaffected.
-            result == 0 ? instance.SetZ() : instance.ClearZ();
-            TestBit(result, 31) ? instance.SetN() : instance.ClearN();
-        } // if
-
 //        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4,gg_mem::S_Cycle) ; // move to ALU_Multiply()
     } // Multiply()
 
