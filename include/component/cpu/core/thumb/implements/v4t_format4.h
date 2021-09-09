@@ -29,7 +29,7 @@ namespace gg_core::gg_cpu {
         } // if
         else if constexpr (std::is_same_v<decltype(OP), E_ShiftType>) {
             instance.Fetch(&instance, gg_mem::I_Cycle) ;
-            instance._mem.Read<uint32_t>(instance._regs[ pc ] + 2, gg_mem::N_Cycle);
+            instance._mem.Read<uint16_t>(instance._regs[ pc ] + 2, gg_mem::N_Cycle);
 
             uint32_t shiftResult = 0 ;
             bool shiftCarry = Op2ShiftReg<OP>(instance, shiftResult, RdValue, RsValue) ;
