@@ -4,7 +4,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "${CMAKXX_FLAGS} -pthread -D_REENTRANT -I/usr/include/SDL2")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -g -O3")
 
 project(ggAdv)
 #    set(v4_arm_core_path include/component/cpu/core/arm)
@@ -35,7 +35,6 @@ project(ggAdv)
         include/component/component_class.h
         include/component/cpu/cpu_enum.h
         include/framework/gba_instance.h
-        src/framework/gba_instance.cpp
         include/component/cpu/cpu.h
         include/component/memory/mmu_status.h
         include/component/memory/mmu.h
@@ -118,7 +117,10 @@ file(GLOB_RECURSE SOURCE_FILES
         ./eggvance/eggvance/src/*.cpp
         )
 
-add_executable(ggTest ${SOURCE_FILES} ${header_core} ${header_arm_implement} ${src_core} ggTest/gg_test.h ggTest/include/loop_tool.h ggTest/alu.cpp ggTest/multiply.cpp ggTest/mul_long.cpp ggTest/branch.cpp ggTest/swap.cpp ggTest/ldr.cpp ggTest/str.cpp ggTest/ldrh.cpp ggTest/strh.cpp ggTest/ldm.cpp ggTest/stm.cpp ggTest/interrupt_and_misc.cpp ggTest/unpredictable.cpp include/utility/arm_asm.h)
+file(GLOB_RECURSE ARM_TEST_SRC ggTest/ARM/*.cpp)
+file(GLOB_RECURSE THUMB_TEST_SRC ggTest/Thumb/*.cpp)
+
+add_executable(ggTest ${SOURCE_FILES} ${header_core} ${header_arm_implement} ${ARM_TEST_SRC} ggTest/Thumb/thumb_test.cpp ggTest/gg_test.h ggTest/include/loop_tool.h ggTest/ARM/alu.cpp ggTest/ARM/multiply.cpp ggTest/ARM/mul_long.cpp ggTest/ARM/branch.cpp ggTest/ARM/swap.cpp ggTest/ARM/ldr.cpp ggTest/ARM/str.cpp ggTest/ARM/ldrh.cpp ggTest/ARM/strh.cpp ggTest/ARM/ldm.cpp ggTest/ARM/stm.cpp ggTest/ARM/interrupt_and_misc.cpp ggTest/ARM/unpredictable.cpp include/utility/arm_asm.h ggTest/Thumb/thumb_test.cpp)
 
 target_include_directories(ggTest PUBLIC
         include
@@ -139,14 +141,64 @@ target_include_directories(ggTest PUBLIC
         ./eggvance/eggvance/external/shell/include/
         ggTest
         ggTest/include
-    spdlog/include
+        ggTest/Thumb/testcases
+        spdlog/include
         )
 
-target_link_libraries(ggTest /usr/local/lib/libfmt.a
-        /usr/local/lib/libgtest.a
-        /usr/local/lib/libgtest_main.a
-        /usr/local/lib/libkeystone.so
-        /usr/local/lib/libcapstone.a
+target_link_libraries(ggTest
+        fmt
+        gtest
+        gtest_main
+        keystone
+        capstone
+        SDL2
+        stdc++fs
+        )
+
+project(ggThumbTest)
+
+include_directories(./eggvance/eggvance/external/shell/include)
+include_directories(./eggvance/eggvance/external/icon/eggvance/include)
+include_directories(./eggvance/eggvance/src)
+
+file(GLOB_RECURSE SOURCE_FILES
+        ./eggvance/eggvance/src/*.h
+        ./eggvance/eggvance/src/*.cpp
+        )
+
+file(GLOB_RECURSE THUMB_TEST_SRC ggTest/Thumb/*.cpp)
+
+add_executable(ggThumbTest ${SOURCE_FILES} ${header_core} ${header_arm_implement} ${THUMB_TEST_SRC} ggTest/gg_test.h ggTest/include/loop_tool.h ggTest/ARM/alu.cpp ggTest/ARM/multiply.cpp ggTest/ARM/mul_long.cpp ggTest/ARM/branch.cpp ggTest/ARM/swap.cpp ggTest/ARM/ldr.cpp ggTest/ARM/str.cpp ggTest/ARM/ldrh.cpp ggTest/ARM/strh.cpp ggTest/ARM/ldm.cpp ggTest/ARM/stm.cpp ggTest/ARM/interrupt_and_misc.cpp ggTest/ARM/unpredictable.cpp include/utility/arm_asm.h ggTest/Thumb/thumb_test.cpp)
+
+target_include_directories(ggThumbTest PUBLIC
+        include
+        include/component/
+        include/component/cpu
+        include/component/cpu/core
+        include/component/cpu/core/arm
+        include/component/cpu/core/arm/decoder
+        include/component/cpu/core/arm/implements
+        include/component/cpu/core/thumb/implements
+        include/component/memory
+        include/component/io
+        include/framework
+        include/instruction/arm
+        include/component/cpu/core/arm/implements
+        include/utility
+        ./eggvance/eggvance/src/
+        ./eggvance/eggvance/external/shell/include/
+        ggTest
+        ggTest/include
+        ggTest/Thumb/testcases
+        spdlog/include
+        )
+
+target_link_libraries(ggThumbTest
+        fmt
+        gtest
+        gtest_main
+        keystone
+        capstone
         SDL2
         stdc++fs
         )

@@ -2,13 +2,9 @@
 // Created by Jason4_Lee on 2021-08-24.
 //
 
-#include <gg_test.h>
-#include <boost/asio.hpp>
-#include <fmt/ostream.h>
-
 namespace {
     using namespace gg_core::gg_cpu ;
-    void CalleeCheek(const CPU& local_cpu, const unsigned Op) {
+    void CalleeCheek(CPU& local_cpu, const unsigned Op) {
         switch (Op) {
             case 0:
                 ASSERT_TRUE(local_cpu.lastCallee == ALU_Operations<AND>) ;
@@ -88,10 +84,9 @@ namespace {
 
                         EggRunThumb(egg_local, instruction);
                         local_cpu.CPU_Test(instruction);
-                        ++t;
 
                         uint32_t errFlag = CheckStatus(local_cpu, egg_local);
-                        std::string input = fmt::format("Original Rd(R{}): {:#x} Original Rs(R{}): {:#x}\n",
+                        std::string input = fmt::format("Original Rd(R{}): {:#x} Rs(R{}): {:#x}\n",
                                                         RdNum, RdValue, RsNum, RsValue);
 
                         CalleeCheek(local_cpu, Op);
@@ -105,6 +100,7 @@ namespace {
                                                     << Diagnose(local_cpu, egg_local, errFlag);
 
                         CpuPC_Reset(egg_local, local_cpu);
+                        ++t;
                     } // for
                 } // for
             };
@@ -114,46 +110,46 @@ namespace {
             return t;
         };
 
-        TestMain(0, 0, 0);
-//        boost::asio::thread_pool workerPool(4);
-//        for (int OpTest = 0; OpTest < 16 ; ++OpTest) {
-//            for (int RsTest = 0; RsTest < 16; ++RsTest) {
-//                for (int RdTest = 0; RdTest < 16; ++RdTest) {
-//                    uint32_t RsValue = 0x01010101 * RsTest;
-//                    uint32_t RdValue = 0x01010101 * RdTest;
-//                    boost::asio::post(workerPool,
-//                        [TestMain, OpTest, RsValue, RdValue] {
-//                            return TestMain(OpTest, RsValue, RdValue);
-//                        } // lambda
-//                    );
-//
-//                    if (RsValue != 0) {
-//                        boost::asio::post(workerPool,
-//                            [TestMain, OpTest, RsValue, RdValue] {
-//                                return TestMain(OpTest, RsValue << 4, RdValue);
-//                            } // lambda
-//                        );
-//                    } // if
-//
-//                    if (RdValue != 0) {
-//                        boost::asio::post(workerPool,
-//                            [TestMain, OpTest, RsValue, RdValue] {
-//                                return TestMain(OpTest, RsValue, RdValue << 4);
-//                            } // lambda
-//                        );
-//                    } // if
-//
-//                    if (RdValue != 0 && RsValue != 0) {
-//                        boost::asio::post(workerPool,
-//                            [TestMain, OpTest, RsValue, RdValue] {
-//                                return TestMain(OpTest, RsValue << 4, RdValue << 4);
-//                            } // lambda
-//                        );
-//                    } // if
-//                } // for
-//            } // for
-//        } // for
-//
-//        workerPool.join();
+        boost::asio::thread_pool workerPool(std::thread::hardware_concurrency());
+        for (int OpTest = 0; OpTest < 16 ; ++OpTest) {
+            for (int RsTest = 0; RsTest < 16; ++RsTest) {
+                for (int RdTest = 0; RdTest < 16; ++RdTest) {
+                    uint32_t RsValue = 0x01010101 * RsTest;
+                    uint32_t RdValue = 0x01010101 * RdTest;
+
+                    boost::asio::post(workerPool,
+                        [TestMain, OpTest, RsValue, RdValue] {
+                            return TestMain(OpTest, RsValue, RdValue);
+                        } // lambda
+                    );
+
+                    if (RsValue != 0) {
+                        boost::asio::post(workerPool,
+                            [TestMain, OpTest, RsValue, RdValue] {
+                                return TestMain(OpTest, RsValue << 4, RdValue);
+                            } // lambda
+                        );
+                    } // if
+
+                    if (RdValue != 0) {
+                        boost::asio::post(workerPool,
+                            [TestMain, OpTest, RsValue, RdValue] {
+                                return TestMain(OpTest, RsValue, RdValue << 4);
+                            } // lambda
+                        );
+                    } // if
+
+                    if (RdValue != 0 && RsValue != 0) {
+                        boost::asio::post(workerPool,
+                            [TestMain, OpTest, RsValue, RdValue] {
+                                return TestMain(OpTest, RsValue << 4, RdValue << 4);
+                            } // lambda
+                        );
+                    } // if
+                } // for
+            } // for
+        } // for
+
+        workerPool.join();
     }
 }

@@ -2,8 +2,6 @@
 // Created by Jason4_Lee on 2021-08-24.
 //
 
-#include <gg_test.h>
-
 namespace {
     TEST_F(ggTest, thumb_move_shift_reg) {
         const unsigned OpStartBit = 11 ;
