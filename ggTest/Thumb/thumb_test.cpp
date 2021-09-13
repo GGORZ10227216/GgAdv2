@@ -7,6 +7,8 @@
 
 #include <gg_test.h>
 
+#include <iostream>
+
 #include <Type1.h>
 #include <Type2.h>
 #include <Type3.h>

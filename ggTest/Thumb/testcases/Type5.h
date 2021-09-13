@@ -3,85 +3,89 @@
 //
 
 namespace {
-    using namespace gg_core::gg_cpu ;
-    void CalleeCheek(CPU& local_cpu, const unsigned Op, const bool H1, const bool H2) {
-        const int hashcode = (Op << 2) | (H1 << 1) | H2 ;
+    using namespace gg_core::gg_cpu;
+
+    void Type5CalleeCheek(CPU &local_cpu, const unsigned Op, const bool H1, const bool H2) {
+        const int hashcode = (Op << 2) | (H1 << 1) | H2;
         switch (hashcode) {
             case 0b0001:
-                ASSERT_TRUE(local_cpu.lastCallee == HiRegOperation_BX<ADD, false, true>) ;
-                break ;
+                ASSERT_TRUE((local_cpu.lastCallee == HiRegOperation_BX<ADD, false, true>));
+                break;
             case 0b0010:
-                ASSERT_TRUE(local_cpu.lastCallee == HiRegOperation_BX<ADD, true, false>) ;
-                break ;
+                ASSERT_TRUE((local_cpu.lastCallee == HiRegOperation_BX<ADD, true, false>));
+                break;
             case 0b0011:
-                ASSERT_TRUE(local_cpu.lastCallee == HiRegOperation_BX<ADD, true, true>) ;
-                break ;
+                ASSERT_TRUE((local_cpu.lastCallee == HiRegOperation_BX<ADD, true, true>));
+                break;
 
             case 0b0101:
-                ASSERT_TRUE(local_cpu.lastCallee == HiRegOperation_BX<CMP, false, true>) ;
-                break ;
+                ASSERT_TRUE((local_cpu.lastCallee == HiRegOperation_BX<CMP, false, true>));
+                break;
             case 0b0110:
-                ASSERT_TRUE(local_cpu.lastCallee == HiRegOperation_BX<CMP, true, false>) ;
-                break ;
+                ASSERT_TRUE((local_cpu.lastCallee == HiRegOperation_BX<CMP, true, false>));
+                break;
             case 0b0111:
-                ASSERT_TRUE(local_cpu.lastCallee == HiRegOperation_BX<CMP, true, true>) ;
-                break ;
+                ASSERT_TRUE((local_cpu.lastCallee == HiRegOperation_BX<CMP, true, true>));
+                break;
 
             case 0b1001:
-                ASSERT_TRUE(local_cpu.lastCallee == HiRegOperation_BX<MOV, false, true>) ;
-                break ;
+                ASSERT_TRUE((local_cpu.lastCallee == HiRegOperation_BX<MOV, false, true>));
+                break;
             case 0b1010:
-                ASSERT_TRUE(local_cpu.lastCallee == HiRegOperation_BX<MOV, true, false>) ;
-                break ;
+                ASSERT_TRUE((local_cpu.lastCallee == HiRegOperation_BX<MOV, true, false>));
+                break;
             case 0b1011:
-                ASSERT_TRUE(local_cpu.lastCallee == HiRegOperation_BX<MOV, true, true>) ;
-                break ;
+                ASSERT_TRUE((local_cpu.lastCallee == HiRegOperation_BX<MOV, true, true>));
+                break;
 
             case 0b1100:
-                ASSERT_TRUE(local_cpu.lastCallee == HiRegOperation_BX<0, false, false>) ;
-                break ;
+                ASSERT_TRUE((local_cpu.lastCallee == HiRegOperation_BX<0, false, false>));
+                break;
             case 0b1101:
-                ASSERT_TRUE(local_cpu.lastCallee == HiRegOperation_BX<0, false, true>) ;
-                break ;
+                ASSERT_TRUE((local_cpu.lastCallee == HiRegOperation_BX<0, false, true>));
+                break;
             default:
-                throw std::logic_error("Invalid Op number") ;
+                throw std::logic_error("Invalid Op number");
         } // switch
     } // Op2Shift()
 
-    TEST_F(ggTest, ALU_Operation) {
-        auto TestMain = [&](const unsigned Op, bool HiRd, bool HiRs, const uint32_t RsValue, const uint32_t RdValue) -> uint64_t {
+    TEST_F(ggTest, HiReg) {
+        auto TestMain = [&](const unsigned Op, bool HiRd, bool HiRs, const uint32_t RsValue,
+                            const uint32_t RdValue) -> uint64_t {
             uint64_t t = 0;
 
-            Arm egg_local;
-            egg_local.flushHalf();
-            egg_local.cpsr.t = true;
-
-            gg_core::GbaInstance instance_local;
-            gg_core::gg_cpu::CPU &local_cpu = instance_local.cpu;
+            arm.cpsr.t = true ; // for thumb ReadUnused()
+            gg_core::gg_cpu::CPU &local_cpu = gbaInstance.cpu;
             GgInitToThumbState(local_cpu);
 
-            const int RdStart = HiRd ? 0 : 8 ;
-            const int RsStart = HiRs ? 0 : 8 ;
+            CpuPC_ResetThumb(arm, local_cpu);
+
+            const int RdStart = HiRd ? 8 : 0;
+            const int RsStart = HiRs ? 8 : 0;
 
             auto task = [&]() {
                 for (int RsNum = RsStart; RsNum < RsStart + 8; ++RsNum) {
                     for (int RdNum = RdStart; RdNum < RdStart + 8; ++RdNum) {
-                        uint16_t instruction = (0b010001 << 10) | (Op << 8) | (HiRd << 7) | (HiRs << 6) | (RsNum << 3) | RdNum;
+                        uint16_t instruction =
+                                (0b010001 << 10) | (Op << 8) | (HiRd << 7) | (HiRs << 6) | ((RsNum - RsStart) << 3) | (RdNum - RdStart);
 
-                        egg_local.regs[RsNum] = RsValue;
+                        if (t == 7)
+                            std::cout << std::endl ;
+
+                        arm.regs[RsNum] = RsValue;
                         local_cpu._regs[RsNum] = RsValue;
 
-                        egg_local.regs[RdNum] = RdValue;
+                        arm.regs[RdNum] = RdValue;
                         local_cpu._regs[RdNum] = RdValue;
 
-                        EggRunThumb(egg_local, instruction);
+                        EggRunThumb(arm, instruction);
                         local_cpu.CPU_Test(instruction);
 
-                        uint32_t errFlag = CheckStatus(local_cpu, egg_local);
+                        uint32_t errFlag = CheckStatus(local_cpu, arm);
                         std::string input = fmt::format("Original Rd(R{}): {:#x} Rs(R{}): {:#x}\n",
                                                         RdNum, RdValue, RsNum, RsValue);
 
-                        CalleeCheek(local_cpu, Op);
+                        Type5CalleeCheek(local_cpu, Op, HiRd, HiRs);
 
                         ASSERT_TRUE(errFlag == 0)
                                                     << "#" << t << " of test\n"
@@ -89,9 +93,9 @@ namespace {
                                                     << input
                                                     << gg_tasm.DASM(instruction) << " [" << instruction
                                                     << "]" << '\n'
-                                                    << Diagnose(local_cpu, egg_local, errFlag);
+                                                    << Diagnose(local_cpu, arm, errFlag);
 
-                        CpuPC_Reset(egg_local, local_cpu);
+                        CpuPC_ResetThumb(arm, local_cpu);
                         ++t;
                     } // for
                 } // for
@@ -102,59 +106,52 @@ namespace {
             return t;
         };
 
-        boost::asio::thread_pool workerPool(std::thread::hardware_concurrency());
-        for (int OpTest = 0; OpTest < 4 ; ++OpTest) {
-            for (int RsTest = 0; RsTest < 16; ++RsTest) {
-                for (int RdTest = 0; RdTest < 16; ++RdTest) {
-
-                    if (OpTest == 0b11) {
-                        // BX Test
+        TestMain(0, true, false, 0, 0x10101010);
+//        boost::asio::thread_pool workerPool(std::thread::hardware_concurrency());
+//        for (int OpTest = 0; OpTest < 3; ++OpTest) {
+//            for (int RsTest = 0; RsTest < 16; ++RsTest) {
+//                for (int RdTest = 0; RdTest < 16; ++RdTest) {
+//                    for (int hibit = 0b01; hibit <= 0b11; ++hibit) {
+//                        uint32_t RsValue = 0x01010101 * RsTest;
+//                        uint32_t RdValue = 0x01010101 * RdTest;
+//
 //                        boost::asio::post(workerPool,
-//                                          [TestMain, OpTest, RsValue, RdValue] {
-//                                              return TestMain(OpTest, false, false, RsValue, RdValue);
+//                                          [TestMain, OpTest, RsValue, RdValue, hibit] {
+//                                              return TestMain(OpTest, hibit & 0b10, hibit & 0b01, RsValue, RdValue);
 //                                          } // lambda
 //                        );
-                    } // if
-                    else {
-                        for (int hibit = 0b01 ; hibit <= 0b11 ; ++hibit) {
-                            uint32_t RsValue = 0x01010101 * RsTest;
-                            uint32_t RdValue = 0x01010101 * RdTest;
-
-                            boost::asio::post(workerPool,
-                                [TestMain, OpTest, RsValue, RdValue, hibit] {
-                                    return TestMain(OpTest, hibit & 0b10, hibit & 0b01, RsValue, RdValue);
-                                } // lambda
-                            );
-
-                            if (RsValue != 0) {
-                                boost::asio::post(workerPool,
-                                    [TestMain, OpTest, RsValue, RdValue, hibit] {
-                                        return TestMain(OpTest, hibit & 0b10, hibit & 0b01, RsValue << 4, RdValue);
-                                        } // lambda
-                                );
-                            } // if
-
-                            if (RdValue != 0) {
-                                boost::asio::post(workerPool,
-                                                  [TestMain, OpTest, RsValue, RdValue, hibit] {
-                                                      return TestMain(OpTest, hibit & 0b10, hibit & 0b01, RsValue, RdValue << 4);
-                                                  } // lambda
-                                );
-                            } // if
-
-                            if (RdValue != 0 && RsValue != 0) {
-                                boost::asio::post(workerPool,
-                                                  [TestMain, OpTest, RsValue, RdValue, hibit] {
-                                                      return TestMain(OpTest, hibit & 0b10, hibit & 0b01, RsValue << 4, RdValue << 4);
-                                                  } // lambda
-                                );
-                            } // if
-                        } // for
-                    } // else
-                } // for
-            } // for
-        } // for
-
-        workerPool.join();
+//
+//                        if (RsValue != 0) {
+//                            boost::asio::post(workerPool,
+//                                              [TestMain, OpTest, RsValue, RdValue, hibit] {
+//                                                  return TestMain(OpTest, hibit & 0b10, hibit & 0b01, RsValue << 4,
+//                                                                  RdValue);
+//                                              } // lambda
+//                            );
+//                        } // if
+//
+//                        if (RdValue != 0) {
+//                            boost::asio::post(workerPool,
+//                                              [TestMain, OpTest, RsValue, RdValue, hibit] {
+//                                                  return TestMain(OpTest, hibit & 0b10, hibit & 0b01, RsValue,
+//                                                                  RdValue << 4);
+//                                              } // lambda
+//                            );
+//                        } // if
+//
+//                        if (RdValue != 0 && RsValue != 0) {
+//                            boost::asio::post(workerPool,
+//                                              [TestMain, OpTest, RsValue, RdValue, hibit] {
+//                                                  return TestMain(OpTest, hibit & 0b10, hibit & 0b01, RsValue << 4,
+//                                                                  RdValue << 4);
+//                                              } // lambda
+//                            );
+//                        } // if
+//                    } // for
+//                } // for
+//            } // for
+//        } // for
+//
+//        workerPool.join();
     }
 }

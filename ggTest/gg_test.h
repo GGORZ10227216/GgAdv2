@@ -125,7 +125,7 @@ protected:
         uint32_t inst_hash = hashThumb(instruction);
         egg_local.regs[15] = (egg_local.regs[15] + 2) & ~0x1;
         egg_local.pipe[0] = egg_local.pipe[1] & 0xffff;
-        egg_local.pipe[1] = egg_local.readHalf(egg_local.gprs[15]);
+        egg_local.pipe[1] = egg_local.readHalf(egg_local.gprs[15]) & 0xffff;
 
         std::invoke(egg_local.instr_thumb[inst_hash], &egg_local, instruction);
     } // EggRunThumb()
@@ -140,6 +140,16 @@ protected:
     void CpuPC_Reset(Arm& egg_local, gg_core::gg_cpu::CPU& local_cpu) {
         egg_local.regs[15] = 0 ;
         local_cpu._regs[15] = 0 ;
+    }
+
+    void CpuPC_ResetThumb(Arm& egg_local, gg_core::gg_cpu::CPU& local_cpu) {
+        egg_local.regs[15] = 0 ;
+        egg_local.pipe[0] = 0xabcd ;
+        egg_local.pipe[1] = 0x5566 ;
+
+        local_cpu._regs[15] = 0 ;
+        local_cpu.fetchedBuffer[!local_cpu.fetchIdx] = 0xabcd ;
+        local_cpu.fetchedBuffer[local_cpu.fetchIdx] = 0x5566 ;
     }
 };
 
