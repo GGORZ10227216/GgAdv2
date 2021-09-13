@@ -73,8 +73,8 @@ namespace gg_core::gg_mem {
                 const uint32_t CPU_PC = _cpuStatus->_regs[ pc ] ;
                 enum { BIOS_AREA = 0, IRAM_AREA = 3, OAM_AREA = 7 } ;
 
-                uint32_t result = _cpuStatus->fetchedBuffer[_cpuStatus->fetchIdx] & 0xffff ;
-                const uint32_t lastFetch = _cpuStatus->fetchedBuffer[!_cpuStatus->fetchIdx] & 0xffff ;
+                uint32_t result = _cpuStatus->fetchedBuffer[_cpuStatus->fetchIdx] ;
+                const uint32_t lastFetch = _cpuStatus->fetchedBuffer[!_cpuStatus->fetchIdx] ;
                 const unsigned addrTrait = CPU_PC >> 24 ;
 
                 switch (addrTrait) {

@@ -51,7 +51,7 @@ namespace gg_core::gg_mem {
                 absAddr
         );
 
-        return (mmu->IllegalReadValue() >> ((absAddr & memoryBusMask) * 8)) & static_cast<T>(0xffffffff);
+        return (mmu->IllegalReadValue() >> ((absAddr & memoryBusMask) << 3)) & static_cast<T>(0xffffffff);
     } // NoUsed_Read()
 
     template<typename T>
