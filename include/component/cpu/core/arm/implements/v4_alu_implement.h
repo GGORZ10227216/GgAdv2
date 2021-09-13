@@ -88,32 +88,52 @@ namespace gg_core::gg_cpu {
         return result ;
     }
 
-    template<bool I, bool S, SHIFT_BY SHIFT_SRC, E_ShiftType ST, E_DataProcess opcode>
-    static void Alu_impl(CPU &instance) {
+    template<typename T, bool S, SHIFT_BY SHIFT_SRC, E_DataProcess opcode>
+    static void ALU_OperationImpl(CPU& instance, const int dstReg, const int op1Reg, const uint32_t op2Val, const bool shiftCarry) {
         constexpr bool TEST = opcode == TST || opcode == TEQ || opcode == CMP || opcode == CMN ;
 
-        const uint32_t curInst = CURRENT_INSTRUCTION ;
-
-        const uint8_t RnNumber = (curInst & 0xf0000) >> 16 ;
-
-        bool shiftCarry = false ;
         if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
             instance.Fetch(&instance, gg_mem::I_Cycle) ; // pc = pc + 4
-            if (RnNumber == pc)
-                instance._mem.Read<uint32_t>(instance._regs[ pc ] + 4, gg_mem::S_Cycle);
+            if (dstReg == pc)
+                instance._mem.Read<T>(instance._regs[ pc ] + 4, gg_mem::S_Cycle);
             else
-                instance._mem.Read<uint32_t>(instance._regs[ pc ] + 4, gg_mem::N_Cycle);
+                instance._mem.Read<T>(instance._regs[ pc ] + 4, gg_mem::N_Cycle);
         } // if constexpr
         else {
-            if (RnNumber == pc)
+            if (dstReg == pc)
                 instance.Fetch(&instance, gg_mem::N_Cycle) ;
             else
                 instance.Fetch(&instance, gg_mem::S_Cycle) ;
         } // else
 
-        uint32_t RnVal = instance._regs[RnNumber] ;
+        uint32_t op1Val = instance._regs[ op1Reg ] ;
+
+        /*Not sure this behavior is also in thumb mode*/
+//        if (op1Reg == pc)
+//            op1Val = op1Val + instance.instructionLength ;
+
+        uint64_t result = ALU_Calculate<S, opcode>(instance, op1Val, op2Val, shiftCarry) ;
+
+        if constexpr (!TEST) {
+            instance._regs[dstReg] = result ;
+            if (dstReg == pc) {
+                instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle); // cycle += 1S + 1S
+                if constexpr (S) {
+                    instance.WriteCPSR( instance.ReadSPSR() ) ;
+                } // if
+            } // if
+        } // if
+    }
+
+    template<bool I, bool S, SHIFT_BY SHIFT_SRC, E_ShiftType ST, E_DataProcess opcode>
+    static void ALU_ARM_Operation(CPU &instance) {
+        const uint32_t curInst = CURRENT_INSTRUCTION ;
+
+        const uint8_t RnNumber = (curInst & 0xf0000) >> 16 ;
+        const uint8_t RdNumber = (curInst & 0xf000) >> 12 ;
+
+        bool shiftCarry = false ;
         uint32_t op2 = 0 ;
-        uint64_t result = 0;
 
         if constexpr (I) {
             shiftCarry = ParseOp2_Imm(instance, op2) ;
@@ -121,25 +141,12 @@ namespace gg_core::gg_cpu {
         else {
             if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
                 shiftCarry = ParseOp2_Shift_RS<ST>(instance, op2) ;
-                if (RnNumber == pc)
-                    RnVal = RnVal + 4 ;
             } // if
             else
                 shiftCarry = ParseOp2_Shift_Imm<ST>(instance, op2) ;
         } // else
 
-        result = ALU_Calculate<S, opcode>(instance, RnVal, op2, shiftCarry) ;
-
-        if constexpr (!TEST) {
-            const uint8_t RdNumber = (curInst & 0xf000) >> 12 ;
-            instance._regs[RdNumber] = result ;
-            if (RdNumber == pc) {
-                instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle); // cycle += 1S + 1S
-                if constexpr (S) {
-                    instance.WriteCPSR( instance.ReadSPSR() ) ;
-                } // if
-            } // if
-        } // if
+        ALU_OperationImpl<uint32_t, S, SHIFT_SRC, opcode>(instance, RdNumber, RnNumber, op2, shiftCarry);
     }
 }
 

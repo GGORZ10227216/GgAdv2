@@ -12,7 +12,7 @@ namespace gg_core::gg_cpu {
         unsigned targetRs = (curInst & 0b111000) >> 3;
         unsigned targetRd = curInst & 0b111 ;
 
-        if constexpr (H1) targetRd += 8 ;
+        if constexpr (H1) targetRd += 8;
         if constexpr (H2) targetRs += 8;
 
         const uint32_t RsValue = instance._regs[ targetRs ] ;
@@ -20,14 +20,13 @@ namespace gg_core::gg_cpu {
 
         uint32_t result = 0 ;
         if constexpr (std::is_same_v<decltype(OP), E_DataProcess>) {
-            instance.Fetch(&instance, S_Cycle) ;
-            instance._regs[ targetRd ] = ALU_Calculate<false, OP>(instance, RdValue, RsValue, false)  ;
+//            instance._regs[ targetRd ] = ALU_Calculate<false, OP>(instance, RdValue, RsValue, false)  ;
+            ALU_OperationImpl<uint16_t, false, SHIFT_BY::NONE, OP>(instance, targetRd, targetRd, RsValue, false);
         } // if
         else {
             instance.Fetch(&instance, N_Cycle) ;
             BX(instance, targetRs);
         } // else
-
     } // MovCmpAddSub()
 }
 
