@@ -106,7 +106,7 @@ namespace {
             };
 
             task();
-            fmt::print("[{}] Rd: {:#x} {}\n", std::this_thread::get_id(), Op, t);
+            fmt::print("[{}] Op: {:#x} {}\n", std::this_thread::get_id(), Op, t);
             return t;
         };
 
