@@ -50,7 +50,7 @@ namespace gg_core::gg_mem {
         } // else if
 
         // normal ROM access logic begin here
-        return reinterpret_cast<T &>(cart.romData[AlignAddr<T>(relativeAddr)]);
+        return reinterpret_cast<T&>(cart.romData[AlignAddr<T>(relativeAddr)]);
     } // ROM_Read()
 
     template<typename T>

@@ -124,7 +124,7 @@ namespace gg_core::gg_mem {
     public:
         // TODO: flash memory support
         using SaveType_t = std::pair<std::string, E_SaveType>;
-
+        enum {MAX_GBA_ROMSIZE = 0x2000000};
         std::array<uint8_t, 0x10000> SRAM;
         std::vector<uint8_t> romData;
         unsigned SRAM_MirrorMask = 0x7fff;
@@ -135,6 +135,13 @@ namespace gg_core::gg_mem {
             eeprom(mmuCycleCounter, sink)
         {
             SRAM.fill(0xff) ;
+            romData.resize(MAX_GBA_ROMSIZE, 0) ;
+
+            // todo: ROM initialize and move to heap
+            uint16_t* seek = reinterpret_cast<uint16_t*>(romData.data()) ;
+            for (int idx = 0 ; idx < MAX_GBA_ROMSIZE/sizeof(uint16_t); ++idx) {
+                seek[idx] = (idx & ~0x1) & 0xffff ;
+            } // for
         }
 
         void LoadRom(const char* pathStr) {

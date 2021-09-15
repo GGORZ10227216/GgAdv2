@@ -39,11 +39,14 @@ namespace gg_core::gg_mem {
 
     template<typename T>
     T NoUsed_Read(MMU_Status *mmu, uint32_t absAddr) {
-        unsigned memoryBusMask = 0x0 ;
-        if constexpr (sizeof(T) == 1)
-            memoryBusMask = 0b11 ;
-        else if constexpr (sizeof(T) == 2)
-            memoryBusMask = 0b10 ;
+        const unsigned memoryBusMask = []() {
+            if constexpr (sizeof(T) == 1)
+                return 0b11 ;
+            else if constexpr (sizeof(T) == 2)
+                return 0b10 ;
+            else
+                return 0 ;
+        }();
 
         mmu->logger->warn(
                 "Attempt to READ {} from address 0x{:x}",

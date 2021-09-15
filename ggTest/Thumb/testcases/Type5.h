@@ -106,7 +106,7 @@ namespace {
             return t;
         };
 
-        TestMain(0, true, false, 0, 0x10101010);
+        TestMain(0, true, false, 0, 0x09090909);
 //        boost::asio::thread_pool workerPool(std::thread::hardware_concurrency());
 //        for (int OpTest = 0; OpTest < 3; ++OpTest) {
 //            for (int RsTest = 0; RsTest < 16; ++RsTest) {
@@ -114,39 +114,7 @@ namespace {
 //                    for (int hibit = 0b01; hibit <= 0b11; ++hibit) {
 //                        uint32_t RsValue = 0x01010101 * RsTest;
 //                        uint32_t RdValue = 0x01010101 * RdTest;
-//
-//                        boost::asio::post(workerPool,
-//                                          [TestMain, OpTest, RsValue, RdValue, hibit] {
-//                                              return TestMain(OpTest, hibit & 0b10, hibit & 0b01, RsValue, RdValue);
-//                                          } // lambda
-//                        );
-//
-//                        if (RsValue != 0) {
-//                            boost::asio::post(workerPool,
-//                                              [TestMain, OpTest, RsValue, RdValue, hibit] {
-//                                                  return TestMain(OpTest, hibit & 0b10, hibit & 0b01, RsValue << 4,
-//                                                                  RdValue);
-//                                              } // lambda
-//                            );
-//                        } // if
-//
-//                        if (RdValue != 0) {
-//                            boost::asio::post(workerPool,
-//                                              [TestMain, OpTest, RsValue, RdValue, hibit] {
-//                                                  return TestMain(OpTest, hibit & 0b10, hibit & 0b01, RsValue,
-//                                                                  RdValue << 4);
-//                                              } // lambda
-//                            );
-//                        } // if
-//
-//                        if (RdValue != 0 && RsValue != 0) {
-//                            boost::asio::post(workerPool,
-//                                              [TestMain, OpTest, RsValue, RdValue, hibit] {
-//                                                  return TestMain(OpTest, hibit & 0b10, hibit & 0b01, RsValue << 4,
-//                                                                  RdValue << 4);
-//                                              } // lambda
-//                            );
-//                        } // if
+//                        TestMain(0, true, false, RsValue, RdValue);
 //                    } // for
 //                } // for
 //            } // for
