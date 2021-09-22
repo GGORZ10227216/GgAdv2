@@ -132,7 +132,6 @@ protected:
 
     void GgInitToThumbState(gg_core::gg_cpu::CPU& local_cpu) {
         local_cpu.ChangeCpuMode(gg_core::gg_cpu::THUMB) ;
-        local_cpu._regs[0] = 0 ;
         local_cpu._regs[15] = 0 ;
         local_cpu.RefillPipeline(&local_cpu, gg_core::gg_mem::S_Cycle, gg_core::gg_mem::S_Cycle) ;
     }
@@ -143,6 +142,9 @@ protected:
     }
 
     void CpuPC_ResetThumb(Arm& egg_local, gg_core::gg_cpu::CPU& local_cpu) {
+        local_cpu.ChangeCpuMode(gg_core::gg_cpu::THUMB) ;
+        egg_local.cpsr.t = true ;
+
         egg_local.regs[15] = 0 ;
         egg_local.pipe[0] = 0xabcd ;
         egg_local.pipe[1] = 0x5566 ;

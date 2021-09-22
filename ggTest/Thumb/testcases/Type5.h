@@ -49,7 +49,7 @@ namespace {
         } // switch
     } // Op2Shift()
 
-    TEST_F(ggTest, HiReg) {
+    TEST_F(ggTest, Thumb_HiReg) {
         auto TestMain = [&](const unsigned Op, bool HiRd, bool HiRs, const uint32_t RsValue,
                             const uint32_t RdValue) -> uint64_t {
             uint64_t t = 0;
@@ -68,9 +68,6 @@ namespace {
                     for (int RdNum = RdStart; RdNum < RdStart + 8; ++RdNum) {
                         uint16_t instruction =
                                 (0b010001 << 10) | (Op << 8) | (HiRd << 7) | (HiRs << 6) | ((RsNum - RsStart) << 3) | (RdNum - RdStart);
-
-                        if (t == 7)
-                            std::cout << std::endl ;
 
                         arm.regs[RsNum] = RsValue;
                         local_cpu._regs[RsNum] = RsValue;
@@ -102,24 +99,88 @@ namespace {
             };
 
             task();
-            fmt::print("[{}] Rd: {:#x} {}\n", std::this_thread::get_id(), Op, t);
+            fmt::print("[{}] Op: {:#x} {}\n", std::this_thread::get_id(), Op, t);
             return t;
         };
 
-        TestMain(0, true, false, 0, 0x09090909);
-//        boost::asio::thread_pool workerPool(std::thread::hardware_concurrency());
-//        for (int OpTest = 0; OpTest < 3; ++OpTest) {
-//            for (int RsTest = 0; RsTest < 16; ++RsTest) {
-//                for (int RdTest = 0; RdTest < 16; ++RdTest) {
-//                    for (int hibit = 0b01; hibit <= 0b11; ++hibit) {
-//                        uint32_t RsValue = 0x01010101 * RsTest;
-//                        uint32_t RdValue = 0x01010101 * RdTest;
-//                        TestMain(0, true, false, RsValue, RdValue);
-//                    } // for
-//                } // for
-//            } // for
-//        } // for
-//
-//        workerPool.join();
+        for (int OpTest = 0; OpTest < 3; ++OpTest) {
+            for (int RsTest = 0; RsTest < 16; ++RsTest) {
+                for (int RdTest = 0; RdTest < 16; ++RdTest) {
+                    for (int hibit = 0b01; hibit <= 0b11; ++hibit) {
+                        uint32_t RsValue = 0x01010101 * RsTest;
+                        uint32_t RdValue = 0x01010101 * RdTest;
+                        TestMain(OpTest, true, false, RsValue, RdValue);
+                    } // for
+                } // for
+            } // for
+        } // for
+    }
+
+    TEST_F(ggTest, Thumb_BX) {
+        auto TestMain = [&](const unsigned Op, bool HiRd, bool HiRs, const uint32_t RsValue,
+                            const uint32_t RdValue) -> uint64_t {
+            uint64_t t = 0;
+
+            arm.cpsr.t = true ; // for thumb ReadUnused()
+            gg_core::gg_cpu::CPU &local_cpu = gbaInstance.cpu;
+            GgInitToThumbState(local_cpu);
+
+            CpuPC_ResetThumb(arm, local_cpu);
+
+            const int RdStart = HiRd ? 8 : 0;
+            const int RsStart = HiRs ? 8 : 0;
+
+            auto task = [&]() {
+                for (int RsNum = RsStart; RsNum < RsStart + 8; ++RsNum) {
+                    uint16_t instruction =
+                            (0b010001 << 10) | (Op << 8) | (HiRd << 7) | (HiRs << 6) | ((RsNum - RsStart) << 3) | 0;
+
+                    arm.regs[RsNum] = RsValue;
+                    local_cpu._regs[RsNum] = RsValue;
+
+                    EggRunThumb(arm, instruction);
+                    local_cpu.CPU_Test(instruction);
+
+                    uint32_t errFlag = CheckStatus(local_cpu, arm);
+                    std::string input = fmt::format("Original Rs(R{}): {:#x}\n",
+                                                    RdValue, RsNum, RsValue);
+
+                    Type5CalleeCheek(local_cpu, Op, HiRd, HiRs);
+
+                    ASSERT_TRUE(errFlag == 0)
+                                                << "#" << t << " of test\n"
+                                                << std::hex << "Errflag: " << errFlag << '\n'
+                                                << input
+                                                << gg_tasm.DASM(instruction) << " [" << instruction
+                                                << "]" << '\n'
+                                                << Diagnose(local_cpu, arm, errFlag);
+
+                    CpuPC_ResetThumb(arm, local_cpu);
+                    ++t;
+                } // for
+            };
+
+            task();
+            fmt::print("[{}] Op: BX, dstAddr: {:#x}, total_t: {}\n", std::this_thread::get_id(), RsValue, t);
+            return t;
+        };
+
+        constexpr auto dstList = gg_core::make_array(
+            0x0, // in bios
+            0x2000000, // start of EWRAM,
+            0x2000001, // start of EWRAM, change to thumb mode
+            0x203ffff, // end of EWRAM, test for out of bound access
+            0x3000000, // start of IWRAM
+            0x3007fff, // end of IWRAM, test for out of bound access
+            0x8000000, // ROM area(WS0)
+            0xA000002, // ROM area(WS1)
+            0xC000004, // ROM area(WS2)
+            0x10000000 // Unused area
+        ) ;
+
+        for (auto dstAddr : dstList) {
+            TestMain(0b11, false, false, dstAddr, 0);
+            TestMain(0b11, false, true, dstAddr, 0);
+        } // for
     }
 }
