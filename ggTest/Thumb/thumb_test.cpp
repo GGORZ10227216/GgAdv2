@@ -15,3 +15,4 @@
 #include <Type4.h>
 #include <Type5.h>
 #include <Type6.h>
+#include <Type7.h>

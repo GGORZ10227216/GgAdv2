@@ -43,6 +43,9 @@ namespace gg_core::gg_mem {
     constexpr static unsigned SRAM_Start = 0x0E000000, SRAM_End = 0x0E00FFFF ;
 
     // Gamepak area
+    constexpr static unsigned WAITSTATE_0_Start = 0x0800'0000;
+    constexpr static unsigned WAITSTATE_1_Start = 0x0A00'0000;
+    constexpr static unsigned WAITSTATE_2_Start = 0x0C00'0000;
     constexpr static unsigned ROM_BLOCK_SIZE = 0x2000000;
 
     enum E_RamSize {

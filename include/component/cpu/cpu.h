@@ -179,6 +179,10 @@ namespace gg_core::gg_cpu {
 
         loggerType logger ;
 
+        // todo: Maybe fetch and refill in both ARM and Thumb mode are 32bit access
+        //       this hypothesis can explain why illegal access need [PC + 6]
+        //       But I'm not sure about cycle correctness, need more test.
+
         static void ARM_RefillPipeline(CPU* self, CycleType first, CycleType second) {
             using namespace gg_cpu;
 

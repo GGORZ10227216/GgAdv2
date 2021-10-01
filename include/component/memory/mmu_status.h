@@ -73,8 +73,9 @@ namespace gg_core::gg_mem {
                 const uint32_t CPU_PC = _cpuStatus->_regs[ pc ] ;
                 enum { BIOS_AREA = 0, IRAM_AREA = 3, OAM_AREA = 7 } ;
 
-                uint32_t result = _cpuStatus->fetchedBuffer[_cpuStatus->fetchIdx] ;
+                uint32_t result = 0 ;
                 const uint32_t lastFetch = _cpuStatus->fetchedBuffer[!_cpuStatus->fetchIdx] ;
+                const uint32_t thisFetch = _cpuStatus->fetchedBuffer[_cpuStatus->fetchIdx] ;
                 const unsigned addrTrait = CPU_PC >> 24 ;
 
                 switch (addrTrait) {
@@ -82,16 +83,16 @@ namespace gg_core::gg_mem {
                     case OAM_AREA:
                         // Wait, Wat? [PC + 6] is outside the pipeline!!
                         // using PC + 4 for now, just like mgba does.
-                        result = (result << 16) | lastFetch;
+                        result = (thisFetch << 16) | lastFetch;
                         break;
                     case IRAM_AREA:
                         if (CPU_PC & 2)
-                            result = (result << 16) | lastFetch ;
+                            result = (thisFetch << 16) | lastFetch ;
                         else
-                            result = (lastFetch << 16) | result ;
+                            result = (lastFetch << 16) | thisFetch ;
                         break;
                     default:
-                            result = (result << 16) | result ;
+                            result = (thisFetch << 16) | thisFetch ;
                 } // switch()
 
                 return result ;
