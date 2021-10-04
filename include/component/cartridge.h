@@ -137,10 +137,9 @@ namespace gg_core::gg_mem {
             SRAM.fill(0xff) ;
             romData.resize(MAX_GBA_ROMSIZE, 0) ;
 
-            // todo: ROM initialize and move to heap
             uint16_t* seek = reinterpret_cast<uint16_t*>(romData.data()) ;
-            for (int idx = 0 ; idx < MAX_GBA_ROMSIZE/sizeof(uint16_t); ++idx) {
-                seek[idx] = (idx & ~0x1) & 0xffff ;
+            for (int idx = 0 ; idx < MAX_GBA_ROMSIZE/2; idx++) {
+                seek[idx] = ((0x8000000 + idx*2) >> 1) & 0xffff;
             } // for
         }
 
