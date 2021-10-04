@@ -34,7 +34,7 @@ namespace gg_core::gg_mem {
                 const uint32_t addrRealign = relativeAddr & (~0x1) ;
                 uint16_t newData = data ;
                 newData = (newData << 8) | data ;
-                reinterpret_cast<T&>(vram.vram_data[ addrRealign ]) = newData;
+                reinterpret_cast<uint16_t&>(vram.vram_data[ addrRealign ]) = newData;
                 return ;
             } // if
             else
