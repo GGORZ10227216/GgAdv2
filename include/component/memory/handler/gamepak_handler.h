@@ -50,7 +50,11 @@ namespace gg_core::gg_mem {
         } // else if
 
         // normal ROM access logic begin here
-        return reinterpret_cast<T&>(cart.romData[AlignAddr<T>(relativeAddr)]);
+        const uint32_t targetAddr = AlignAddr<T>(relativeAddr) ;
+        if (targetAddr < cart.romData.size())
+            return reinterpret_cast<T&>(cart.romData[AlignAddr<T>(relativeAddr)]);
+        else
+            return 0 ;
     } // ROM_Read()
 
     template<typename T>

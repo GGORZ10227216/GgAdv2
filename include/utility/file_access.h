@@ -13,12 +13,7 @@ namespace gg_core {
     static void LoadFileToBuffer(const std::filesystem::path& filePath, std::vector<uint8_t>& romBuffer){
         if (exists(filePath)) {
             std::ifstream stream(filePath.c_str(), std::ios::in | std::ios::binary);
-            unsigned int romSize = std::filesystem::file_size(filePath) ;
-
-            for (auto i = 0 ; i < romSize ; ++i)
-                romBuffer[i] = stream.get() ;
-
-            spdlog::info(fmt::format("Load ROM finished, size: {} bytes.", romSize));
+            romBuffer = std::vector<uint8_t>((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
         } // if
         else {
             // logger.LogWarning(fmt::format("File: \"{}\" doesn't exist!", filePath.string())) ;
