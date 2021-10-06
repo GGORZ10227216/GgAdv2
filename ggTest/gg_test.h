@@ -124,15 +124,17 @@ protected:
     void EggRunThumb(Arm& egg_local, uint16_t instruction) {
         uint32_t inst_hash = hashThumb(instruction);
         egg_local.regs[15] = (egg_local.regs[15] + 2) & ~0x1;
-        egg_local.pipe[0] = egg_local.pipe[1] & 0xffff;
+
+        const uint32_t nextInstruction = egg_local.pipe[1] & 0xffff ;
+
         egg_local.pipe[1] = egg_local.readHalf(egg_local.gprs[15]) & 0xffff;
+        egg_local.pipe[0] = nextInstruction ;
 
         std::invoke(egg_local.instr_thumb[inst_hash], &egg_local, instruction);
     } // EggRunThumb()
 
     void GgInitToThumbState(gg_core::gg_cpu::CPU& local_cpu) {
         local_cpu.ChangeCpuMode(gg_core::gg_cpu::THUMB) ;
-        local_cpu._regs[15] = 0 ;
         local_cpu.RefillPipeline(&local_cpu, gg_core::gg_mem::S_Cycle, gg_core::gg_mem::S_Cycle) ;
     }
 
