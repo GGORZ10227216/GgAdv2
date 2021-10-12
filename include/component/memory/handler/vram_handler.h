@@ -30,15 +30,17 @@ namespace gg_core::gg_mem {
             // we can emulate it by logic below:
             //     BG: [addr_align_by_16] = data * 0x101
             //     OBJ: just ignore
+            absAddr = gg_mem::VRAM_Start + relativeAddr ;
             if (absAddr >= mmu->videoRAM.BG_Start && absAddr <= mmu->videoRAM.BG_End()) {
                 const uint32_t addrRealign = relativeAddr & (~0x1) ;
-                uint16_t newData = data ;
-                newData = (newData << 8) | data ;
-                reinterpret_cast<uint16_t&>(vram.vram_data[ addrRealign ]) = newData;
+                reinterpret_cast<uint16_t&>(vram.vram_data[ addrRealign ]) = data*0x101;
                 return ;
             } // if
-            else
+            else {
+                // Write to OBJ 0x06010000-0x06017fff(or 6014000h-6017FFFh in Bitmap mode)
+                // are ignored.
                 return ;
+            } // else
         } // if constexpr
 
         reinterpret_cast<T&>(vram.vram_data[ relativeAddr ]) = data;
