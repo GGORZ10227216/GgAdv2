@@ -14,7 +14,7 @@ namespace gg_core::gg_cpu {
         constexpr bool H = TestBit(HashCode10, 5) ;
         constexpr bool S = TestBit(HashCode10, 4) ;
 
-        return &LoadStoreRegOffset<H, S>;
+        return &LoadStoreRegOffsetSignEx<H, S>;
     }
 }
 
