@@ -29,12 +29,25 @@ namespace gg_core::gg_cpu {
                 dst = instance._mem.Read<uint8_t>(targetAddr, gg_mem::I_Cycle) ;
         } // if
         else if constexpr (sizeof(T) == 2) {
+            /**
+             * Mis-aligned LDRH,LDRSH (does or does not do strange things)
+             * On ARM7 aka ARMv4 aka NDS7/GBA:
+             * LDRH Rd,[odd]   -->  LDRH Rd,[odd-1] ROR 8  ;read to bit0-7 and bit24-31
+             * LDRSH Rd,[odd]  -->  LDRSB Rd,[odd]         ;sign-expand BYTE value
+             **/
             if constexpr (SIGNED) { // LDRSH
                 const unsigned extShiftAmount = targetAddr & 1 ? 24 : 16 ;
-                dst = (static_cast<int32_t>(instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle)) << extShiftAmount) >> extShiftAmount ; // sign extend
+                if (extShiftAmount == 24)
+                    dst = (static_cast<int32_t>(instance._mem.Read<uint8_t>(targetAddr, gg_mem::I_Cycle)) << extShiftAmount) >> extShiftAmount ; // sign extend
+                else
+                    dst = (static_cast<int32_t>(instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle)) << extShiftAmount) >> extShiftAmount ; // sign extend
             } // if
             else { // LDRH
-                dst = instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle) ;
+                uint32_t value = instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle) ;
+                if (targetAddr & 1) [[unlikely]] // Suppose mis-aligned access rarely happens......
+                    dst = gg_core::rotr(value, 8) ;
+                else [[likely]]
+                    dst = value ;
             } // else
         } // else if
         else { // LDR
