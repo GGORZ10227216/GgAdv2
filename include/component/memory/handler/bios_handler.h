@@ -39,6 +39,7 @@ namespace gg_core::gg_mem {
 
     template<typename T>
     T NoUsed_Read(MMU_Status *mmu, uint32_t absAddr) {
+        // Just found that mgba has this wired behavior, not sure NO$GBA's.....
         const unsigned memoryBusMask = []() {
             if constexpr (sizeof(T) == 1)
                 return 0b11 ;
