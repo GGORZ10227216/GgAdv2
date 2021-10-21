@@ -25,7 +25,7 @@ namespace gg_core::gg_cpu {
         } // if
         else {
             if constexpr (H)
-                MemLoad<uint16_t, true>(instance, targetAddr, targetRd) ;
+                MemLoad<uint16_t, false>(instance, targetAddr, targetRd) ;
             else
                 MemStore<uint16_t>(instance, targetAddr, targetRd) ;
         } // else
