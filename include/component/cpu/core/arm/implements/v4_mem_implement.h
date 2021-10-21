@@ -43,11 +43,7 @@ namespace gg_core::gg_cpu {
                     dst = (static_cast<int32_t>(instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle)) << extShiftAmount) >> extShiftAmount ; // sign extend
             } // if
             else { // LDRH
-                uint32_t value = instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle) ;
-                if (targetAddr & 1) [[unlikely]] // Suppose mis-aligned access rarely happens......
-                    dst = gg_core::rotr(value, 8) ;
-                else [[likely]]
-                    dst = value ;
+                dst = instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle) ;
             } // else
         } // else if
         else { // LDR
