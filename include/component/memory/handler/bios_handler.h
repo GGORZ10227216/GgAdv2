@@ -17,7 +17,8 @@ namespace gg_core::gg_mem {
         if (targetAddr < E_RamSize::E_BIOS_SIZE) {
             mmu->_cycleCounter += BIOS_ACCESS_CYCLE();
             if (mmu->_cpuStatus->_regs[gg_cpu::pc] <= 0x3fff) {
-                mmu->bios_readBuf = reinterpret_cast<uint32_t&>(mmu->bios_data[targetAddr]);
+                if constexpr (sizeof(T) == sizeof(uint32_t))
+                    mmu->bios_readBuf = reinterpret_cast<uint32_t&>(mmu->bios_data[targetAddr]); // only fetched opcode will affect read buffer
                 return reinterpret_cast<T&>(mmu->bios_data[targetAddr]);
             } // if
             else
