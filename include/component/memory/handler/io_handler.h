@@ -20,7 +20,6 @@ namespace gg_core::gg_mem {
         const uint32_t relativeAddr = AlignAddr<T>(absAddr - ioStart) ;
         T result = 0 ;
         if (relativeAddr < E_RamSize::E_IO_SIZE) {
-            mmu->_cycleCounter += IO_ACCESS_CYCLE();
             for (int i = 0 ; i < sizeof(T) ; ++i) {
                 const auto curPolicy = static_cast<E_IO_AccessMode> (policyTable[relativeAddr + i]) ;
                 result <<= 8 ;
@@ -51,7 +50,6 @@ namespace gg_core::gg_mem {
 
         const uint32_t relativeAddr = AlignAddr<T>(absAddr - ioStart) ;
         if (relativeAddr < E_RamSize::E_IO_SIZE) {
-            mmu->_cycleCounter += IO_ACCESS_CYCLE();
             const auto curPolicy = static_cast<E_IO_AccessMode> (policyTable[relativeAddr]) ;
             if (curPolicy == E_IO_AccessMode::W || curPolicy == E_IO_AccessMode::RW) {
                 // Just write the data directly, since we are reading IO by byte access(check policy per byte)

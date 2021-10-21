@@ -14,7 +14,9 @@ namespace gg_core::gg_mem {
     T Palette_Read(MMU_Status* mmu, uint32_t absAddr) {
         const uint32_t relativeAddr = NORMAL_MIRROR(AlignAddr<T>(absAddr), E_PALETTE_SIZE);
         VideoRAM& vram = mmu->videoRAM ;
-        mmu->_cycleCounter += PALETTE_ACCESS_CYCLE<T>();
+
+        // todo: Plus 1 cycle if GBA accesses video memory at the same time.
+
         return reinterpret_cast<T&>(vram.palette_data[ relativeAddr ]);
     } // IWRAM_Read()
 
@@ -22,7 +24,8 @@ namespace gg_core::gg_mem {
     void Palette_Write(MMU_Status* mmu, uint32_t absAddr, T data) {
         const uint32_t relativeAddr = NORMAL_MIRROR(AlignAddr<T>(absAddr), E_PALETTE_SIZE);
         VideoRAM& vram = mmu->videoRAM ;
-        mmu->_cycleCounter += PALETTE_ACCESS_CYCLE<T>();
+
+        // todo: Plus 1 cycle if GBA accesses video memory at the same time.
 
         if constexpr (sizeof(T) == 1) {
             // byte write to palette memory is undefined behavior,

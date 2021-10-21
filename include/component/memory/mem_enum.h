@@ -16,7 +16,10 @@ namespace gg_core::gg_mem {
 
     enum E_AccessType { N_Cycle, S_Cycle, I_Cycle };
     enum E_GamePakRegion {
-        E_WS0, E_WS1, E_WS2, E_SRAM
+        E_WS0 = 0x8, E_WS0_B = 0x9,
+        E_WS1 = 0xa, E_WS1_B = 0xb,
+        E_WS2 = 0xc, E_WS2_B = 0xd,
+        E_SRAM = 0xe
     } ;
 
     enum E_BackupMediaType {

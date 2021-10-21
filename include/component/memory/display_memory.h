@@ -10,24 +10,6 @@
 #define GGADV_DISPLAY_MEMORY_H
 
 namespace gg_core::gg_mem {
-    template <typename W>
-    static inline unsigned PALETTE_ACCESS_CYCLE() {
-        if constexpr (SameSize<W, DWORD>())
-            return 2 ;
-        else
-            return 1 ;
-    }
-
-    template <typename W>
-    static inline unsigned VRAM_ACCESS_CYCLE() {
-        if constexpr (SameSize<W, DWORD>())
-            return 2 ;
-        else
-            return 1 ;
-    }
-
-    static inline unsigned OAM_ACCESS_CYCLE() { return 1 ; }
-
     struct VideoRAM {
         unsigned mode ;
 

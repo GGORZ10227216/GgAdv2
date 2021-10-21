@@ -95,9 +95,11 @@ namespace gg_core::gg_cpu {
         if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
             instance.Fetch(&instance, gg_mem::I_Cycle) ; // pc = pc + 4
             if (dstReg == pc)
-                instance._mem.Read<T>(instance._regs[ pc ] + 4, gg_mem::S_Cycle);
+//                instance._mem.Read<T>(instance._regs[ pc ] + 4, gg_mem::S_Cycle);
+                instance._mem.CalculateCycle(instance._regs[ pc ] + 4, sizeof(T), gg_mem::S_Cycle);
             else
-                instance._mem.Read<T>(instance._regs[ pc ] + 4, gg_mem::N_Cycle);
+//                instance._mem.Read<T>(instance._regs[ pc ] + 4, gg_mem::N_Cycle);
+                instance._mem.CalculateCycle(instance._regs[ pc ] + 4, sizeof(T), gg_mem::N_Cycle);
         } // if constexpr
         else {
             if (dstReg == pc)

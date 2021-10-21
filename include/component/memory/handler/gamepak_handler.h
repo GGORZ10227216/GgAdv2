@@ -13,7 +13,6 @@ namespace gg_core::gg_mem {
     template<typename T>
     T SRAM_Read(MMU_Status *mmu, uint32_t absAddr) {
         const uint32_t relativeAddr = SRAM_MIRROR(mmu, absAddr);
-        mmu->_cycleCounter += GAMEPAK_ACCESS_CYCLE<uint8_t, E_SRAM>(mmu, absAddr);
 
         // SRAM is only allow byte access
         if constexpr (sizeof(T) == 1)
@@ -34,7 +33,6 @@ namespace gg_core::gg_mem {
         Cartridge &cart = mmu->cartridge;
         uint32_t relativeAddr = cart.RelativeAddr<P>(absAddr);
 
-        mmu->_cycleCounter += GAMEPAK_ACCESS_CYCLE<T, P>(mmu, absAddr);
         if constexpr (P == E_WS2) {
             // If absAddr is in EEPROM region and cart has a EEPROM attached, 
             // that means this access is a EEPROM access.
@@ -60,7 +58,6 @@ namespace gg_core::gg_mem {
     template<typename T>
     void SRAM_Write(MMU_Status *mmu, uint32_t absAddr, T data) {
         const uint32_t relativeAddr = SRAM_MIRROR(mmu, absAddr);
-        mmu->_cycleCounter += GAMEPAK_ACCESS_CYCLE<uint8_t, E_SRAM>(mmu, absAddr);
 
         // SRAM is only allow byte access
         if constexpr (sizeof(T) == 1)

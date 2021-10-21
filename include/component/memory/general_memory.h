@@ -34,17 +34,17 @@ namespace gg_core::gg_mem {
      *      3007FFCh 4     Pointer to user IRQ handler (to 32bit ARM code)
      **/
 
-    static inline unsigned BIOS_ACCESS_CYCLE() { return 1 ; }
-    static inline unsigned IWRAM_ACCESS_CYCLE() { return 1 ; }
-    static inline unsigned IO_ACCESS_CYCLE() { return 1 ; }
-
-    template <typename W>
-    static inline unsigned EWRAM_ACCESS_CYCLE() {
-        if constexpr (SameSize<W, DWORD>())
-            return 6 ;
-        else
-            return 3 ;
-    } // EWRAM_ACCESS_CYCLE()
+//    static inline unsigned BIOS_ACCESS_CYCLE() { return 1 ; }
+//    static inline unsigned IWRAM_ACCESS_CYCLE() { return 1 ; }
+//    static inline unsigned IO_ACCESS_CYCLE() { return 1 ; }
+//
+//    template <typename W>
+//    static inline unsigned EWRAM_ACCESS_CYCLE() {
+//        if constexpr (SameSize<W, DWORD>())
+//            return 6 ;
+//        else
+//            return 3 ;
+//    } // EWRAM_ACCESS_CYCLE()
 }
 
 #endif //GGADV_GENERAL_MEMORY_H

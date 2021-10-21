@@ -21,6 +21,8 @@ namespace gg_core::gg_cpu {
     template <typename T, bool SIGNED>
     static void MemLoad(CPU& instance, uint32_t targetAddr, unsigned targetRegNum) {
         uint32_t& dst = instance._regs[ targetRegNum ] ;
+        uint32_t& cycleCounter = instance._mem._cycleCounter ;
+
         // 2nd cycle
         if constexpr (sizeof(T) == 1) {
             if constexpr (SIGNED) // LDRSB
@@ -52,13 +54,12 @@ namespace gg_core::gg_cpu {
 
         if (targetRegNum == pc) {
             // 3th cycle
-            instance._mem.Read<uint32_t>(instance._regs[ gg_cpu::pc ] + instance.instructionLength, gg_mem::N_Cycle) ;
+            cycleCounter += instance._mem.CalculateCycle(instance._regs[ gg_cpu::pc ] + instance.instructionLength, sizeof(uint32_t), gg_mem::N_Cycle) ;
             // 4th&5th cycle, end.
             instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
         } // if
-        else {
-            instance._mem.Read<T>(instance._regs[ gg_cpu::pc ] + instance.instructionLength, gg_mem::S_Cycle) ; // 3rd cycle, end.
-        } // else
+        else
+            cycleCounter += instance._mem.CalculateCycle(instance._regs[ gg_cpu::pc ] + instance.instructionLength, sizeof(T), gg_mem::S_Cycle) ;
     } // LDR()
 
     template <typename T>
@@ -111,11 +112,11 @@ namespace gg_core::gg_cpu {
 
                     if (idx == pc) {
                         CPU_REG[ pc ] &= ~0x3 ;
-                        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4, gg_mem::N_Cycle) ;
+                        instance._mem.CalculateCycle(instance._regs[ pc ] + 4, sizeof(uint32_t), gg_mem::N_Cycle);
                         instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
                     } // if
                     else {
-                        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4, gg_mem::S_Cycle) ;
+                        instance._mem.CalculateCycle(instance._regs[ pc ] + 4, sizeof(uint32_t), gg_mem::S_Cycle);
                     } // else
                 } // if
                 else {
@@ -301,7 +302,7 @@ namespace gg_core::gg_cpu {
             instance._mem.Write<uint32_t>(Rn, Rm, gg_mem::I_Cycle) ;
         } // if
 
-        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4, gg_mem::N_Cycle) ;
+        instance._mem.CalculateCycle(instance._regs[ pc ] + 4, sizeof(uint32_t), gg_mem::N_Cycle);
     } // Swap_impl()
 }
 

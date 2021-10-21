@@ -23,7 +23,7 @@ namespace gg_core::gg_cpu {
         uint32_t result = arg1 * arg2 ;
         instance.cycle += boothValue ; // The I_Cycle cycle
 
-        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4,gg_mem::S_Cycle) ;
+        instance._mem.CalculateCycle(instance._regs[ pc ] + 4, sizeof(uint32_t), gg_mem::S_Cycle);
 
         if constexpr (S) {
             // Result of C is meaningless, V is unaffected.
@@ -118,7 +118,7 @@ namespace gg_core::gg_cpu {
         CPU_REG[RdLoNumber] = result.dword[0] ;
         CPU_REG[RdHiNumber] = result.dword[1] ;
 
-        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4,gg_mem::S_Cycle) ;
+        instance._mem.CalculateCycle(instance._regs[ pc ] + 4, sizeof(uint32_t), gg_mem::S_Cycle);
     }
 }
 

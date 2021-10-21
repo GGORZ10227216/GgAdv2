@@ -71,17 +71,26 @@ namespace gg_core::gg_mem {
             Write<uint32_t>(addr, value, gg_mem::S_Cycle);
         } // Write()
 
+        inline int CalculateCycle(uint32_t absAddr, int accessWidth, E_AccessType accessType) {
+            return memCycleTable[absAddr >> 24][accessType].cycle[accessWidth] ; ;
+        } // CalculateCycle()
+
         template<typename W, typename T>
-        void Write(uint32_t addr, T value, E_AccessType accessType) requires std::is_same_v<W, T> {
-            const uint32_t alignedAddr = AlignAddr<W>(addr);
+        void Write(uint32_t absAddr, T value, E_AccessType accessType) requires std::is_same_v<W, T> {
+            const uint32_t alignedAddr = AlignAddr<W>(absAddr);
             unsigned addrTrait = (alignedAddr & 0xff000000) >> 24;
             requestAccessType = accessType ;
 
-            if (addrTrait > 0xf)
+            if (addrTrait > 0xf) {
                 NoUsed_Write<W>(this, alignedAddr, value) ;
-            else
+                _cycleCounter += 1 ;
+            } // if
+            else {
                 std::get<(sizeof(W) >> 1)>(WriteHandlers[ addrTrait ])(this, alignedAddr, value) ;
-            lastAccessAddr = addr ;
+                _cycleCounter += accessType == I_Cycle ? 1 : CalculateCycle(absAddr, sizeof(W), accessType) ;
+            } // else
+
+            lastAccessAddr = absAddr ;
         } // Write()
 
         template<typename W>
@@ -96,10 +105,14 @@ namespace gg_core::gg_mem {
             uint32_t result = 0 ;
             requestAccessType = accessType ;
 
-            if (addrTrait > 0xf)
+            if (addrTrait > 0xf) {
                 result = NoUsed_Read<W>(this, absAddr) ;
-            else
+                _cycleCounter += 1 ;
+            } // if
+            else {
                 result = std::get<(sizeof(W) >> 1)>(ReadHandlers[ addrTrait ])(this, absAddr) ;
+                _cycleCounter += accessType == I_Cycle ? 1 : CalculateCycle(absAddr, sizeof(W), accessType) ;
+            } // else
 
             lastAccessAddr = absAddr ;
             if constexpr (sizeof(W) == 1)

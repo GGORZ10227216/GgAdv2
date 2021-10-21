@@ -14,7 +14,9 @@ namespace gg_core::gg_mem {
     auto VRAM_Read(MMU_Status* mmu, uint32_t absAddr) {
         const uint32_t relativeAddr = VRAM_MIRROR(AlignAddr<T>(absAddr));
         VideoRAM& vram = mmu->videoRAM ;
-        mmu->_cycleCounter += VRAM_ACCESS_CYCLE<T>();
+
+        // todo: Plus 1 cycle if GBA accesses video memory at the same time.
+
         return reinterpret_cast<T&>(vram.vram_data[relativeAddr]);
     } // IWRAM_Read()
 
@@ -22,7 +24,8 @@ namespace gg_core::gg_mem {
     void VRAM_Write(MMU_Status* mmu, uint32_t absAddr, T data) {
         const uint32_t relativeAddr = VRAM_MIRROR(AlignAddr<T>(absAddr));
         VideoRAM& vram = mmu->videoRAM ;
-        mmu->_cycleCounter += VRAM_ACCESS_CYCLE<T>();
+
+        // todo: Plus 1 cycle if GBA accesses video memory at the same time.
 
         if constexpr (sizeof(T) == 1) {
             // byte write to palette VRAM is undefined behavior,
