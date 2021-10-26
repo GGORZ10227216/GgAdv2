@@ -10,52 +10,22 @@
 #define GGTEST_BIOS_HANDLER_H
 
 namespace gg_core::gg_mem {
-    template<typename T>
-    T BIOS_Read(MMU_Status *mmu, uint32_t absAddr) {
-        const uint32_t targetAddr = AlignAddr<T>(absAddr);
-
-        if (targetAddr < E_RamSize::E_BIOS_SIZE) {
-            if (mmu->_cpuStatus->_regs[gg_cpu::pc] <= 0x3fff) {
-                if constexpr (sizeof(T) == sizeof(uint32_t))
-                    mmu->bios_readBuf = reinterpret_cast<uint32_t&>(mmu->bios_data[targetAddr]); // only fetched opcode will affect read buffer
-                return reinterpret_cast<T&>(mmu->bios_data[targetAddr]);
-            } // if
-            else
-                return static_cast<T>(mmu->bios_readBuf);
-        } // if
-        else
-            return static_cast<T>(mmu->IllegalReadValue());
-    } // BIOS_Read()
-
-    template<typename T>
-    void BIOS_Write(MMU_Status *mmu, uint32_t absAddr, T data) {
-        mmu->logger->warn(
-                "Attempt to WRITE {} value ({}) to BIOS area({})",
-                accessWidthName[sizeof(T) >> 1],
-                data,
-                absAddr
-        );
-    }
+    template <typename T>
+    T IllegalShift(uint32_t value, uint32_t absAddr) {
+        // Just found that mgba has this wired behavior, not sure NO$GBA's.....
+        const unsigned memoryBusMask = sizeof(uint32_t) - sizeof(T) ;
+        return (value >> ((absAddr & memoryBusMask) << 3)) & static_cast<T>(0xffffffff);
+    } // IllegalShift()
 
     template<typename T>
     T NoUsed_Read(MMU_Status *mmu, uint32_t absAddr) {
-        // Just found that mgba has this wired behavior, not sure NO$GBA's.....
-        const unsigned memoryBusMask = []() {
-            if constexpr (sizeof(T) == 1)
-                return 0b11 ;
-            else if constexpr (sizeof(T) == 2)
-                return 0b10 ;
-            else
-                return 0 ;
-        }();
-
         mmu->logger->warn(
                 "Attempt to READ {} from address 0x{:x}",
                 accessWidthName[sizeof(T) >> 1],
                 absAddr
         );
 
-        return (mmu->IllegalReadValue() >> ((absAddr & memoryBusMask) << 3)) & static_cast<T>(0xffffffff);
+        return IllegalShift<T>(mmu->IllegalReadValue(), absAddr);
     } // NoUsed_Read()
 
     template<typename T>
@@ -67,6 +37,33 @@ namespace gg_core::gg_mem {
                 absAddr
         );
     } // NoUsed_Write()
+
+    template<typename T>
+    T BIOS_Read(MMU_Status *mmu, uint32_t absAddr) {
+        const uint32_t targetAddr = AlignAddr<T>(absAddr);
+
+        if (targetAddr < E_RamSize::E_BIOS_SIZE) {
+            if (mmu->_cpuStatus->_regs[gg_cpu::pc] <= 0x3fff) {
+                if constexpr (sizeof(T) == sizeof(uint32_t))
+                    mmu->bios_readBuf = reinterpret_cast<uint32_t&>(mmu->bios_data[targetAddr]); // only fetched opcode will affect read buffer
+                return reinterpret_cast<T&>(mmu->bios_data[targetAddr]);
+            } // if
+            else
+                return IllegalShift<T>(mmu->bios_readBuf, absAddr);
+        } // if
+        else
+            return NoUsed_Read<T>(mmu, absAddr);
+    } // BIOS_Read()
+
+    template<typename T>
+    void BIOS_Write(MMU_Status *mmu, uint32_t absAddr, T data) {
+        mmu->logger->warn(
+                "Attempt to WRITE {} value ({}) to BIOS area({})",
+                accessWidthName[sizeof(T) >> 1],
+                data,
+                absAddr
+        );
+    }
 }
 
 #endif //GGTEST_BIOS_HANDLER_H
