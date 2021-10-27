@@ -14,7 +14,7 @@ namespace gg_core::gg_cpu {
         unsigned baseReg = curInst & ((0b111 << 8)) >> 8 ;
         unsigned regList = curInst & 0xff ;
 
-        LDSTM<L, false, true, true>(instance, instance._regs[baseReg], regList);
+        LDSTM<L, false, true, true>(instance, instance._regs[baseReg], regList, PopCount32(regList) << 2);
     } // SP_Offset()
 }
 

@@ -73,15 +73,9 @@ namespace gg_core::gg_cpu {
     }
 
     template <bool L, bool P, bool U, bool W>
-    static void LDSTM(CPU& instance, uint32_t& baseReg, unsigned regList) {
-        uint32_t base = 0, offset = 0 ;
+    static void LDSTM(CPU& instance, uint32_t& baseReg, unsigned regList, unsigned offset) {
+        uint32_t base = 0 ;
         unsigned int registerCnt = PopCount32(regList) ;
-        offset = registerCnt * 4 ;
-
-        if (registerCnt == 0) {
-            regList = 0x8000 ; // pc only
-            offset = 0x40 ;
-        } // if
 
         if constexpr (U) {
             if constexpr (P) {
@@ -108,15 +102,20 @@ namespace gg_core::gg_cpu {
             if (TestBit(regList, idx)) {
                 if constexpr (L) {
                     const auto cycleType = --registerCnt == 0 ? gg_mem::I_Cycle : gg_mem::S_Cycle ;
+                    uint32_t originalPC = 0x0 ;
+
+                    if (idx == pc)
+                        originalPC = CPU_REG[ idx ] ;
+
                     CPU_REG[ idx ] = instance._mem.Read<uint32_t>(base, cycleType) ;
 
                     if (idx == pc) {
-                        CPU_REG[ pc ] &= ~0x3 ;
-                        instance._mem.CalculateCycle(instance._regs[ pc ] + 4, sizeof(uint32_t), gg_mem::N_Cycle);
+                        CPU_REG[ pc ] &= ~(instance.instructionLength - 1) ;
+                        instance._mem.CalculateCycle(originalPC + instance.instructionLength, instance.instructionLength, gg_mem::N_Cycle);
                         instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
                     } // if
                     else {
-                        instance._mem.CalculateCycle(instance._regs[ pc ] + 4, sizeof(uint32_t), gg_mem::S_Cycle);
+                        instance._mem.CalculateCycle(instance._regs[ pc ] + instance.instructionLength, instance.instructionLength, gg_mem::S_Cycle);
                     } // else
                 } // if
                 else {
@@ -265,6 +264,7 @@ namespace gg_core::gg_cpu {
 
         // todo: undocumented behavior of ldm/stm implement
         uint32_t regList = BitFieldValue<0, 16>(CURRENT_INSTRUCTION) ;
+        uint32_t offset = 0 ;
         uint32_t &Rn = instance._regs[ BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ] ;
 
         uint32_t originalCPSR = instance.ReadCPSR() ;
@@ -273,7 +273,14 @@ namespace gg_core::gg_cpu {
         if constexpr (S)
             instance.WriteCPSR( (originalCPSR & ~0b11111) | static_cast<uint32_t>(E_OperationMode::USR) ) ;
 
-        LDSTM<L, P, U, W>(instance, Rn, regList);
+        if (regList == 0) {
+            regList = 0x8000 ; // pc only
+            offset = 0x40 ;
+        } // if
+        else
+            offset = PopCount32(regList) << 2;
+
+        LDSTM<L, P, U, W>(instance, Rn, regList, offset);
 
         if constexpr (S) {
             if constexpr (L) {
