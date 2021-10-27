@@ -134,6 +134,7 @@ protected:
     } // EggRunThumb()
 
     void GgInitToThumbState(gg_core::gg_cpu::CPU& local_cpu) {
+        local_cpu._regs[0] = 0 ; // bypass 0xca5 emulation
         local_cpu.ChangeCpuMode(gg_core::gg_cpu::THUMB) ;
         local_cpu.RefillPipeline(&local_cpu, gg_core::gg_mem::S_Cycle, gg_core::gg_mem::S_Cycle) ;
     }
