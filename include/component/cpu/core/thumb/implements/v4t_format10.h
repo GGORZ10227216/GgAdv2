@@ -13,7 +13,7 @@ namespace gg_core::gg_cpu {
         const uint16_t curInst = CURRENT_INSTRUCTION ;
         const unsigned targetRd = curInst & 0b111;
         const unsigned baseReg   = (curInst & (0b111 << 3)) >> 3 ;
-        const unsigned offsetImm = (curInst & (0b11111 << 6)) >> 4 ; // 7bit offset
+        const unsigned offsetImm = (curInst & (0b11111 << 6)) >> 5 ;
 
         const unsigned targetAddr = instance._regs[ baseReg ] + offsetImm;
 
