@@ -64,8 +64,8 @@ namespace {
 
                 for (int i = 8, j = 1 ; i >= 0 ; --i) {
                     if (gg_core::TestBit(Rlist, i)) {
-                        const uint32_t refReadback = arm.readWordRotate(spAddr - j*4) ;
-                        const uint32_t ggReadback = gbaInstance.mmu.Read<uint32_t>(spAddr - j*4, gg_core::gg_mem::S_Cycle) ;
+                        const uint32_t refReadback = arm.readWordRotate((spAddr - j*4) & ~0x3) ;
+                        const uint32_t ggReadback = gbaInstance.mmu.Read<uint32_t>((spAddr - j*4) & ~0x3, gg_core::gg_mem::S_Cycle) ;
                         ++j ;
 
                         if (i < 8) {
@@ -94,7 +94,10 @@ namespace {
 
         using namespace gg_core;
         const auto areaList = gg_core::make_array(
-                0x03007f00
+                0x03007f00,
+                0x03007f01,
+                0x03007f02,
+                0x03007f03
         ) ;
 
         for (const auto base : areaList)
@@ -142,9 +145,6 @@ namespace {
                 std::string input = fmt::format("SP Value: {:#x}, Rlist: {:#x}\n",
                                                 spAddr, (Rlist & 0xff));
 
-                if (t == 263)
-                    std::cout << std::endl ;
-
                 EggRunThumb(arm, instruction);
                 local_cpu.CPU_Test(instruction);
 
@@ -170,7 +170,10 @@ namespace {
 
         using namespace gg_core;
         const auto areaList = gg_core::make_array(
-                0x03007f00
+                0x03007f00,
+                0x03007f01,
+                0x03007f02,
+                0x03007f03
         ) ;
 
         for (const auto base : areaList)
