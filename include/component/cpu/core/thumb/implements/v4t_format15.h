@@ -11,10 +11,16 @@ namespace gg_core::gg_cpu {
         instance.Fetch(&instance, N_Cycle) ;
 
         const uint16_t curInst = CURRENT_INSTRUCTION ;
-        unsigned baseReg = curInst & ((0b111 << 8)) >> 8 ;
+        unsigned baseRegNum = (curInst & (0b111 << 8)) >> 8 ;
         unsigned regList = curInst & 0xff ;
+        unsigned offset = PopCount32(regList) << 2 ;
 
-        LDSTM<L, false, true, true>(instance, instance._regs[baseReg], regList, PopCount32(regList) << 2);
+        if (regList == 0) {
+            regList = 0x8000;
+            offset = 0x40 ;
+        } // if
+
+        LDSTM<L, false, true, true>(instance, baseRegNum, regList, offset);
     } // SP_Offset()
 }
 

@@ -16,12 +16,12 @@ namespace gg_core::gg_cpu {
         if constexpr (L) {
             if constexpr (R)
                 regList |= (1 << pc);
-            LDSTM<true, false, true, true>(instance, instance._regs[sp], regList, PopCount32(regList) << 2);
+            LDSTM<true, false, true, true>(instance, sp, regList, PopCount32(regList) << 2);
         } // if
         else {
             if constexpr (R)
                 regList |= (1 << lr);
-            LDSTM<false, true, false, true>(instance, instance._regs[sp], regList, PopCount32(regList) << 2);
+            LDSTM<false, true, false, true>(instance, sp, regList, PopCount32(regList) << 2);
         } // else
     } // SP_Offset()
 }

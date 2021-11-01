@@ -73,30 +73,40 @@ namespace gg_core::gg_cpu {
     }
 
     template <bool L, bool P, bool U, bool W>
-    static void LDSTM(CPU& instance, uint32_t& baseReg, unsigned regList, unsigned offset) {
-        uint32_t base = 0 ;
+    static void LDSTM(CPU& instance, unsigned baseRegIdx, unsigned regList, unsigned offset) {
         unsigned int registerCnt = PopCount32(regList) ;
+        const unsigned int registerCntBackup = registerCnt ;
+
+        uint32_t& baseReg = instance._regs[baseRegIdx] ;
+        uint32_t base = baseReg & ~0x3;
 
         if constexpr (U) {
             if constexpr (P) {
                 // pre-increment
-                base = baseReg + 4 ;
+                base = base + 4 ;
             } // if
             else {
                 // post-increment
-                base = baseReg ;
+                base = base ;
             } // else
         } // if
         else {
             if constexpr (P) {
                 // pre-decrement
-                base = baseReg - offset ;
+                base = base - offset ;
             } // if
             else {
                 // post-decrement
-                base = baseReg - offset + 4 ;
+                base = base - offset + 4 ;
             } // else
         } // else
+
+        if constexpr (W) {
+            if constexpr (U)
+                baseReg = (baseReg & ~0x3) + offset ;
+            else
+                baseReg = (baseReg & ~0x3) - offset ;
+        } // if
 
         for (size_t idx = 0 ; idx < 16 ; ++idx) {
             if (TestBit(regList, idx)) {
@@ -121,21 +131,22 @@ namespace gg_core::gg_cpu {
                 else {
                     const auto cycleType = --registerCnt == 0 ? gg_mem::N_Cycle : gg_mem::S_Cycle ;
                     uint32_t regVal = CPU_REG[ idx ] ;
+
                     if (idx == 15)
-                        regVal = (regVal + 4) & ~0x3 ;
-                    instance._mem.Write<uint32_t>(base, regVal, cycleType) ;
+                        regVal = (regVal + instance.instructionLength) & ~(instance.instructionLength - 1);
+
+                    if (idx == baseRegIdx) {
+                        registerCntBackup == registerCnt + 1 ?
+                            instance._mem.Write<uint32_t>(base, base, cycleType) :
+                            instance._mem.Write<uint32_t>(base, baseReg, cycleType) ;
+                    } // if
+                    else
+                        instance._mem.Write<uint32_t>(base, regVal, cycleType) ;
                 } // else
 
                 base += 4 ;
             } // if
         } // for
-
-        if constexpr (W) {
-            if constexpr (U)
-                baseReg += offset ;
-            else
-                baseReg -= offset ;
-        } // if
     }
     
     template <bool I, bool P, bool U, bool B, bool W, bool L, E_ShiftType ST>
@@ -265,7 +276,7 @@ namespace gg_core::gg_cpu {
         // todo: undocumented behavior of ldm/stm implement
         uint32_t regList = BitFieldValue<0, 16>(CURRENT_INSTRUCTION) ;
         uint32_t offset = 0 ;
-        uint32_t &Rn = instance._regs[ BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ] ;
+        uint32_t RnNumber = BitFieldValue<16, 4>(CURRENT_INSTRUCTION) ;
 
         uint32_t originalCPSR = instance.ReadCPSR() ;
         uint32_t originalMode = instance.GetOperationMode() ;
@@ -280,7 +291,7 @@ namespace gg_core::gg_cpu {
         else
             offset = PopCount32(regList) << 2;
 
-        LDSTM<L, P, U, W>(instance, Rn, regList, offset);
+        LDSTM<L, P, U, W>(instance, RnNumber, regList, offset);
 
         if constexpr (S) {
             if constexpr (L) {
