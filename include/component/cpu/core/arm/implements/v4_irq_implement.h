@@ -17,17 +17,24 @@ namespace gg_core::gg_cpu {
         instance.WriteCPSR((preCPSR & ~0b11111u) | static_cast<uint8_t>(opMode)) ;
         instance.WriteSPSR(preCPSR) ;
 
-        instance._regs[ lr ] = instance._regs[ pc ] - instance.instructionLength ;
 
-        if constexpr (opMode == SVC)
+
+        if constexpr (opMode == SVC) {
+            instance._regs[ lr ] = instance._regs[ pc ] - instance.instructionLength ;
             instance._regs[ pc ] = SW_IRQ ;
-        else if constexpr (opMode == IRQ)
+        } // if
+        else if constexpr (opMode == IRQ) {
+            instance._regs[ lr ] = instance._regs[ pc ] - instance.instructionLength*2 ;
             instance._regs[ pc ] = HW_IRQ ;
+        } // else if
+        else
+            gg_core::Unreachable();
 
         instance.ChangeCpuMode(ARM);
 
         instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
-        instance.SetI() ;
+        instance.SetI() ; // TODO: not sure setting the I bit is emulator's responsibility or programmer's
+                          //       Need to check what nintendo's BIOS do in interrupt routine.
     } // Interrupt_impl()
 }
 
