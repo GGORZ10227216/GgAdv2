@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool S>
-    static void SP_Offset(CPU& instance) {
+    extern void SP_Offset(CPU& instance) {
         instance.Fetch(&instance, S_Cycle) ;
 
         const uint16_t curInst = CURRENT_INSTRUCTION ;

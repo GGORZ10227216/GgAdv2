@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool H>
-    static void LongBranch(CPU& instance) {
+    extern void LongBranch(CPU& instance) {
         const uint16_t curInst = CURRENT_INSTRUCTION ;
         unsigned offset = static_cast<int16_t>(curInst & 0x7ff) ;
 

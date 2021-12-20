@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <E_DataProcess OP>
-    static void MovCmpAddSub(CPU& instance);
+    extern void MovCmpAddSub(CPU& instance);
 
     template <uint32_t HashCode10>
     static constexpr auto ThumbType3() {

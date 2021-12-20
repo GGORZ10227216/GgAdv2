@@ -9,7 +9,7 @@ namespace gg_core::gg_cpu {
     using namespace gg_core::gg_mem ;
 
     template <E_ShiftType ST>
-    static void MoveShift(CPU& instance) {
+    extern void MoveShift(CPU& instance) {
         instance.Fetch(&instance, S_Cycle) ;
 
         const uint16_t curInst = CURRENT_INSTRUCTION ;

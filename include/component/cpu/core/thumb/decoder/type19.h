@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool H>
-    static void LongBranch(CPU& instance) ;
+    extern void LongBranch(CPU& instance) ;
 
     template <uint32_t HashCode10>
     static constexpr auto ThumbType19() {

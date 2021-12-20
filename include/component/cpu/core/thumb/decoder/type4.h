@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <auto OP>
-    static void ALU_Operations(CPU& instance) ;
+    extern void ALU_Operations(CPU& instance) ;
 
     using HandlerType = void(*)(CPU&);
 

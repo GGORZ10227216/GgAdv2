@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool L>
-    static void SP_RelativeLoadStore(CPU& instance) ;
+    extern void SP_RelativeLoadStore(CPU& instance) ;
 
     template <uint32_t HashCode10>
     static constexpr auto ThumbType11() {

@@ -2,18 +2,20 @@
 // Created by buildmachine on 2021-03-17.
 //
 
-#include <mmu_status.h>
+
 #include <mem_enum.h>
 #include <gg_utility.h>
+
+
 
 #ifndef GGTEST_PALETTE_HANDLER_H
 #define GGTEST_PALETTE_HANDLER_H
 
 namespace gg_core::gg_mem {
     template <typename T>
-    T Palette_Read(MMU_Status* mmu, uint32_t absAddr) {
+    T Palette_Read(GbaInstance& instance, uint32_t absAddr) {
         const uint32_t relativeAddr = NORMAL_MIRROR(AlignAddr<T>(absAddr), E_PALETTE_SIZE);
-        VideoRAM& vram = mmu->videoRAM ;
+        VideoRAM& vram = instance.mmu.videoRAM ;
 
         // todo: Plus 1 cycle if GBA accesses video memory at the same time.
 
@@ -21,9 +23,9 @@ namespace gg_core::gg_mem {
     } // IWRAM_Read()
 
     template <typename T>
-    void Palette_Write(MMU_Status* mmu, uint32_t absAddr, T data) {
+    void Palette_Write(GbaInstance& instance, uint32_t absAddr, T data) {
         const uint32_t relativeAddr = NORMAL_MIRROR(AlignAddr<T>(absAddr), E_PALETTE_SIZE);
-        VideoRAM& vram = mmu->videoRAM ;
+        VideoRAM& vram = instance.mmu.videoRAM ;
 
         // todo: Plus 1 cycle if GBA accesses video memory at the same time.
 

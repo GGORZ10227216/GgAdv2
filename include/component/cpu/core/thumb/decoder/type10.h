@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool L>
-    static void LoadStoreImmOffsetHalf(CPU& instance) ;
+    extern void LoadStoreImmOffsetHalf(CPU& instance) ;
 
     template <uint32_t HashCode10>
     static constexpr auto ThumbType10() {

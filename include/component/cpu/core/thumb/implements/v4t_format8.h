@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool H, bool S>
-    static void LoadStoreRegOffsetSignEx(CPU& instance) {
+    extern void LoadStoreRegOffsetSignEx(CPU& instance) {
         instance.Fetch(&instance, N_Cycle) ;
 
         const uint16_t curInst = CURRENT_INSTRUCTION ;

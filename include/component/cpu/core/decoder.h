@@ -190,7 +190,7 @@ namespace gg_core {
                 if constexpr (bit6) {
                     constexpr unsigned cond = (HashCode10 & (0b1111 << 2)) >> 2 ;
                     if constexpr (cond == 0b1111)
-                    return ThumbType17<HashCode10>() ;
+                        return ThumbType17<HashCode10>() ;
                     else
                         return ThumbType16<HashCode10>() ;
                 } // if
@@ -201,7 +201,7 @@ namespace gg_core {
             else if constexpr (firstStageCode == 0b111){
                 constexpr bool bit6 = TestBit(HashCode10, 6) ;
                 if constexpr (bit6)
-                return ThumbType19<HashCode10>();
+                    return ThumbType19<HashCode10>();
                 else
                     return ThumbType18<HashCode10>();
             } // else

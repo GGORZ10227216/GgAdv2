@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool L>
-    static void LoadStoreImmOffsetHalf(CPU& instance) {
+    extern void LoadStoreImmOffsetHalf(CPU& instance) {
         instance.Fetch(&instance, N_Cycle) ;
 
         const uint16_t curInst = CURRENT_INSTRUCTION ;

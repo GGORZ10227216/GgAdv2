@@ -6,7 +6,7 @@
 #define GGTEST_TYPE17_H
 
 namespace gg_core::gg_cpu {
-    static void SoftInterrupt(CPU& instance) ;
+    extern void SoftInterrupt(CPU& instance) ;
 
     template <uint32_t HashCode10>
     static constexpr auto ThumbType17() {

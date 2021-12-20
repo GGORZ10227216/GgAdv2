@@ -6,7 +6,9 @@
 #include <cstdint>
 #include <cstring>
 
-#include <cpu_enum.h>
+#include <bit_manipulate.h>
+
+#include <mem_enum.h>
 
 #ifndef GGADV_CPU_STATUS_H
 #define GGADV_CPU_STATUS_H
@@ -15,10 +17,24 @@ class ggTest ;
 
 namespace gg_core {
     namespace gg_cpu {
+        class CPU;
+        using HandlerType = void (*)(gg_core::gg_cpu::CPU &) ;
+
+        enum STATE_BIT {THUMB_BIT, IRQ_BIT, DMA_BIT, HALT_BIT, TIMER_BIT};
+        enum IRQ_TYPE {
+            V_BLANK, H_BLANK, V_COUNTER_MATCH, TIMER_0, TIMER_1, TIMER_2, TIMER_3,
+            SERIAL, DMA_0, DMA_1, DMA_2, DMA_3, KEYPAD, EXT
+        } ;
+
         struct CPU_Status {
+            unsigned runState = 0x0 ;
             std::array<unsigned, 16> _regs;
 
-            CPU_Status() {
+            CPU_Status(std::array<uint8_t, 0x400>& ioRegs):
+                IF(reinterpret_cast<uint16_t&>(ioRegs[0x202])),
+                IE(reinterpret_cast<uint16_t&>(ioRegs[0x200])),
+                IME(reinterpret_cast<uint16_t&>(ioRegs[0x208]))
+            {
                 _regs.fill(0) ;
             }
 
@@ -69,49 +85,6 @@ namespace gg_core {
                 } // switch()
             }
 
-            void WriteCPSR(uint32_t newCPSR) {
-                /// todo: test
-                E_OperationMode originalMode = static_cast<E_OperationMode>(_cpsr & 0x1fu);
-                E_OperationMode newMode = static_cast<E_OperationMode>(newCPSR & 0x1fu);
-
-                bool needBankSwap = (originalMode != newMode) && ((originalMode^newMode) != 0b01111) ;
-
-                if (needBankSwap) {
-                    // specialize the swap logic for GBA's cpu(NO FIQ mode)
-                    unsigned *currentBank = GetBankRegDataPtr(originalMode);
-                    unsigned *targetBank  = GetBankRegDataPtr(newMode) ;
-
-                    // Store back current content to reg bank
-                    *reinterpret_cast<uint64_t*>(currentBank) = *reinterpret_cast<uint64_t*>(_regs.data() + sp);
-                    // Load banked register from new mode's reg bank
-                    *reinterpret_cast<uint64_t*>(_regs.data() + sp) = *reinterpret_cast<uint64_t*>(targetBank);
-                } // if
-
-                _cpsr = newCPSR;
-            }
-
-            void WriteSPSR(uint32_t value) {
-                switch (GetOperationMode()) {
-                    case FIQ:
-                        _spsr_fiq = value ;
-                        break ;
-                    case IRQ:
-                        _spsr_irq = value ;
-                        break ;
-                    case SVC:
-                        _spsr_svc = value ;
-                        break ;
-                    case ABT:
-                        _spsr_abt = value ;
-                        break ;
-                    case UND:
-                        _spsr_und  = value ;
-                        break ;
-                    default:
-                        exit(-2) ;
-                } // switch()
-            }
-
             E_OperationMode GetOperationMode() {
                 return static_cast<E_OperationMode>(_cpsr & 0x1f);
             } // GetOperationMode()
@@ -127,19 +100,6 @@ namespace gg_core {
             bool Z() { return _cpsr & 0x40000000u; } // Z()
             bool N() { return _cpsr & 0x80000000u; } // N()
 
-            void SetF() { _cpsr |= (1 << 6); } // SetF()
-            void ClearF() { _cpsr &= ~(1 << 6); } // ClearF()
-            void SetI() { _cpsr |= (1 << 7); } // SetI()
-            void ClearI() { _cpsr &= ~(1 << 7); } // ClearI()
-            void SetV() { _cpsr |= (1 << 28); } // SetV()
-            void ClearV() { _cpsr &= ~(1 << 28); } // ClearV()
-            void SetC() { _cpsr |= (1 << 29); } // SetC()
-            void ClearC() { _cpsr &= ~(1 << 29); } // ClearC()
-            void SetZ() { _cpsr |= (1 << 30); } // SetZ()
-            void ClearZ() { _cpsr &= ~(1 << 30); } // ClearZ()
-            void SetN() { _cpsr |= (1 << 31); } // SetN()
-            void ClearN() { _cpsr &= ~(1 << 31); } // ClearN()
-
             bool EQ() { return Z() ; }
             bool NE() { return !Z() ; }
             bool CS() { return C() ; }
@@ -149,7 +109,7 @@ namespace gg_core {
             bool VS() { return V() ; }
             bool VC() { return !V() ; }
             bool HI() { return C() && !Z() ; }
-            bool LS() { return !C() && Z() ; }
+            bool LS() { return !C() || Z() ; }
             bool GE() { return N() == V() ; }
             bool LT() { return N() != V() ; }
             bool GT() { return !Z() && (N() == V()) ; }
@@ -177,7 +137,7 @@ namespace gg_core {
             std::array<uint32_t, 2> fetchedBuffer;
             uint8_t fetchIdx = 0;
             uint32_t currentInstruction = 0x00 ;
-            uint32_t _cpsr = 0xd3;
+
             uint32_t cycle = 0 ;
             uint32_t lastPC = 0x0 ;
 
@@ -217,6 +177,17 @@ namespace gg_core {
                 // todo: log undefined mode
                 return nullptr;
             } // GetBankRegDataPtr()
+
+            uint32_t (*iHash)(uint32_t) = nullptr ;
+            void (*Fetch)(CPU*, gg_mem::E_AccessType) = nullptr ;
+            void (*Tick)(CPU*) = nullptr ;
+            void (*RefillPipeline)(CPU*, gg_mem::CycleType, gg_mem::CycleType) = nullptr ;
+            HandlerType const* instructionTable = nullptr ;
+        protected:
+            uint32_t _cpsr = 0xd3;
+            uint16_t&  IF;
+            uint16_t&  IE;
+            uint16_t& IME;
         };
     }
 }

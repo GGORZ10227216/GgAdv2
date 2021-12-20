@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool L, bool R>
-    static void PushPop(CPU& instance) {
+    extern void PushPop(CPU& instance) {
         instance.Fetch(&instance, N_Cycle) ;
 
         const uint16_t curInst = CURRENT_INSTRUCTION ;

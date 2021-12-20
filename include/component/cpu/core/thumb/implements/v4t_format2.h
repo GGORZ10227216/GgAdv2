@@ -9,7 +9,7 @@ namespace gg_core::gg_cpu {
     using namespace gg_core::gg_mem ;
 
     template <bool IS_IMMEDIATE, E_DataProcess OPCODE>
-    static void AddSub(CPU& instance) {
+    extern void AddSub(CPU& instance) {
         instance.Fetch(&instance, S_Cycle) ;
 
         const uint16_t curInst = CURRENT_INSTRUCTION ;

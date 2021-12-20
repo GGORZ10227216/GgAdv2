@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <auto OP, bool H1, bool H2>
-    static void HiRegOperation_BX(CPU& instance) {
+    extern void HiRegOperation_BX(CPU& instance) {
         const uint16_t curInst = CURRENT_INSTRUCTION ;
         unsigned targetRs = (curInst & 0b111000) >> 3;
         unsigned targetRd = curInst & 0b111 ;

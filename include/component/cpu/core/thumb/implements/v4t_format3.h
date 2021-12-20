@@ -9,7 +9,7 @@ namespace gg_core::gg_cpu {
     using namespace gg_core::gg_mem ;
 
     template <E_DataProcess OP>
-    static void MovCmpAddSub(CPU& instance) {
+    extern void MovCmpAddSub(CPU& instance) {
         /**
          * Remove Rd in template argument,
          *

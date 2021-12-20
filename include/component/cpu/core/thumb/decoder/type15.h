@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool L>
-    static void MultiLoadStore(CPU& instance) ;
+    extern void MultiLoadStore(CPU& instance) ;
 
     template <uint32_t HashCode10>
     static constexpr auto ThumbType15() {

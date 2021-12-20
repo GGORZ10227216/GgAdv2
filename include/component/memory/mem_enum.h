@@ -15,6 +15,8 @@ namespace gg_core::gg_mem {
     const unsigned BYTE_SIZE = 1 ;
 
     enum E_AccessType { N_Cycle, S_Cycle, I_Cycle };
+    using CycleType = E_AccessType ;
+
     enum E_GamePakRegion {
         E_WS0 = 0x8, E_WS0_B = 0x9,
         E_WS1 = 0xa, E_WS1_B = 0xb,

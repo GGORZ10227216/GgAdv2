@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool S>
-    static void SP_Offset(CPU& instance) ;
+    extern void SP_Offset(CPU& instance) ;
 
     template <uint32_t HashCode10>
     static constexpr auto ThumbType13() {

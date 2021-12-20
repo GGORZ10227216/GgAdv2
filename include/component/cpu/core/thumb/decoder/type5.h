@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <auto OP, bool H1, bool H2>
-    static void HiRegOperation_BX(CPU& instance) ;
+    extern void HiRegOperation_BX(CPU& instance) ;
 
     template <uint32_t HashCode10>
     static constexpr auto ThumbType5() {

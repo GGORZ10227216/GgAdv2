@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool SP>
-    static void LoadAddress(CPU& instance) {
+    extern void LoadAddress(CPU& instance) {
         instance.Fetch(&instance, S_Cycle) ;
 
         const uint16_t curInst = CURRENT_INSTRUCTION ;

@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <E_ShiftType ST>
-    static void MoveShift(CPU& instance) ;
+    extern void MoveShift(CPU& instance) ;
 
     template <uint32_t HashCode10>
     static constexpr auto ThumbType1() {

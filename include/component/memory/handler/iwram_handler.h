@@ -2,7 +2,7 @@
 // Created by buildmachine on 2021-03-16.
 //
 
-#include <mmu_status.h>
+
 #include <mem_enum.h>
 #include <handler/mirror.h>
 #include <gg_utility.h>
@@ -12,15 +12,15 @@
 
 namespace gg_core::gg_mem {
     template <typename T>
-    auto IWRAM_Read(MMU_Status* mmu, uint32_t absAddr) {
+    auto IWRAM_Read(GbaInstance& instance, uint32_t absAddr) {
         const uint32_t relativeAddr = NORMAL_MIRROR(AlignAddr<T>(absAddr), E_IWRAM_SIZE);
-        return reinterpret_cast<T&>(mmu->IWRAM[ relativeAddr ]);
+        return reinterpret_cast<T&>(instance.mmu.IWRAM[ relativeAddr ]);
     } // IWRAM_Read()
 
     template <typename T>
-    void IWRAM_Write(MMU_Status* mmu, uint32_t absAddr, T data) {
+    void IWRAM_Write(GbaInstance& instance, uint32_t absAddr, T data) {
         const uint32_t relativeAddr = NORMAL_MIRROR(AlignAddr<T>(absAddr), E_IWRAM_SIZE);
-        reinterpret_cast<T&>(mmu->IWRAM[ relativeAddr ]) = data;
+        reinterpret_cast<T&>(instance.mmu.IWRAM[ relativeAddr ]) = data;
     } // IWRAM_Write()
 }
 

@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool L>
-    static void MultiLoadStore(CPU& instance) {
+    extern void MultiLoadStore(CPU& instance) {
         instance.Fetch(&instance, N_Cycle) ;
 
         const uint16_t curInst = CURRENT_INSTRUCTION ;

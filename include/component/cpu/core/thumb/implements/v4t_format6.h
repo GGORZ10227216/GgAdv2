@@ -6,7 +6,7 @@
 #define GGTEST_V4T_FORMAT6_H
 
 namespace gg_core::gg_cpu {
-    static void PC_RelativeLoad(CPU& instance) {
+    extern void PC_RelativeLoad(CPU& instance) {
         instance.Fetch(&instance, N_Cycle) ;
 
         const uint16_t curInst = CURRENT_INSTRUCTION ;

@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool L, bool R>
-    static void PushPop(CPU& instance)  ;
+    extern void PushPop(CPU& instance)  ;
 
     template <uint32_t HashCode10>
     static constexpr auto ThumbType14() {

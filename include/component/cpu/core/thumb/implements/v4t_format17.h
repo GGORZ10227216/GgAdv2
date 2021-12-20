@@ -6,7 +6,7 @@
 #define GGTEST_V4T_FORMAT17_H
 
 namespace gg_core::gg_cpu {
-    static void SoftInterrupt(CPU& instance) {
+    extern void SoftInterrupt(CPU& instance) {
         Interrupt_impl<SVC>(instance);
     } // SoftInterrupt()
 }

@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool H, bool S>
-    static void LoadStoreRegOffsetSignEx(CPU& instance) ;
+    extern void LoadStoreRegOffsetSignEx(CPU& instance) ;
 
     template <uint32_t HashCode10>
     static constexpr auto ThumbType8() {

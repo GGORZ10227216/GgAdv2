@@ -6,7 +6,7 @@
 #define GGTEST_V4T_FORMAT16_H
 
 namespace gg_core::gg_cpu {
-    static void ConditionalBranch(CPU& instance) {
+    extern void ConditionalBranch(CPU& instance) {
         const uint16_t curInst = CURRENT_INSTRUCTION ;
         unsigned condition = curInst & ((0xf << 8)) >> 8 ;
 

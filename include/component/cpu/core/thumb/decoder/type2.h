@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool IS_IMMEDIATE, E_DataProcess OPCODE>
-    static void AddSub(CPU& instance) ;
+    extern void AddSub(CPU& instance) ;
 
     template <uint32_t HashCode10>
     static constexpr auto ThumbType2() {

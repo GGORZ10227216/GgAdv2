@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <auto OP>
-    static void ALU_Operations(CPU& instance) {
+    extern void ALU_Operations(CPU& instance) {
         const uint16_t curInst = CURRENT_INSTRUCTION ;
         const unsigned targetRs = (curInst & 0b111000) >> 3;
         const unsigned targetRd = curInst & 0b111 ;

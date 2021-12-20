@@ -7,7 +7,7 @@
 
 namespace gg_core::gg_cpu {
     template <bool SP>
-    static void LoadAddress(CPU& instance) ;
+    extern void LoadAddress(CPU& instance) ;
 
     template <uint32_t HashCode10>
     static constexpr auto ThumbType12() {

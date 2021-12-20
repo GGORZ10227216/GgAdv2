@@ -14,8 +14,8 @@ namespace gg_core::gg_mem {
         return absAddr & ((absAddr & 0x10000) ? 0x17fff : 0x0'ffff);
     }
 
-    inline uint32_t SRAM_MIRROR(MMU_Status* mmu, uint32_t absAddr) {
-        return absAddr & mmu->cartridge.GetSRAM_MirrorMask();
+    inline uint32_t SRAM_MIRROR(MMU_Status& mmu, uint32_t absAddr) {
+        return absAddr & mmu.cartridge.GetSRAM_MirrorMask();
     }
 }
 

@@ -2,18 +2,20 @@
 // Created by buildmachine on 2021-03-17.
 //
 
-#include <mmu_status.h>
+
 #include <mem_enum.h>
 #include <gg_utility.h>
+
+
 
 #ifndef GGTEST_VRAM_HANDLER_H
 #define GGTEST_VRAM_HANDLER_H
 
 namespace gg_core::gg_mem {
     template <typename T>
-    auto VRAM_Read(MMU_Status* mmu, uint32_t absAddr) {
+    auto VRAM_Read(GbaInstance& instance, uint32_t absAddr) {
         const uint32_t relativeAddr = VRAM_MIRROR(AlignAddr<T>(absAddr));
-        VideoRAM& vram = mmu->videoRAM ;
+        VideoRAM& vram = instance.mmu.videoRAM ;
 
         // todo: Plus 1 cycle if GBA accesses video memory at the same time.
 
@@ -21,9 +23,9 @@ namespace gg_core::gg_mem {
     } // IWRAM_Read()
 
     template <typename T>
-    void VRAM_Write(MMU_Status* mmu, uint32_t absAddr, T data) {
+    void VRAM_Write(GbaInstance& instance, uint32_t absAddr, T data) {
         const uint32_t relativeAddr = VRAM_MIRROR(AlignAddr<T>(absAddr));
-        VideoRAM& vram = mmu->videoRAM ;
+        VideoRAM& vram = instance.mmu.videoRAM ;
 
         // todo: Plus 1 cycle if GBA accesses video memory at the same time.
 
@@ -34,7 +36,7 @@ namespace gg_core::gg_mem {
             //     BG: [addr_align_by_16] = data * 0x101
             //     OBJ: just ignore
             absAddr = gg_mem::VRAM_Start + relativeAddr ;
-            if (absAddr >= mmu->videoRAM.BG_Start && absAddr <= mmu->videoRAM.BG_End()) {
+            if (absAddr >= instance.mmu.videoRAM.BG_Start && absAddr <= instance.mmu.videoRAM.BG_End()) {
                 const uint32_t addrRealign = relativeAddr & (~0x1) ;
                 reinterpret_cast<uint16_t&>(vram.vram_data[ addrRealign ]) = data*0x101;
                 return ;
