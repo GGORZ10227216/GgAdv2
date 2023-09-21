@@ -64,12 +64,12 @@ T BIOS_Read(GbaInstance &instance, uint32_t absAddr) {
   if (targetAddr < E_RamSize::E_BIOS_SIZE) {
 	if (instance.cpu._regs[gg_cpu::pc] <= 0x3fff) {
 	  if constexpr (sizeof(T) == sizeof(uint32_t))
-		instance.mmu.bios_readBuf =
+		instance.mmu.bios_readbuf =
 			reinterpret_cast<uint32_t &>(instance.mmu.bios_data[targetAddr]); // only fetched opcode will affect read buffer
 	  return reinterpret_cast<T &>(instance.mmu.bios_data[targetAddr]);
 	} // if
 	else
-	  return IllegalShift<T>(instance.mmu.bios_readBuf, absAddr);
+	  return IllegalShift<T>(instance.mmu.bios_readbuf, absAddr);
   } // if
   else
 	return NoUsed_Read<T>(instance, absAddr);

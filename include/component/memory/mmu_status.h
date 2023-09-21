@@ -114,7 +114,7 @@ struct MMU_Status {
 //            } // switch
 //        } // IllegalReadBehavior()
 
-  uint32_t bios_readBuf = 0;
+  uint32_t bios_readbuf = 0;
   gg_cpu::CPU_Status &_cpuStatus;
 
   loggerType logger;
