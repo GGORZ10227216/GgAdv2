@@ -14,7 +14,7 @@
 #define GGADV_GAMEPAK_MEMORY_H
 
 namespace gg_core::gg_mem {
-    /*Using memCycleTable, comment this temporary*/
+/*Using memCycleTable, comment this temporary*/
 //    template<typename W, E_GamePakRegion R>
 //    inline unsigned GAMEPAK_ACCESS_CYCLE(MMU_Status* mmu, uint32_t addr) {
 //        if (mmu->requestAccessType == I_Cycle) {

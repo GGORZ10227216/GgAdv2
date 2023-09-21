@@ -10,26 +10,26 @@
 #define GGADV_INSTRUCTION_CLASS_H
 
 namespace gg_core {
-    template<typename T>
-    class InstructionClass {
-    public :
-        void SetRegisterRef(uint32_t binaryInstr) {
-            static_cast<T *> (this)->SetRegisterRefImpl(binaryInstr);
-        } // SetRegisterRef()
+template<typename T>
+class InstructionClass {
+public :
+  void SetRegisterRef(uint32_t binaryInstr) {
+	static_cast<T *> (this)->SetRegisterRefImpl(binaryInstr);
+  } // SetRegisterRef()
 
-        void Execute() {
-            static_cast<T *> (this)->ExecuteImpl();
-        } // Execute()
+  void Execute() {
+	static_cast<T *> (this)->ExecuteImpl();
+  } // Execute()
 
-        std::string Disassemble() {
-            return "";
-        } // Disassemble()
+  std::string Disassemble() {
+	return "";
+  } // Disassemble()
 
-    private :
-        void SetRegisterRefImpl(uint32_t binaryInstr) {}
+private :
+  void SetRegisterRefImpl(uint32_t binaryInstr) {}
 
-        void ExecuteImpl() {}
-    };
+  void ExecuteImpl() {}
+};
 }
 
 #endif //GGADV_INSTRUCTION_CLASS_H

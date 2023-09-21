@@ -5,10 +5,10 @@
 #include <benchmark/benchmark.h>
 #include <emu_framework.h>
 
-static void ALU_PerformanceTest(benchmark::State& state) {
-    for (auto _ : state) {
-        CPU emu(std::nullopt) ;
-    } // for
+static void ALU_PerformanceTest(benchmark::State &state) {
+  for (auto _ : state) {
+	CPU emu(std::nullopt);
+  } // for
 }
 // Register the function as a benchmark
 BENCHMARK(ALU_PerformanceTest);

@@ -10,19 +10,19 @@
 #define GGADV_FRAMEWORK_H
 
 namespace gg_core {
-    class EmuFramework {
-        void InitImpl() {
+class EmuFramework {
+  void InitImpl() {
 
-        } // InitImpl()
+  } // InitImpl()
 
-        void RunImpl() {
+  void RunImpl() {
 
-        } // RunImpl()
+  } // RunImpl()
 
-        void CloseImpl() {
+  void CloseImpl() {
 
-        } // CloseImpl()
-    };
+  } // CloseImpl()
+};
 }
 
 #endif //GGADV_FRAMEWORK_H

@@ -5,66 +5,66 @@
 #include <gg_test.h>
 
 namespace {
-    using namespace gg_core;
-    using namespace gg_core::gg_cpu;
-    using namespace gg_core::gg_mem;
+using namespace gg_core;
+using namespace gg_core::gg_cpu;
+using namespace gg_core::gg_mem;
 
-    TEST_F(ggTest, arm_svc_test) {
-        // fixme: not strict enough, need reinforcement
+TEST_F(ggTest, arm_svc_test) {
+  // fixme: not strict enough, need reinforcement
 
-        ArmAssembler gg_asm;
+  ArmAssembler gg_asm;
 
-        uint32_t instruction = 0xef000000 ;
+  uint32_t instruction = 0xef000000;
 
-        instance.WriteCPSR(0x10) ;
-        egg.cpsr = 0x10 ;
+  instance.WriteCPSR(0x10);
+  egg.cpsr = 0x10;
 
-        uint32_t inst_hash = hashArm(instruction);
-        EggRun(egg, instruction);
-        instance.CPU_Test(instruction);
+  uint32_t inst_hash = hashArm(instruction);
+  EggRun(egg, instruction);
+  instance.CPU_Test(instruction);
 
-        std::cout << instance._regs[ lr ] << " " << egg.regs[ 14 ] << std::endl ;
-        uint32_t errFlag = CheckStatus(instance, egg);
-        ASSERT_TRUE(errFlag == 0 )
-            << std::hex << "Errflag: " << errFlag << '\n'
-            << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
-            << Diagnose(instance, egg, errFlag);
-        CpuPC_Reset(egg, instance);
-    }
+  std::cout << instance._regs[lr] << " " << egg.regs[14] << std::endl;
+  uint32_t errFlag = CheckStatus(instance, egg);
+  ASSERT_TRUE(errFlag == 0)
+			  << std::hex << "Errflag: " << errFlag << '\n'
+			  << gg_asm.DASM(instruction) << "[" << instruction << "]" << '\n'
+			  << Diagnose(instance, egg, errFlag);
+  CpuPC_Reset(egg, instance);
+}
 
-    TEST_F(ggTest, arm_ldrt_test) {
-        instance.WriteCPSR(0x10) ;
-        // fill usr reg
-        for (int i = 0 ; i < 16 ; ++i)
-            instance._regs[ i ] = 0x0200'0000 + i ;
+TEST_F(ggTest, arm_ldrt_test) {
+  instance.WriteCPSR(0x10);
+  // fill usr reg
+  for (int i = 0; i < 16; ++i)
+	instance._regs[i] = 0x0200'0000 + i;
 
-        instance._mem.Write32(0x02000000, 0xdeadbeefu) ;
+  instance._mem.Write32(0x02000000, 0xdeadbeefu);
 
-        instance.WriteCPSR(0x13) ;
-        uint32_t instruction = 0xe4b0e000 ; // ldrt lr, [r0]
+  instance.WriteCPSR(0x13);
+  uint32_t instruction = 0xe4b0e000; // ldrt lr, [r0]
 
-        instance.CPU_Test(instruction);
+  instance.CPU_Test(instruction);
 
-        ASSERT_TRUE(instance._regs[ sp ] == 0);
-        ASSERT_TRUE(instance._regs[ lr ] == 0);
+  ASSERT_TRUE(instance._regs[sp] == 0);
+  ASSERT_TRUE(instance._regs[lr] == 0);
 
-        instance.WriteCPSR(0x10) ;
-        ASSERT_TRUE(instance._regs[ sp ] == 0x02000000 + sp) ;
-        ASSERT_TRUE(instance._regs[ lr ] == 0xdeadbeef);
-    }
+  instance.WriteCPSR(0x10);
+  ASSERT_TRUE(instance._regs[sp] == 0x02000000 + sp);
+  ASSERT_TRUE(instance._regs[lr] == 0xdeadbeef);
+}
 
-    TEST_F(ggTest, arm_strt_test) {
-        instance.WriteCPSR(0x10) ;
-        // fill usr reg
-        for (int i = 0 ; i < 16 ; ++i)
-            instance._regs[ i ] = 0x0200'0000 + i ;
+TEST_F(ggTest, arm_strt_test) {
+  instance.WriteCPSR(0x10);
+  // fill usr reg
+  for (int i = 0; i < 16; ++i)
+	instance._regs[i] = 0x0200'0000 + i;
 
-        instance.WriteCPSR(0x13) ;
-        instance._regs[ sp ] =  0xdeadbeef ;
+  instance.WriteCPSR(0x13);
+  instance._regs[sp] = 0xdeadbeef;
 
-        uint32_t instruction = 0xe4a0d000 ; // strt lr, [r0]
-        instance.CPU_Test(instruction);
+  uint32_t instruction = 0xe4a0d000; // strt lr, [r0]
+  instance.CPU_Test(instruction);
 
-        ASSERT_TRUE(instance._mem.Read32(0x02000000) == 0x02000000 + sp) ;
-    }
+  ASSERT_TRUE(instance._mem.Read32(0x02000000) == 0x02000000 + sp);
+}
 }

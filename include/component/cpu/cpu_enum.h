@@ -8,37 +8,37 @@
 namespace gg_core::gg_cpu {
 //    using Regs = std::array<unsigned, 16>;
 
-    enum E_OperationMode {
-        USR = 0b10000, FIQ = 0b10001,
-        IRQ = 0b10010, SVC = 0b10011,
-        ABT = 0b10111, SYS = 0b11111,
-        UND = 0b11011
-    };
+enum E_OperationMode {
+  USR = 0b10000, FIQ = 0b10001,
+  IRQ = 0b10010, SVC = 0b10011,
+  ABT = 0b10111, SYS = 0b11111,
+  UND = 0b11011
+};
 
-    enum E_ExceptionVector {
-        RESET = 0x0,
-        UNDEFINED_INSTRUCTION = 0x4,
-        SW_IRQ = 0x8,
-        ABORT_PREFETCH = 0xC,
-        ABORT_DATA = 0x10,
-        HW_IRQ = 0x18
-    };
+enum E_ExceptionVector {
+  RESET = 0x0,
+  UNDEFINED_INSTRUCTION = 0x4,
+  SW_IRQ = 0x8,
+  ABORT_PREFETCH = 0xC,
+  ABORT_DATA = 0x10,
+  HW_IRQ = 0x18
+};
 
-    enum E_CpuMode {
-        ARM, THUMB
-    };
+enum E_CpuMode {
+  ARM, THUMB
+};
 
-    enum E_RegName {
-        r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, sp, lr, pc
-    };
+enum E_RegName {
+  r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, sp, lr, pc
+};
 
-    enum E_ShiftType {
-        LSL, LSR, ASR, ROR
-    };
+enum E_ShiftType {
+  LSL, LSR, ASR, ROR
+};
 
-    enum E_DataProcess {
-        AND, EOR, SUB, RSB, ADD, ADC, SBC, RSC, TST, TEQ, CMP, CMN, ORR, MOV, BIC, MVN
-    };
+enum E_DataProcess {
+  AND, EOR, SUB, RSB, ADD, ADC, SBC, RSC, TST, TEQ, CMP, CMN, ORR, MOV, BIC, MVN
+};
 
 //    enum class E_ThumbType4Op {
 //        AND = E_DataProcess::AND, EOR = E_DataProcess::EOR,
@@ -51,32 +51,38 @@ namespace gg_core::gg_cpu {
 //        BIC = E_DataProcess::BIC, MVN = E_DataProcess::MVN
 //    };
 
-    enum E_CondName {
-        EQ, NE, CS, CC, MI, PL, VS, VC, HI, LS, GE, LT, GT, LE, AL
-    };
+enum E_CondName {
+  EQ, NE, CS, CC, MI, PL, VS, VC, HI, LS, GE, LT, GT, LE, AL
+};
 
-    enum E_PSRBit {
-        T = 5, F = 6, I = 7, V = 28, C = 29, Z = 30, N = 31
-    };
+enum E_PSRBit {
+  T = 5, F = 6, I = 7, V = 28, C = 29, Z = 30, N = 31
+};
 
-    enum E_PipelineStage {
-        Execute, Decode, Fetched
-    };
+enum E_PipelineStage {
+  Execute, Decode, Fetched
+};
 
-    enum class OP_TYPE { LOGICAL, ARITHMETIC, TEST } ;
+enum class OP_TYPE { LOGICAL, ARITHMETIC, TEST };
 
-    enum class SHIFT_BY {
-        RS, IMM, NONE
-    };
+enum class SHIFT_BY {
+  RS, IMM, NONE
+};
 
-    enum class OFFSET_TYPE { RM, IMM };
+enum class OFFSET_TYPE { RM, IMM };
 
-    constexpr char reg4InfoStr[] =
-            "\tr0:  {:>#010x} r1:  {:>#010x}  r2:  {:>#010x} r3:  {:>#010x}\n"
-            "\tr4:  {:>#010x} r5:  {:>#010x}  r6:  {:>#010x} r7:  {:>#010x}\n"
-            "\tr8:  {:>#010x} r9:  {:>#010x}  r10: {:>#010x} r11: {:>#010x}\n"
-            "\tr12: {:>#010x} sp:  {:>#010x}  lr:  {:>#010x} pc:  {:>#010x}"
-    ;
+enum STATE_BIT { THUMB_BIT, IRQ_BIT, DMA_BIT, HALT_BIT, TIMER_BIT };
+
+enum IRQ_TYPE {
+  V_BLANK, H_BLANK, V_COUNTER_MATCH, TIMER_0, TIMER_1, TIMER_2, TIMER_3,
+  SERIAL, DMA_0, DMA_1, DMA_2, DMA_3, KEYPAD, EXT
+};
+
+constexpr char reg4InfoStr[] =
+	"\tr0:  {:>#010x} r1:  {:>#010x}  r2:  {:>#010x} r3:  {:>#010x}\n"
+	"\tr4:  {:>#010x} r5:  {:>#010x}  r6:  {:>#010x} r7:  {:>#010x}\n"
+	"\tr8:  {:>#010x} r9:  {:>#010x}  r10: {:>#010x} r11: {:>#010x}\n"
+	"\tr12: {:>#010x} sp:  {:>#010x}  lr:  {:>#010x} pc:  {:>#010x}";
 }
 
 #endif //GGADV_CPU_ENUM_H

@@ -9,9 +9,9 @@
 #define GGTHUMBTEST_TASK_H
 
 struct Task {
-    size_t id ;
-    uint64_t timeStamp ;
-    std::function<void(int)> content ;
+  size_t id;
+  uint64_t timeStamp;
+  std::function<void(int)> content;
 };
 
 #endif //GGTHUMBTEST_TASK_H

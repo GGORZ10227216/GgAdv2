@@ -10,29 +10,31 @@
 #include <cpu.h>
 #include <mmu.h>
 #include <timers.h>
+#include <dma/dma_controller.h>
+
 #include <task_runner.h>
 
 #ifndef GGADV_FRAMEWORK_BASE_H
 #define GGADV_FRAMEWORK_BASE_H
 
 namespace gg_core {
-    struct GbaInstance {
-        GbaInstance(const char* romPath);
-        GbaInstance();
+struct GbaInstance {
+  GbaInstance(const char *romPath);
+  GbaInstance();
 
-        uint64_t GetSystemClk() { return _systemClk ; }
+  uint64_t GetSystemClk() { return _systemClk; }
 
-        std::ostringstream oss ;
-        sinkType logSink ;
-        gg_mem::MMU mmu ;
-        gg_cpu::CPU cpu ;
+  std::ostringstream oss;
+  sinkType logSink;
+  gg_mem::MMU mmu;
+  gg_cpu::CPU cpu;
 
-        gg_io::Timers timer;
+  gg_io::Timers timer;
+  gg_io::dma_controller dmaController;
 
-        TaskRunner<64> runner;
-        uint64_t _systemClk = 0 ;
-    };
+  TaskRunner<64> runner;
+  uint64_t _systemClk = 0;
+};
 }
-
 
 #endif //GGADV_FRAMEWORK_BASE_H

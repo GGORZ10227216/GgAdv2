@@ -25,7 +25,7 @@ with fp:
         dataBuffer += '0x{:02x},'.format(byte[0])
         counter += 1
         byte = fp.read(1)
-    out.write(dataBuffer[:-1]+"\n};\n\n")
+    out.write(dataBuffer[:-1] + "\n};\n\n")
     out.write("#endif // CPU_GBA_BIOS_H\n")
     out.close()
     fp.close()

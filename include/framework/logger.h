@@ -13,9 +13,9 @@
 #include <spdlog/sinks/null_sink.h>
 #include <spdlog/sinks/stdout_sinks.h>
 
-using LOG = spdlog::sinks::null_sink_st ; // fixme: change me when release
-using sinkType = std::shared_ptr<LOG> ;
-using loggerType = std::shared_ptr<spdlog::logger> ;
+using LOG = spdlog::sinks::null_sink_st; // fixme: change me when release
+using sinkType = std::shared_ptr<LOG>;
+using loggerType = std::shared_ptr<spdlog::logger>;
 
 #ifndef GGADV_LOGGER_H
 #define GGADV_LOGGER_H

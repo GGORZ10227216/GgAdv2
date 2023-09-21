@@ -6,12 +6,12 @@
 #define GGTEST_TYPE16_H
 
 namespace gg_core::gg_cpu {
-    extern void ConditionalBranch(CPU& instance)  ;
+extern void ConditionalBranch(CPU &instance);
 
-    template <uint32_t HashCode10>
-    static constexpr auto ThumbType16() {
-        return &ConditionalBranch;
-    }
+template<uint32_t HashCode10>
+static constexpr auto ThumbType16() {
+  return &ConditionalBranch;
+}
 }
 
 #endif //GGTEST_TYPE16_H

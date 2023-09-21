@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 fp = open("./IOmap", "r")
 mapInfos = fp.readlines()
 fp.close()
@@ -50,9 +48,7 @@ for info in mapInfos:
     except:
         print("yee: " + info)
 
-
 print("enum E_IOName{{\n{}\n}}".format(',\n'.join(enums)))
 print("gg_core::make_array(\n{}\n)".format(',\n'.join(tuples)))
 
 print("gg_core::make_array(\n{}\n)".format(','.join(modes)))
-

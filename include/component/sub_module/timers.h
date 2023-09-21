@@ -9,26 +9,26 @@
 #define GGTHUMBTEST_TIMERS_H
 
 namespace gg_core {
-    class GbaInstance ;
+class GbaInstance;
 
-    namespace gg_io {
-        struct Timers {
-            Timers(GbaInstance& _mmu) ;
+namespace gg_io {
+struct Timers {
+  Timers(GbaInstance &_mmu);
 
-            void WriteControl(int idx, uint16_t value) ;
+  void WriteControl(int idx, uint16_t value);
 
-            uint16_t ReadCounter(int idx) ;
-            void WriteCounter(int idx, uint16_t value) { timer[idx]._init = value ; }
-            void OnOverflow(int idx) ;
-            void StartTimer(int idx, uint64_t delayed) ;
-            void StopTimer(int idx);
+  uint16_t ReadCounter(int idx);
+  void WriteCounter(int idx, uint16_t value) { timer[idx]._init = value; }
+  void OnOverflow(int idx);
+  void StartTimer(int idx, uint64_t delayed);
+  void StopTimer(int idx);
 
-            const uint32_t _overflowValue = 0x1'0000 ;
+  const uint32_t _overflowValue = 0x1'0000;
 
-            Timer timer[4] ;
-            GbaInstance& _instance ;
-        };
-    } // namespace gg_io
+  Timer timer[4];
+  GbaInstance &_instance;
+};
+} // namespace gg_io
 } // namespace gg_core
 
 #endif //GGTHUMBTEST_TIMERS_H

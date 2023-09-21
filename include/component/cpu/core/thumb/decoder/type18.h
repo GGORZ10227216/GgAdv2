@@ -6,12 +6,12 @@
 #define GGTEST_TYPE18_H
 
 namespace gg_core::gg_cpu {
-    extern void UnconditionalBranch(CPU& instance) ;
+extern void UnconditionalBranch(CPU &instance);
 
-    template <uint32_t HashCode10>
-    static constexpr auto ThumbType18() {
-        return &UnconditionalBranch;
-    }
+template<uint32_t HashCode10>
+static constexpr auto ThumbType18() {
+  return &UnconditionalBranch;
+}
 }
 
 #endif //GGTEST_TYPE18_H

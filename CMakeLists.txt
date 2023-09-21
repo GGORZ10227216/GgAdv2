@@ -28,7 +28,7 @@ project(ggAdv)
 #    )
 #    set(v4_arm_core_src ${v4_arm_decoder_src} ${v4_arm_implement_src})
 
-    set(header_core
+set(header_core
         include/instruction_class.h
         include/framework/logger.h
         include/component/cpu/cpu_status.h
@@ -47,26 +47,26 @@ project(ggAdv)
         include/component/memory/display_memory.h
         include/component/memory/gamepak_memory.h
         include/utility/bit_manipulate.h include/utility/gg_utility.h include/component/cpu/core/arm/decoder/multiply.h include/component/cpu/core/arm/decoder/memory_access.h
-            include/component/sub_module/timer.h
-            include/framework/task.h)
+        include/component/sub_module/timer.h
+        include/framework/task.h include/component/sub_module/dma/dma_controller.h include/component/sub_module/dma/dma.h)
 
-    set(src_core
-            src/framework/gba_instance.cpp
-            src/component/sub_module/timers.cpp
-            src/component/cpu/cpu.cpp
-            src/component/memory/mmu.cpp src/component/memory/io_handler.cpp)
+set(src_core
+        src/framework/gba_instance.cpp
+        src/component/sub_module/timers.cpp
+        src/component/cpu/cpu.cpp
+        src/component/memory/mmu.cpp src/component/memory/io_handler.cpp src/component/sub_module/dma/dma.cpp)
 
-    # include/component/cpu/core/arm_encoder_v2.h include/component/cpu/core/thumb/decoder/type1.h
-    add_executable(ggAdv main.cpp ${header_core} ${src_core})
-    target_link_libraries(ggAdv
-            /usr/local/lib/libfmt.a
-            /usr/local/lib/libfmt.a
-            /usr/local/lib/libgtest.a
-            /usr/local/lib/libgtest_main.a
-            /usr/local/lib/libkeystone.so
-            /usr/local/lib/libcapstone.a)
+# include/component/cpu/core/arm_encoder_v2.h include/component/cpu/core/thumb/decoder/type1.h
+add_executable(ggAdv main.cpp ${header_core} ${src_core})
+target_link_libraries(ggAdv
+        /usr/local/lib/libfmt.a
+        /usr/local/lib/libfmt.a
+        /usr/local/lib/libgtest.a
+        /usr/local/lib/libgtest_main.a
+        /usr/local/lib/libkeystone.so
+        /usr/local/lib/libcapstone.a)
 
-    target_include_directories(ggAdv PUBLIC
+target_include_directories(ggAdv PUBLIC
         include
         include/component
         include/component/cpu
@@ -81,7 +81,7 @@ project(ggAdv)
         include/framework
         include/utility
         spdlog/include
-    )
+        )
 
 project(arm_analyzer)
 add_executable(arm_analyzer tool/arm_analyzer/main.cpp)
@@ -107,7 +107,7 @@ target_include_directories(ggBenchmark PUBLIC
         include/instruction/arm
         include/component/cpu/core/arm/implements
         include/utility
-    spdlog/include
+        spdlog/include
         )
 target_link_libraries(ggBenchmark /usr/local/lib/libfmt.a
         /usr/local/lib/libbenchmark.a

@@ -6,15 +6,15 @@
 #define GGTEST_TYPE10_H
 
 namespace gg_core::gg_cpu {
-    template <bool L>
-    extern void LoadStoreImmOffsetHalf(CPU& instance) ;
+template<bool L>
+extern void LoadStoreImmOffsetHalf(CPU &instance);
 
-    template <uint32_t HashCode10>
-    static constexpr auto ThumbType10() {
-        constexpr bool L = TestBit(HashCode10, 5) ;
+template<uint32_t HashCode10>
+static constexpr auto ThumbType10() {
+  constexpr bool L = TestBit(HashCode10, 5);
 
-        return &LoadStoreImmOffsetHalf<L>;
-    }
+  return &LoadStoreImmOffsetHalf<L>;
+}
 }
 
 #endif //GGTEST_TYPE10_H
