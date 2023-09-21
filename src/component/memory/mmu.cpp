@@ -21,7 +21,7 @@ MMU_Status::MMU_Status(GbaInstance &instance, const std::optional<std::filesyste
 	_cpuStatus(instance.cpu),
 	logger(std::make_shared<spdlog::logger>("MMU", instance.logSink)) {
   if (romPath.has_value())
-	cartridge.LoadRom(romPath.value().c_str());
+	cartridge.LoadRom(romPath.value());
   else {
 	logger->warn("Emulator is working under DEBUG mode(no ROM loaded!!)");
   } // else

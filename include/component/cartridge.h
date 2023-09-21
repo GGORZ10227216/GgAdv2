@@ -144,9 +144,9 @@ public:
 //            } // for
   }
 
-  void LoadRom(const char *pathStr) {
+  void LoadRom(const std::filesystem::path &romPath) {
 	using namespace std::filesystem;
-	path romPath(pathStr);
+
 	if (exists(romPath)) {
 	  LoadFileToBuffer(romPath, romData);
 	  Header header = GetHeader();
