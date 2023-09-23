@@ -118,9 +118,10 @@ static void ALU_OperationImpl(CPU &instance,
 
   uint32_t op1Val = instance._regs[op1Reg];
 
-  /*Not sure this behavior is also in thumb mode*/
-//        if (op1Reg == pc)
-//            op1Val = op1Val + instance.instructionLength ;
+  if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
+	if (op1Reg == pc)
+	  op1Val = op1Val + instance.instructionLength ;
+  } // if constexpr
 
   uint64_t result = ALU_Calculate<S, opcode>(instance, op1Val, op2Val, shiftCarry);
 
