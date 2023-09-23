@@ -94,31 +94,44 @@ static void ALU_OperationImpl(CPU &instance,
 							  const int op1Reg,
 							  const uint32_t op2Val,
 							  const bool shiftCarry) {
-  constexpr bool TEST = opcode == TST || opcode == TEQ || opcode == CMP || opcode == CMN;
+  /*
+   * There are 4 different code flow for this function. each of them will lead to different cycle count result:
+   *   1. Normal Data Processing:
+   *     flow: E, cycle: 1S
+   *   2. Data Processing with register specified shift:
+   *     flow: A -> C, cycle: 1I + 1S
+   *   3. Data Processing with PC written:
+   *     flow: D -> F, cycle: 1N + 2S
+   *   4. Data Processing with PC written and register specified shift:
+   *     flow: A -> B -> F, cycle: 1I + 1N + 2S
+   * */
 
+  constexpr bool TEST = opcode == TST || opcode == TEQ || opcode == CMP || opcode == CMN;
   if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
-	instance.Fetch(&instance, gg_mem::I_Cycle); // pc = pc + 4
+	/*A*/ instance.Fetch(&instance, gg_mem::I_Cycle); // pc = pc + 4
 
 	// We are performing a memory read here, but discard the result.
 	// This is because our purpose is to increase the cycle counter.
 	// Check the ARM7TDMI manual(page 231, shift(Rs) part) for more information.
 	if (dstReg == pc) {
-	  instance._mem.Read<T>(instance._regs[ pc ] + 4, gg_mem::S_Cycle);
+	  /*B*/ instance._mem.Read<T>(instance._regs[ pc ] + 4, gg_mem::N_Cycle);
 	} // if
 	else {
-	  instance._mem.Read<T>(instance._regs[ pc ] + 4, gg_mem::N_Cycle);
+	  /*C*/ instance._mem.Read<T>(instance._regs[ pc ] + 4, gg_mem::S_Cycle);
 	} // else
   } // if constexpr
   else {
 	if (dstReg == pc)
-	  instance.Fetch(&instance, gg_mem::N_Cycle);
+	  /*D*/ instance.Fetch(&instance, gg_mem::N_Cycle);
 	else
-	  instance.Fetch(&instance, gg_mem::S_Cycle);
+	  /*E*/ instance.Fetch(&instance, gg_mem::S_Cycle);
   } // else
 
   uint32_t op1Val = instance._regs[op1Reg];
 
   if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
+	// If we read PC now, we will get the PC + 3L value.
+	// But, strangely, the value inside the register seems to be PC + 8.
 	if (op1Reg == pc)
 	  op1Val = op1Val + instance.instructionLength ;
   } // if constexpr
@@ -128,7 +141,7 @@ static void ALU_OperationImpl(CPU &instance,
   if constexpr (!TEST) {
 	instance._regs[dstReg] = result;
 	if (dstReg == pc) {
-	  instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle); // cycle += 1S + 1S
+	  /*F*/ instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle); // cycle += 1S + 1S
 	  if constexpr (S) {
 		instance.WriteCPSR(instance.ReadSPSR());
 	  } // if
