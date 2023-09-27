@@ -77,10 +77,15 @@ static constexpr std::array<const char *, 3> accessWidthName{
 	"BYTE", "WORD", "DWORD"
 };
 
+// WS0, WS1, WS2 have same first access wait state
+// They are all {4, 3, 2, 8}
 constexpr static std::array<unsigned, 4> N_CYCLE_TABLE{
 	4, 3, 2, 8
 };
 
+// In the other hand, WS0, WS1, WS2 have different second access wait state.
+// The format of S_CYCLE_TABLE is :
+// {WS0_WAITCNT_0, WS0_WAITCNT_1, WS1_WAITCNT_0, WS1_WAITCNT_1, WS2_WAITCNT_0, WS2_WAITCNT_1}
 constexpr static std::array<unsigned, 6> S_CYCLE_TABLE{
 	2, 1, 4, 1, 8, 1
 };
