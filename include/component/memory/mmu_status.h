@@ -30,7 +30,7 @@ inline unsigned AlignAddr(uint32_t addr) {
 struct MMU_Status {
   MMU_Status(GbaInstance &instance, const std::optional<std::filesystem::path> &romPath);
 
-  unsigned _cycleCounter = 0;
+  unsigned &_cycleCounter;
 
   std::array<uint8_t, 0x4000> bios_data{};
   std::array<uint8_t, 0x40000> EWRAM{};
