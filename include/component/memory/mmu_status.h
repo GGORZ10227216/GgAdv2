@@ -63,7 +63,20 @@ struct MMU_Status {
 
   using cycleinfo = std::array<CycleSet, 15>;
 
+  /* According to the gbatek, WAITCNT by default is 0x0000, that means:
+   *    1. WS0 {N, S} = {4, 2}
+   *    2. WS1 {N, S} = {4, 4}
+   *    3. WS2 {N, S} = {4, 8}
+   * In addition, cartridge's bus width is 16bit, so the 32bit N-access should be treated like this:
+   *    1N + 1 + 1S + 1
+   * And the 32bit S-access should be treated like this:
+   *    2 * (1S + 1)
+  */
+
   std::array<cycleinfo, 2> memCycleTable{
+	  // Format: CycleSet {8-bit access, 16-bit access, 32-bit access}
+	  // memCycleTable[0] --> cycle table for Non-sequential memory access
+	  // memCycleTable[1] --> cycle table for Sequential memory access
 	  cycleinfo{
 		  CycleSet{1, 1, 1}, // BIOS
 		  CycleSet{1, 1, 1}, // unused#1
@@ -75,10 +88,10 @@ struct MMU_Status {
 		  CycleSet{1, 1, 1}, // OAM
 		  CycleSet{5, 5, 8}, // WS0_A
 		  CycleSet{5, 5, 8}, // WS0_B
-		  CycleSet{5, 5, 8}, // WS1_A
-		  CycleSet{5, 5, 8}, // WS1_B
-		  CycleSet{5, 5, 8}, // WS2_A
-		  CycleSet{5, 5, 8},  // WS2_B
+		  CycleSet{5, 5, 10}, // WS1_A, 1N + 1 + 1S + 1 -> 4 + 1 + 4 + 1
+		  CycleSet{5, 5, 10}, // WS1_B, 1N + 1 + 1S + 1 -> 4 + 1 + 4 + 1
+		  CycleSet{5, 5, 14}, // WS2_A, 1N + 1 + 1S + 1 -> 4 + 1 + 8 + 1
+		  CycleSet{5, 5, 14}, // WS2_B, 1N + 1 + 1S + 1 -> 4 + 1 + 8 + 1
 		  CycleSet{9, 0, 0}  // SRAM(byte access only)
 	  },
 	  cycleinfo{
@@ -90,12 +103,12 @@ struct MMU_Status {
 		  CycleSet{1, 1, 2}, // Palette
 		  CycleSet{1, 1, 2}, // VRAM
 		  CycleSet{1, 1, 1}, // OAM
-		  CycleSet{2, 2, 4}, // WS0_A
-		  CycleSet{2, 2, 4}, // WS0_B
-		  CycleSet{5, 5, 10}, // WS1_A
+		  CycleSet{2, 2, 6}, // WS0_A, 32bit access clk is: 2*(2 + 1) = 6
+		  CycleSet{2, 2, 6}, // WS0_B
+		  CycleSet{5, 5, 10}, // WS1_A, 32bit access clk is: 2*(4 + 1) = 10
 		  CycleSet{5, 5, 10}, // WS1_B
-		  CycleSet{9, 9, 18}, // WS2_A
-		  CycleSet{9, 9, 18},  // WS2_B
+		  CycleSet{9, 9, 18}, // WS2_A, 32bit access clk is: 2*(8 + 1) = 18
+		  CycleSet{9, 9, 18}, // WS2_B
 		  CycleSet{0, 0, 0}  // SRAM(doesn't have S Cycle)
 	  }
   };
