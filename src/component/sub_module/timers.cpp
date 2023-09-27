@@ -4,7 +4,9 @@
 
 #include <gba_instance.h>
 
-#include <task_runner.h>
+// TODO: Cycle accuracy is not the main goal of this project.
+//#include <task_runner.h>
+
 #include <timers.h>
 
 namespace gg_core::gg_io {
@@ -40,7 +42,7 @@ uint16_t Timers::ReadCounter(int idx) {
 } // ReadCounter()
 
 void Timers::WriteControl(int idx, uint16_t value) {
-  _instance.runner.Cancel(0);
+//  _instance.runner.Cancel(0);
 
   bool wasEnabled = timer[idx].IsEnabled();
   timer[idx]._Control = value;

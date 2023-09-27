@@ -132,9 +132,8 @@ public:
   unsigned SRAM_MirrorMask = 0x7fff;
   EEPROM eeprom;
 
-  Cartridge(unsigned &mmuCycleCounter, sinkType &sink) :
-	  logger(std::make_shared<spdlog::logger>("Cartridge", sink)),
-	  eeprom(mmuCycleCounter, sink) {
+  Cartridge(unsigned &mmuCycleCounter) :
+	  eeprom(mmuCycleCounter) {
 	SRAM.fill(0xff);
 //            romData.resize(MAX_GBA_ROMSIZE, 0) ;
 
@@ -155,12 +154,12 @@ public:
 		_saveType = CheckSaveType();
 	  } // if
 	  else {
-		logger->error("Rom verify failed, probably not a valid GBA rom file.");
+//		logger->error("Rom verify failed, probably not a valid GBA rom file.");
 		std::exit(-1);
 	  } // else
 	} // if
 	else {
-	  logger->error("File does not exist!!");
+//	  logger->error("File does not exist!!");
 	  std::exit(-1);
 	} // else
   } // LoadRom()
@@ -212,7 +211,6 @@ public:
 
 private :
   E_SaveType _saveType = E_UNKNOWN;
-  loggerType logger;
 
   E_SaveType CheckSaveType() {
 	const uint32_t entryPointOffset = EntrypointOffset();
@@ -228,7 +226,7 @@ private :
 	  } // for
 	} // for
 
-	logger->warn("Save type id not found!");
+//	logger->warn("Save type id not found!");
 	return E_UNKNOWN;
   } // CheckSaveType()
 

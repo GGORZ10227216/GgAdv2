@@ -77,11 +77,11 @@ void IO_Write(GbaInstance &instance, uint32_t absAddr, T data) {
 	  return;
 	} // if
 	else {
-	  instance.mmu.logger->warn(
-		  "Attempt to WRITE {} value to READ-ONLY IO register 0x{:x}",
-		  accessWidthName[sizeof(T) >> 1],
-		  absAddr
-	  );
+//	  instance.mmu.logger->warn(
+//		  "Attempt to WRITE {} value to READ-ONLY IO register 0x{:x}",
+//		  accessWidthName[sizeof(T) >> 1],
+//		  absAddr
+//	  );
 	} // else
   } // if
 

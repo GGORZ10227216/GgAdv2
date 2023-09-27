@@ -17,13 +17,14 @@
 
 namespace gg_core::gg_mem {
 MMU_Status::MMU_Status(GbaInstance &instance, const std::optional<std::filesystem::path> &romPath) :
-	cartridge(_cycleCounter, instance.logSink),
-	_cpuStatus(instance.cpu),
-	logger(std::make_shared<spdlog::logger>("MMU", instance.logSink)) {
+	_cycleCounter(instance.cycleCounter),
+	cartridge(_cycleCounter),
+	_cpuStatus(instance.cpu)
+{
   if (romPath.has_value())
 	cartridge.LoadRom(romPath.value());
   else {
-	logger->warn("Emulator is working under DEBUG mode(no ROM loaded!!)");
+//	logger->warn("Emulator is working under DEBUG mode(no ROM loaded!!)");
   } // else
 }
 

@@ -8,9 +8,10 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -g -O3")
 
 project(ggAdv)
 
+add_subdirectory(libppu)
+
 set(header_core
         include/instruction_class.h
-        include/framework/logger.h
         include/component/cpu/cpu_status.h
         include/component/component_class.h
         include/component/cpu/cpu_enum.h
@@ -27,19 +28,24 @@ set(header_core
         include/component/memory/display_memory.h
         include/component/memory/gamepak_memory.h
         include/utility/bit_manipulate.h include/utility/gg_utility.h include/component/cpu/core/arm/decoder/multiply.h include/component/cpu/core/arm/decoder/memory_access.h
-        include/component/sub_module/timer.h
-        include/framework/task.h include/component/sub_module/dma/dma_controller.h include/component/sub_module/dma/dma.h)
+#        include/component/sub_module/timer.h
+#        include/component/sub_module/dma/dma_controller.h
+#        include/component/sub_module/dma/dma.h
+        )
 
 set(src_core
         src/framework/gba_instance.cpp
-        src/component/sub_module/timers.cpp
+#        src/component/sub_module/timers.cpp
         src/component/cpu/cpu.cpp
-        src/component/memory/mmu.cpp src/component/memory/io_handler.cpp src/component/sub_module/dma/dma.cpp)
+        src/component/memory/mmu.cpp
+        src/component/memory/io_handler.cpp
+#        src/component/sub_module/dma/dma.cpp
+        )
 
 # include/component/cpu/core/arm_encoder_v2.h include/component/cpu/core/thumb/decoder/type1.h
 add_executable(ggAdv main.cpp ${header_core} ${src_core})
 target_compile_definitions(ggAdv PUBLIC -DSPDLOG_SHARED_LIB -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL)
-target_link_libraries(ggAdv -lfmt -lspdlog -lcapstone -lkeystone -lgtest -lgtest_main)
+target_link_libraries(ggAdv -lfmt -lspdlog -lcapstone -lkeystone -lgtest -lgtest_main libppu)
 
 target_include_directories(ggAdv PUBLIC
         include
@@ -55,4 +61,5 @@ target_include_directories(ggAdv PUBLIC
         include/component/sub_module
         include/framework
         include/utility
+        libppu/include
         )

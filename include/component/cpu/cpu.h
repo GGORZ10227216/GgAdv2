@@ -4,7 +4,6 @@
 
 #include <arm_asm.h>
 
-#include <logger.h>
 #include <cpu_status.h>
 
 #ifndef GGADV_CPU_H
@@ -24,9 +23,8 @@ public :
 
   ArmAssembler armAsm;
   ArmAssembler thumbAsm;
-  loggerType logger;
 
-  CPU(GbaInstance &instanceMemory, sinkType &sink);
+  CPU(GbaInstance &instanceMemory);
 
   void SetF() { _cpsr |= (1 << 6); } // SetF()
   void ClearF() { _cpsr &= ~(1 << 6); } // ClearF()

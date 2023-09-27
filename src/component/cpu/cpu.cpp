@@ -39,11 +39,10 @@
 #include <cpu_tick.h>
 
 namespace gg_core::gg_cpu {
-CPU::CPU(GbaInstance &instance, sinkType &sink) :
+CPU::CPU(GbaInstance &instance) :
 	_instance(instance),
 	CPU_Status(instance.mmu.IOReg),
 	_mem(instance.mmu),
-	logger(std::make_shared<spdlog::logger>("CPU", sink)),
 	armAsm(ASMMODE::ARM),
 	thumbAsm(ASMMODE::THUMB) {
   /**

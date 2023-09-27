@@ -7,21 +7,29 @@
 namespace gg_core {
 GbaInstance::GbaInstance(const char *romPath) :
 	oss(),
-	logSink(std::make_shared<LOG>()),
 	mmu(*this, romPath),
-	cpu(*this, logSink),
-	timer(*this),
-	dmaController(*this),
-	runner(_systemClk) {
+	cpu(*this),
+	ppu(mmu.IOReg.data(),
+		mmu.videoRAM.palette_data.data(),
+		mmu.videoRAM.vram_data.data(),
+		mmu.videoRAM.oam_data.data()
+	)
+//	timer(*this),
+//	dmaController(*this)
+{
 }
 
 GbaInstance::GbaInstance() :
 	oss(),
-	logSink(std::make_shared<LOG>()),
 	mmu(*this, std::nullopt),
-	cpu(*this, logSink),
-	timer(*this),
-	dmaController(*this),
-	runner(_systemClk) {
+	cpu(*this),
+	ppu(mmu.IOReg.data(),
+		mmu.videoRAM.palette_data.data(),
+		mmu.videoRAM.vram_data.data(),
+		mmu.videoRAM.oam_data.data()
+	)
+//	timer(*this),
+//	dmaController(*this)
+{
 }
 }

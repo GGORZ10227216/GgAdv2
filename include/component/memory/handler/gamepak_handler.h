@@ -18,11 +18,11 @@ T SRAM_Read(GbaInstance &instance, uint32_t absAddr) {
   if constexpr (sizeof(T) == 1)
 	return instance.mmu.cartridge.SRAM[relativeAddr];
   else {
-	instance.mmu.logger->warn(
-		"Attempt to READ {} value from SRAM 0x{:x}",
-		accessWidthName[sizeof(T) >> 1],
-		absAddr
-	);
+//	instance.mmu.logger->warn(
+//		"Attempt to READ {} value from SRAM 0x{:x}",
+//		accessWidthName[sizeof(T) >> 1],
+//		absAddr
+//	);
 
 	return static_cast<T>(instance.mmu.cartridge.SRAM[relativeAddr]) * static_cast<T>(0x01010101);
   } // else
@@ -81,13 +81,13 @@ void GAMEPAK_Write(GbaInstance &instance, uint32_t absAddr, T data) {
 	} // if
   } // else if
 
-  instance.mmu.logger->warn(
-	  "Attempt to write {} value {} to ROM{}(0x{:x})",
-	  accessWidthName[sizeof(T) >> 1],
-	  data,
-	  static_cast<int>(P),
-	  absAddr
-  );
+//  instance.mmu.logger->warn(
+//	  "Attempt to write {} value {} to ROM{}(0x{:x})",
+//	  accessWidthName[sizeof(T) >> 1],
+//	  data,
+//	  static_cast<int>(P),
+//	  absAddr
+//  );
 }
 }
 

@@ -17,7 +17,7 @@ static void LoadFileToBuffer(const std::filesystem::path &filePath, std::vector<
   } // if
   else {
 	// logger.LogWarning(fmt::format("File: \"{}\" doesn't exist!", filePath.string())) ;
-	spdlog::error("Load file error");
+//	spdlog::error("Load file error");
   } // else
 } // LoadFileToBuffer()
 }

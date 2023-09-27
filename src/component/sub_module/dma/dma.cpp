@@ -48,10 +48,10 @@ void dma_controller::WriteControl(int idx, uint16_t value) {
 	tc._dstStep = tc._dstStepTable[stepIdxBase][tc.DstAddrControl()];
 
 	if (tc.SrcAddrControl() == RELOAD) {
-	  spdlog::error(
-		  fmt::format("Using prohibited srcAddrCnt code when accessing dma_{}",
-					  static_cast<int> (tc._irqId)
-		  ));
+//	  spdlog::error(
+//		  fmt::format("Using prohibited srcAddrCnt code when accessing dma_{}",
+//					  static_cast<int> (tc._irqId)
+//		  ));
 
 	  std::exit(-1);
 	} // switch

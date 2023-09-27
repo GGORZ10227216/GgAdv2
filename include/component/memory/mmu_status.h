@@ -5,8 +5,6 @@
 #include <array>
 #include <cstdint>
 
-#include <logger.h>
-
 #include <cartridge.h>
 #include <gba_bios.h>
 
@@ -130,7 +128,6 @@ struct MMU_Status {
   uint32_t bios_readbuf = 0;
   gg_cpu::CPU_Status &_cpuStatus;
 
-  loggerType logger;
   E_AccessType requestAccessType = N_Cycle;
   uint32_t lastAccessAddr;
 };

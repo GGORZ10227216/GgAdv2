@@ -2,17 +2,16 @@
 // Created by orzgg on 2020-09-04.
 //
 
-#include <logger.h>
 
 #include <gg_utility.h>
 #include <bit_manipulate.h>
 
 #include <cpu.h>
 #include <mmu.h>
-#include <timers.h>
-#include <dma/dma_controller.h>
+#include <ppu.h>
+//#include <timers.h>
+//#include <dma/dma_controller.h>
 
-#include <task_runner.h>
 
 #ifndef GGADV_FRAMEWORK_BASE_H
 #define GGADV_FRAMEWORK_BASE_H
@@ -22,18 +21,16 @@ struct GbaInstance {
   GbaInstance(const char *romPath);
   GbaInstance();
 
-  uint64_t GetSystemClk() { return _systemClk; }
-
   std::ostringstream oss;
-  sinkType logSink;
   gg_mem::MMU mmu;
   gg_cpu::CPU cpu;
+  gg_gfx::PPU ppu;
+//  gg_io::Timers timer;
+//  gg_io::dma_controller dmaController;
 
-  gg_io::Timers timer;
-  gg_io::dma_controller dmaController;
-
-  TaskRunner<64> runner;
-  uint64_t _systemClk = 0;
+  // Cycle accuracy is not the main goal of this project.
+//  TaskRunner<64> runner;
+  unsigned cycleCounter = 0;
 };
 }
 
