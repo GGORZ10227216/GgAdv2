@@ -12,11 +12,7 @@ namespace gg_core::gg_cpu {
 template<E_DataProcess opcode>
 inline void CPSR_Arithmetic(CPU &instance, uint32_t Rn, uint32_t op2, uint64_t result) {
   bool needSetCarry = false, needSetOverflow = false;
-  if constexpr (opcode == ADD || opcode == CMN) {
-	needSetOverflow = TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31);
-	needSetCarry = result > 0xffffffff;
-  } // if
-  else if constexpr (opcode == ADC) {
+  if constexpr (opcode == ADD || opcode == CMN || opcode == ADC) {
 	needSetOverflow = TestBit(Rn, 31) == TestBit(op2, 31) && TestBit(Rn, 31) != TestBit(result, 31);
 	needSetCarry = result > 0xffffffff;
   } // if
