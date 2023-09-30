@@ -19,7 +19,7 @@ static void BranchExchange_impl(CPU &instance) {
 
 template<bool L>
 static void Branch_impl(CPU &instance) {
-  instance.Fetch(&instance, gg_mem::N_Cycle);
+  instance.Fetch(&instance, gg_mem::S_Cycle);
   int32_t offset = (instance.CurrentInstruction() & 0x00ffffff) << 2;
 
   if (gg_core::TestBit(offset, 25))
@@ -29,6 +29,6 @@ static void Branch_impl(CPU &instance) {
 	instance._regs[lr] = instance._regs[pc] - 4;
 
   instance._regs[pc] += offset;
-  instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+  instance.RefillPipeline(&instance, gg_mem::N_Cycle, gg_mem::S_Cycle);
 }
 } // gg_core::gg_cpu
