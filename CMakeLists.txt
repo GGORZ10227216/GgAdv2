@@ -42,10 +42,11 @@ set(src_core
 #        src/component/sub_module/dma/dma.cpp
         )
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+
 # include/component/cpu/core/arm_encoder_v2.h include/component/cpu/core/thumb/decoder/type1.h
 add_executable(ggAdv main.cpp ${header_core} ${src_core})
-target_compile_definitions(ggAdv PUBLIC -DSPDLOG_SHARED_LIB -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL)
-target_link_libraries(ggAdv -lfmt -lspdlog -lcapstone -lkeystone -lgtest -lgtest_main libppu)
+target_link_libraries(ggAdv -lfmt -lcapstone -lkeystone libppu)
 
 target_include_directories(ggAdv PUBLIC
         include
