@@ -2,8 +2,11 @@
 // Created by buildmachine on 2020-10-29.
 //
 
+#include <array>
+#include <string>
+#include <cstdlib>
+
 #include <type_traits>
-#include <logger.h>
 
 #ifndef GGTEST_GG_UTILITY_H
 #define GGTEST_GG_UTILITY_H
@@ -26,11 +29,6 @@ std::array<
 template<typename T, typename U>
 constexpr bool SameSize() {
   return sizeof(T) == sizeof(U);
-}
-
-inline void Unimplemented(const std::string &what) {
-  spdlog::error("Unimplemented: {}", what);
-  exit(-1);
 }
 
 template<typename T>

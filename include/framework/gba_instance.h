@@ -22,7 +22,6 @@ struct GbaInstance {
   GbaInstance();
   unsigned cycleCounter;
 
-  std::ostringstream oss;
   gg_mem::MMU mmu;
   gg_cpu::CPU cpu;
   gg_gfx::PPU ppu;
