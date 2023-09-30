@@ -20,6 +20,7 @@ namespace gg_core {
 struct GbaInstance {
   GbaInstance(const char *romPath);
   GbaInstance();
+  unsigned cycleCounter;
 
   std::ostringstream oss;
   gg_mem::MMU mmu;
@@ -30,7 +31,6 @@ struct GbaInstance {
 
   // Cycle accuracy is not the main goal of this project.
 //  TaskRunner<64> runner;
-  unsigned cycleCounter = 0;
 };
 }
 
