@@ -17,6 +17,8 @@
 #ifndef GGADV_MMU_H
 #define GGADV_MMU_H
 
+#include <iostream>
+
 namespace gg_core {
 class GbaInstance;
 
@@ -77,7 +79,10 @@ public :
   } // Write()
 
   inline int CalculateCycle(uint32_t absAddr, int accessWidth, E_AccessType accessType) {
-	return memCycleTable[absAddr >> 24][accessType].cycle[accessWidth];;
+    if (accessType == E_AccessType::I_Cycle)
+      return 1;
+    else
+	  return memCycleTable[absAddr >> 24][accessType].cycle[accessWidth >> 1];
   } // CalculateCycle()
 
   template<typename W, typename T>
@@ -88,11 +93,11 @@ public :
 
 	if (addrTrait > 0xf) {
 	  NoUsed_Write<W>(_instance, alignedAddr, value);
-	  _cycleCounter += 1;
+      AddCycleCounter(absAddr, I_Cycle, sizeof(W), false);
 	} // if
 	else {
 	  std::get<(sizeof(W) >> 1)>(WriteHandlers[addrTrait])(_instance, alignedAddr, value);
-	  _cycleCounter += accessType == I_Cycle ? 1 : CalculateCycle(absAddr, sizeof(W), accessType);
+      AddCycleCounter(absAddr, accessType, sizeof(W), false);
 	} // else
 
 	lastAccessAddr = absAddr;
@@ -112,11 +117,11 @@ public :
 
 	if (addrTrait > 0xf) {
 	  result = NoUsed_Read<W>(_instance, absAddr);
-	  _cycleCounter += 1;
+      AddCycleCounter(absAddr, I_Cycle, sizeof(W), true);
 	} // if
 	else {
 	  result = std::get<(sizeof(W) >> 1)>(ReadHandlers[addrTrait])(_instance, absAddr);
-	  _cycleCounter += accessType == I_Cycle ? 1 : CalculateCycle(absAddr, sizeof(W), accessType);
+      AddCycleCounter(absAddr, accessType, sizeof(W), true);
 	} // else
 
 	lastAccessAddr = absAddr;
@@ -131,6 +136,29 @@ public :
   GbaInstance &_instance;
   static std::array<ReadHandler, 16> ReadHandlers;
   static std::array<WriteHandler, 16> WriteHandlers;
+
+private:
+  void AddCycleCounter(uint32_t absAddr, E_AccessType accessType, unsigned accessWide, bool isRead, const char* comment = nullptr) {
+    const unsigned deltaClk = CalculateCycle(absAddr, accessWide, accessType);
+
+    std::string accessTypeStr;
+    const char* actionStr = isRead ? "Read" : "Write";
+
+    if (accessType == E_AccessType::N_Cycle)
+      accessTypeStr = "N";
+    else if (accessType == E_AccessType::S_Cycle)
+      accessTypeStr = "S";
+    else
+      accessTypeStr = "I";
+
+    std::cerr << "[MMU] " << actionStr << " " << accessTypeStr << " occur on addr [" << std::hex << absAddr << "], add clk: "
+              << deltaClk;
+    if (comment != nullptr)
+      std::cerr << "(" << comment << ")";
+    std::cerr << std::endl;
+
+    _cycleCounter += deltaClk;
+  } // AddCycleCounter()
 };
 }
 }

@@ -119,11 +119,11 @@ void CPU::CPU_DebugTick() {
 	instr = fmt::format("[{:#x}] {}", lastPC, thumbAsm.DASM(currentInstruction));
   } // else
 
-
-  std::cout << instr << std::endl;
-  std::cout << mode << std::endl;
-  std::cout << psr << std::endl;
-  std::cout << info << std::endl;
+  std::cerr << "elapsed cycle: " << _instance.cycleCounter << std::endl;
+  std::cerr << instr << std::endl;
+  std::cerr << mode << std::endl;
+  std::cerr << psr << std::endl;
+  std::cerr << info << std::endl;
 
   const unsigned condition = [&]() {
 	if (GetCpuMode() == E_CpuMode::ARM)
