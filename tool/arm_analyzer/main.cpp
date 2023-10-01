@@ -121,14 +121,14 @@ json ALU(uint32_t i, const string_view &mnemonic) {
   else {
 	attr["Shift"]["Amount"] = (i & (1 << 4) ? "Rs" : "Imm");
 	switch ((i & (0b11 << 5)) >> 5) {
-	case 0x0 :attr["Shift"]["Type"] = "LSL";
-	  break;
-	case 0x1:attr["Shift"]["Type"] = "LSR";
-	  break;
-	case 0x2:attr["Shift"]["Type"] = "ASR";
-	  break;
-	case 0x3 :attr["Shift"]["Type"] = "ROR";
-	  break;
+	  case 0x0 :attr["Shift"]["Type"] = "LSL";
+		break;
+	  case 0x1:attr["Shift"]["Type"] = "LSR";
+		break;
+	  case 0x2:attr["Shift"]["Type"] = "ASR";
+		break;
+	  case 0x3 :attr["Shift"]["Type"] = "ROR";
+		break;
 	}
 
 	attr["Signature"] = fmt::format(
@@ -237,14 +237,14 @@ json Transfer(uint32_t i, const string_view &mnemonic) {
 	attr["Flags"].push_back("i");
 	attr["Shift"]["Amount"] = "Imm";
 	switch ((i & (0b11 << 5)) >> 5) {
-	case 0x0 :attr["Shift"]["Type"] = "LSL";
-	  break;
-	case 0x1:attr["Shift"]["Type"] = "LSR";
-	  break;
-	case 0x2:attr["Shift"]["Type"] = "ASR";
-	  break;
-	case 0x3 :attr["Shift"]["Type"] = "ROR";
-	  break;
+	  case 0x0 :attr["Shift"]["Type"] = "LSL";
+		break;
+	  case 0x1:attr["Shift"]["Type"] = "LSR";
+		break;
+	  case 0x2:attr["Shift"]["Type"] = "ASR";
+		break;
+	  case 0x3 :attr["Shift"]["Type"] = "ROR";
+		break;
 	} // switch
 
 	attr["Signature"] = fmt::format(

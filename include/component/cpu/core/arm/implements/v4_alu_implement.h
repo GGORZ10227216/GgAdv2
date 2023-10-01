@@ -110,10 +110,10 @@ static void ALU_OperationImpl(CPU &instance,
 	// This is because our purpose is to increase the cycle counter.
 	// Check the ARM7TDMI manual(page 231, shift(Rs) part) for more information.
 	if (dstReg == pc) {
-	  /*B*/ instance._mem.Read<T>(instance._regs[ pc ] + 4, gg_mem::N_Cycle);
+	  /*B*/ instance._mem.Read<T>(instance._regs[pc] + 4, gg_mem::N_Cycle);
 	} // if
 	else {
-	  /*C*/ instance._mem.Read<T>(instance._regs[ pc ] + 4, gg_mem::S_Cycle);
+	  /*C*/ instance._mem.Read<T>(instance._regs[pc] + 4, gg_mem::S_Cycle);
 	} // else
   } // if constexpr
   else {
@@ -129,7 +129,7 @@ static void ALU_OperationImpl(CPU &instance,
 	// If we read PC now, we will get the PC + 3L value.
 	// But, strangely, the value inside the register seems to be PC + 8.
 	if (op1Reg == pc)
-	  op1Val = op1Val + instance.instructionLength ;
+	  op1Val = op1Val + instance.instructionLength;
   } // if constexpr
 
   uint64_t result = ALU_Calculate<S, opcode>(instance, op1Val, op2Val, shiftCarry);

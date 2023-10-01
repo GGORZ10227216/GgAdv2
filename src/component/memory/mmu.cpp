@@ -19,8 +19,7 @@ namespace gg_core::gg_mem {
 MMU_Status::MMU_Status(GbaInstance &instance, const std::optional<std::filesystem::path> &romPath) :
 	_cycleCounter(instance.cycleCounter),
 	cartridge(_cycleCounter),
-	_cpuStatus(instance.cpu)
-{
+	_cpuStatus(instance.cpu) {
   if (romPath.has_value())
 	cartridge.LoadRom(romPath.value());
   else {
@@ -51,19 +50,19 @@ MMU::MMU(GbaInstance &instance, const std::optional<std::filesystem::path> &romP
 	const unsigned addrTrait = CPU_PC >> 24;
 
 	switch (addrTrait) {
-	case BIOS_AREA:
-	case OAM_AREA:
-	  // Wait, Wat? [PC + 6] is outside the pipeline!!
-	  // using PC + 4 for now, just like mgba does.
-	  result = (thisFetch << 16) | lastFetch;
-	  break;
-	case IRAM_AREA:
-	  if (CPU_PC & 2)
+	  case BIOS_AREA:
+	  case OAM_AREA:
+		// Wait, Wat? [PC + 6] is outside the pipeline!!
+		// using PC + 4 for now, just like mgba does.
 		result = (thisFetch << 16) | lastFetch;
-	  else
-		result = (lastFetch << 16) | thisFetch;
-	  break;
-	default:result = (thisFetch << 16) | thisFetch;
+		break;
+	  case IRAM_AREA:
+		if (CPU_PC & 2)
+		  result = (thisFetch << 16) | lastFetch;
+		else
+		  result = (lastFetch << 16) | thisFetch;
+		break;
+	  default:result = (thisFetch << 16) | thisFetch;
 	} // switch()
 
 	return result;

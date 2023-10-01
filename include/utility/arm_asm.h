@@ -12,7 +12,7 @@
 enum class ASMMODE { ARM, THUMB };
 
 class ArmAssembler {
-public :
+ public :
   ArmAssembler(ASMMODE mode = ASMMODE::ARM) {
 	ksMode = mode == ASMMODE::ARM ? KS_MODE_ARM : KS_MODE_THUMB;
 	csMode = mode == ASMMODE::ARM ? CS_MODE_ARM : CS_MODE_THUMB;
@@ -57,7 +57,7 @@ public :
 	cs_close(&handle);
   }
 
-private:
+ private:
   ks_engine *ks = nullptr;
   ks_err err;
   size_t count_asm;

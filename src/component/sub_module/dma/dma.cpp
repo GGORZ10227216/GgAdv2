@@ -57,14 +57,14 @@ void dma_controller::WriteControl(int idx, uint16_t value) {
 	} // switch
 
 	switch (tc.Timing()) {
-	case HBLK:SetBit(_channelStatus[1], idx); // imm timing will set READY flag directly.
-	  break;
-	case VBLK:SetBit(_channelStatus[2], idx); // imm timing will set READY flag directly.
-	  break;
-	case SPECIAL:
-	  if (tc._irqId == 3)
-		SetBit(_channelStatus[3], idx); // imm timing will set READY flag directly.
-	  break;
+	  case HBLK:SetBit(_channelStatus[1], idx); // imm timing will set READY flag directly.
+		break;
+	  case VBLK:SetBit(_channelStatus[2], idx); // imm timing will set READY flag directly.
+		break;
+	  case SPECIAL:
+		if (tc._irqId == 3)
+		  SetBit(_channelStatus[3], idx); // imm timing will set READY flag directly.
+		break;
 	}
 
 	// TODO: schedule imm setting DMA here
@@ -153,13 +153,13 @@ void dma_controller::DoTransfer() {
 void dma_controller::Notify(DMA_TIMING requirement) {
   /// An interface to let framework notify dma controller to do h/v blank transfer
   switch (requirement) {
-  case HBLK:Trigger(_channelStatus[1]);
-	break;
-  case VBLK:Trigger(_channelStatus[2]);
-	break;
-  case SPECIAL:Trigger(_channelStatus[3]);
-	break;
-	// TODO: fifo mechanism
+	case HBLK:Trigger(_channelStatus[1]);
+	  break;
+	case VBLK:Trigger(_channelStatus[2]);
+	  break;
+	case SPECIAL:Trigger(_channelStatus[3]);
+	  break;
+	  // TODO: fifo mechanism
   }
 }
 

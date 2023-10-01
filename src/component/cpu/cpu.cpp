@@ -82,13 +82,13 @@ void CPU::CPU_DebugTick() {
 
   auto OpMode2Str = [](unsigned mCode) {
 	switch (mCode) {
-	case USR:return "USR";
-	case IRQ:return "IRQ";
-	case ABT:return "ABT";
-	case UND:return "UND";
-	case FIQ:return "FIQ";
-	case SVC:return "SVC";
-	case SYS:return "SYS";
+	  case USR:return "USR";
+	  case IRQ:return "IRQ";
+	  case ABT:return "ABT";
+	  case UND:return "UND";
+	  case FIQ:return "FIQ";
+	  case SVC:return "SVC";
+	  case SYS:return "SYS";
 	} // switch
 
 	return "ERROR";
@@ -255,17 +255,17 @@ void CPU::WriteCPSR(uint32_t newCPSR) {
 
 void CPU::WriteSPSR(uint32_t value) {
   switch (GetOperationMode()) {
-  case FIQ:_spsr_fiq = value;
-	break;
-  case IRQ:_spsr_irq = value;
-	break;
-  case SVC:_spsr_svc = value;
-	break;
-  case ABT:_spsr_abt = value;
-	break;
-  case UND:_spsr_und = value;
-	break;
-  default:exit(-2);
+	case FIQ:_spsr_fiq = value;
+	  break;
+	case IRQ:_spsr_irq = value;
+	  break;
+	case SVC:_spsr_svc = value;
+	  break;
+	case ABT:_spsr_abt = value;
+	  break;
+	case UND:_spsr_und = value;
+	  break;
+	default:exit(-2);
   } // switch()
 } // WriteSPSR()
 }

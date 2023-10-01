@@ -6,10 +6,10 @@
 
 namespace gg_core {
 GbaInstance::GbaInstance(const char *romPath) :
-  cycleCounter(0),
-  mmu(*this, romPath),
-  cpu(*this),
-  ppu(mmu.IOReg.data(),
+	cycleCounter(0),
+	mmu(*this, romPath),
+	cpu(*this),
+	ppu(mmu.IOReg.data(),
 		mmu.videoRAM.palette_data.data(),
 		mmu.videoRAM.vram_data.data(),
 		mmu.videoRAM.oam_data.data()
