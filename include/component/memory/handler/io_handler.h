@@ -18,7 +18,7 @@ T IO_Read(GbaInstance &instance, uint32_t absAddr) {
   using namespace gg_io;
 
   const uint32_t relativeAddr = AlignAddr<T>(absAddr - ioStart);
-  T result = 0;
+  uint32_t result = 0;
   if (relativeAddr < E_RamSize::E_IO_SIZE) {
 	for (int i = 0; i < sizeof(T); ++i) {
 	  const auto curPolicy = static_cast<E_IO_AccessMode> (policyTable[relativeAddr + i]);
@@ -34,7 +34,7 @@ T IO_Read(GbaInstance &instance, uint32_t absAddr) {
 	  } // else
 	} // for
 
-	return result;
+	return static_cast<T>(result);
   } // if
   else {
 	// 04000400-04FFFFFF Not used
