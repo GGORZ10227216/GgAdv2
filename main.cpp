@@ -1,5 +1,3 @@
-#include <iostream>
-#include <optional>
 #include <emu_framework.h>
 
 using namespace gg_core::gg_cpu;
