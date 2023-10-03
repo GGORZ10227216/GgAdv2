@@ -288,11 +288,25 @@ void BlockMemAccess_impl(CPU &instance) {
   uint32_t offset = 0;
   uint32_t RnNumber = BitFieldValue<16, 4>(CURRENT_INSTRUCTION);
 
-  uint32_t originalCPSR = instance.ReadCPSR();
-  uint32_t originalMode = instance.GetOperationMode();
+  uint32_t currentCPSR = instance.ReadCPSR();
+  uint32_t currentOpMode = instance.GetOperationMode();
 
-  if constexpr (S)
-	instance.WriteCPSR((originalCPSR & ~0b11111) | static_cast<uint32_t>(E_OperationMode::USR));
+  if constexpr (S) {
+	if constexpr (L) {
+	  if (TestBit(regList, 15)) {
+		// LDM with R15 in transfer list and S bit set (Mode changes)
+		// Do nothing here, CPSR will be changed after r15 is written......
+	  } // if
+	  else {
+		// LDM without R15 in transfer list and S bit set (User bank transfer)
+		instance.WriteCPSR((currentCPSR & ~0b11111) | static_cast<uint32_t>(E_OperationMode::USR));
+	  } // else
+	} // if constexpr
+	else {
+	  // STM with S bit set (User bank transfer)
+	  instance.WriteCPSR((currentCPSR & ~0b11111) | static_cast<uint32_t>(E_OperationMode::USR));
+	} // else
+  } // if constexpr
 
   if (regList == 0) {
 	regList = 0x8000; // pc only
@@ -305,11 +319,17 @@ void BlockMemAccess_impl(CPU &instance) {
 
   if constexpr (S) {
 	if constexpr (L) {
-	  if (TestBit(regList, 15))
-		instance.WriteCPSR(instance.ReadSPSR(static_cast<E_OperationMode>(originalMode)));
+	  if (TestBit(regList, 15)) {
+		// LDM with R15 in transfer list and S bit set (Mode changes)
+		// ......Transfer the SPSR_<mode> to the CPSR
+		instance.WriteCPSR(instance.ReadSPSR(static_cast<E_OperationMode>(currentOpMode)));
+	  } // if
 	} // if
-
-	instance.WriteCPSR((originalCPSR & ~0b11111) | originalMode);
+	else {
+	  // STM with r15 in transfer list and S bit set OR LDM without r15 in transfer list and S bit set
+	  // (change the register bank back to the original mode)
+	  instance.WriteCPSR((currentCPSR & ~0b11111) | currentOpMode);
+	} // else
   } // if
 } // BlockMemAccess_impl()
 
