@@ -22,7 +22,12 @@ static void Interrupt_impl(CPU &instance) {
 	instance._regs[pc] = SW_IRQ;
   } // if
   else if constexpr (opMode == IRQ) {
-	instance._regs[lr] = instance._regs[pc] - instance.instructionLength * 2;
+	// Datasheet says:
+	//   Where PC is the address of the instruction that was not executed because the FIQ or
+	//   IRQ took priority ...
+	//   ... Return instruction is "SUBS PC, R14_irq, #4"
+	// According to that, I guess the correct lr value should be PC - 2*instructionLength + 4
+	instance._regs[lr] = instance._regs[pc] - instance.instructionLength * 2 + 4;
 	instance._regs[pc] = HW_IRQ;
   } // else if
   else
