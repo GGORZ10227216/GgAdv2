@@ -234,6 +234,7 @@ void CPU::WriteCPSR(uint32_t newCPSR) {
   E_OperationMode originalMode = static_cast<E_OperationMode>(_cpsr & 0x1fu);
   E_OperationMode newMode = static_cast<E_OperationMode>(newCPSR & 0x1fu);
 
+  // if new mode is not the same as old mode, and not switching between USR and SYS
   bool needBankSwap = (originalMode != newMode) && ((originalMode ^ newMode) != 0b01111);
 
   if (needBankSwap) {
