@@ -79,6 +79,7 @@ public :
   } // Write()
 
   inline int CalculateCycle(uint32_t absAddr, int accessWidth, E_AccessType accessType) {
+	// TODO: MMU request an I cycle, is it possible?
     if (accessType == E_AccessType::I_Cycle)
       return 1;
     else
@@ -93,11 +94,11 @@ public :
 
 	if (addrTrait > 0xf) {
 	  NoUsed_Write<W>(_instance, alignedAddr, value);
-      AddCycleCounter(absAddr, I_Cycle, sizeof(W), false);
+	  AddCycle(absAddr, I_Cycle, sizeof(W), false);
 	} // if
 	else {
 	  std::get<(sizeof(W) >> 1)>(WriteHandlers[addrTrait])(_instance, alignedAddr, value);
-      AddCycleCounter(absAddr, accessType, sizeof(W), false);
+	  AddCycle(absAddr, accessType, sizeof(W), false);
 	} // else
 
 	lastAccessAddr = absAddr;
@@ -117,11 +118,11 @@ public :
 
 	if (addrTrait > 0xf) {
 	  result = NoUsed_Read<W>(_instance, absAddr);
-      AddCycleCounter(absAddr, I_Cycle, sizeof(W), true);
+	  AddCycle(absAddr, I_Cycle, sizeof(W), true);
 	} // if
 	else {
 	  result = std::get<(sizeof(W) >> 1)>(ReadHandlers[addrTrait])(_instance, absAddr);
-      AddCycleCounter(absAddr, accessType, sizeof(W), true);
+	  AddCycle(absAddr, accessType, sizeof(W), true);
 	} // else
 
 	lastAccessAddr = absAddr;
@@ -138,7 +139,7 @@ public :
   static std::array<WriteHandler, 16> WriteHandlers;
 
 private:
-  void AddCycleCounter(uint32_t absAddr, E_AccessType accessType, unsigned accessWide, bool isRead, const char* comment = nullptr) {
+  void AddCycle(uint32_t absAddr, E_AccessType accessType, unsigned accessWide, bool isRead, const char* comment = nullptr) {
     const unsigned deltaClk = CalculateCycle(absAddr, accessWide, accessType);
 
     std::string accessTypeStr;
@@ -157,7 +158,7 @@ private:
       std::cerr << "(" << comment << ")";
     std::cerr << std::endl;
 
-    _cycleCounter += deltaClk;
+	_elapsedCycle += deltaClk;
   } // AddCycleCounter()
 };
 }

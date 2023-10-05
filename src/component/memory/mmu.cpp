@@ -17,8 +17,7 @@
 
 namespace gg_core::gg_mem {
 MMU_Status::MMU_Status(GbaInstance &instance, const std::optional<std::filesystem::path> &romPath) :
-	_cycleCounter(instance.cycleCounter),
-	cartridge(_cycleCounter),
+	cartridge(_elapsedCycle),
 	_cpuStatus(instance.cpu) {
   if (romPath.has_value())
 	cartridge.LoadRom(romPath.value());

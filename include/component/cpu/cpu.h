@@ -46,6 +46,7 @@ public :
   void ClearN() { _cpsr &= ~(1 << 31); } // ClearN()
 
   void CPU_DebugTick();
+  void AddCycle(const unsigned deltaClk, const char* reason);
   void CPU_Test(uint32_t inst);
   void ChangeCpuMode(E_CpuMode mode);
   void ChangeOperationMode(E_OperationMode newMode);

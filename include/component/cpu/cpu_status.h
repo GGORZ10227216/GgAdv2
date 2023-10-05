@@ -120,7 +120,6 @@ struct CPU_Status {
   uint8_t fetchIdx = 0;
   uint32_t currentInstruction = 0x00;
 
-  uint32_t cycle = 0;
   uint32_t lastPC = 0x0;
 
   unsigned instructionLength = 4;
@@ -161,9 +160,7 @@ struct CPU_Status {
   HandlerType const *instructionTable = nullptr;
 protected:
   uint32_t _cpsr = 0xd3;
-  uint16_t &IF;
-  uint16_t &IE;
-  uint16_t &IME;
+  uint32_t _elapsedClk = 0;
 };
 }
 }

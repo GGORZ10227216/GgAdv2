@@ -76,6 +76,11 @@ void CPU::RaiseInterrupt(IRQ_TYPE irqType) {
   CPU_StateChange();
 } // RaiseInterrupt()
 
+void CPU::AddCycle(const unsigned int deltaClk, const char *reason) {
+  std::cerr << "[CPU] elapsed cycle: " << _instance.cycleCounter << " (" << reason << ")" << std::endl;
+  _elapsedClk += deltaClk;
+}
+
 void CPU::CPU_DebugTick() {
   currentInstruction = fetchedBuffer[!fetchIdx];
   std::string mode, instr, psr, info;
@@ -119,11 +124,15 @@ void CPU::CPU_DebugTick() {
 	instr = fmt::format("[{:#x}] {}", lastPC, thumbAsm.DASM(currentInstruction));
   } // else
 
-  std::cerr << "elapsed cycle: " << _instance.cycleCounter << std::endl;
+  std::cerr << "CPU elapsed cycle: " << _elapsedClk << std::endl;
+  std::cerr << "MMU elapsed cycle: " << _mem._elapsedCycle << std::endl;
   std::cerr << instr << std::endl;
   std::cerr << mode << std::endl;
   std::cerr << psr << std::endl;
   std::cerr << info << std::endl;
+
+  _elapsedClk = 0;
+  _mem._elapsedCycle = 0;
 
   const unsigned condition = [&]() {
 	if (GetCpuMode() == E_CpuMode::ARM)

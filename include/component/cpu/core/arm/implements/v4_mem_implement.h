@@ -21,7 +21,7 @@ void calculateTargetAddr(uint32_t &targetAddr, unsigned offset) {
 template<typename T, bool SIGNED>
 static void MemLoad(CPU &instance, uint32_t targetAddr, unsigned targetRegNum) {
   uint32_t &dst = instance._regs[targetRegNum];
-  uint32_t &cycleCounter = instance._mem._cycleCounter;
+  uint32_t &cycleCounter = instance._mem._elapsedCycle;
 
   // 2nd cycle
   if constexpr (sizeof(T) == 1) {
@@ -54,6 +54,7 @@ static void MemLoad(CPU &instance, uint32_t targetAddr, unsigned targetRegNum) {
 	dst = instance._mem.Read<uint32_t>(targetAddr, gg_mem::I_Cycle);
   } // else
 
+  // FIXME: should not call CalculateCycle() directly here
   if (targetRegNum == pc) {
 	// 3th cycle
 	cycleCounter += instance._mem.CalculateCycle(instance._regs[gg_cpu::pc] + instance.instructionLength,
