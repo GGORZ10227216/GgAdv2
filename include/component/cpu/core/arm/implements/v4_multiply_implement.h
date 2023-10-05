@@ -21,7 +21,9 @@ static uint32_t ALU_Multiply(CPU &instance, uint32_t arg1, uint32_t arg2) {
   } // for
 
   uint32_t result = arg1 * arg2;
-  instance.cycle += boothValue; // The I_Cycle cycle
+
+  instance.AddCycle(boothValue, "MUL I cycle");
+//  instance._elapsedClk += boothValue; // The I_Cycle cycle
 
   instance._mem.CalculateCycle(instance._regs[pc] + 4, sizeof(uint32_t), gg_mem::S_Cycle);
 
@@ -51,7 +53,8 @@ static void Multiply_impl(CPU &instance) {
 	uint8_t RnNumber = BitFieldValue<12, 4>(CURRENT_INSTRUCTION);
 	unsigned RnValue = instance._regs[RnNumber];
 	result += RnValue;
-	instance.cycle += 1; // The I_Cycle cycle
+	instance.AddCycle(1, "MULA additional 1 I cycle");
+//	instance._elapsedClk += 1; // The I_Cycle cycle
   } // if
 
   instance._regs[RdNumber] = result;
@@ -101,12 +104,14 @@ static void MultiplyLong_impl(CPU &instance) {
 	} // else
   } // for
 
-  instance.cycle += boothValue + 1;
+  instance.AddCycle(boothValue + 1, "MULL I cycle");
+//  instance._elapsedClk += boothValue + 1;
 
   if constexpr (A) {
 	uint64_t RdValue = (static_cast<uint64_t>(CPU_REG[RdHiNumber]) << 32) | CPU_REG[RdLoNumber];
 	result.qword += RdValue;
-	instance.cycle += 1;
+	instance.AddCycle(1, "MLAL additional 1 I cycle");
+//	instance._elapsedClk += 1;
 	// EMU_CLK += CLK_CONT.I_Cycle() ;
   } // if constexpr
 
