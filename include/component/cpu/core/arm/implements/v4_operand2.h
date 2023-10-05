@@ -75,8 +75,10 @@ inline bool Op2ShiftReg(CPU &instance, uint32_t &result, unsigned shiftBase, uns
 	} // else
   } // if
 
-  if (validShift)
-	instance.cycle += 1; // Shift by reg will add 1 I_Cycle cycle
+  if (validShift) {
+	instance.AddCycle(1, "Shift by reg");
+//	instance._elapsedClk += 1; // Shift by reg will add 1 I_Cycle cycle
+  } // if
 
   return carrySet;
 } // Op2Shift()
