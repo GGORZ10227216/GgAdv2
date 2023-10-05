@@ -25,6 +25,10 @@ struct GbaInstance {
   gg_mem::MMU mmu;
   gg_cpu::CPU cpu;
   gg_gfx::PPU ppu;
+
+  uint16_t &IF;
+  uint16_t &IE;
+  uint16_t &IME;
 //  gg_io::Timers timer;
 //  gg_io::dma_controller dmaController;
 

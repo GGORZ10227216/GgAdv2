@@ -25,10 +25,7 @@ struct CPU_Status {
   unsigned runState = 0x0;
   std::array<unsigned, 16> _regs;
 
-  CPU_Status(std::array<uint8_t, 0x400> &ioRegs) :
-	  IF(reinterpret_cast<uint16_t &>(ioRegs[0x202])),
-	  IE(reinterpret_cast<uint16_t &>(ioRegs[0x200])),
-	  IME(reinterpret_cast<uint16_t &>(ioRegs[0x208])) {
+  CPU_Status() {
 	_regs.fill(0);
   }
 

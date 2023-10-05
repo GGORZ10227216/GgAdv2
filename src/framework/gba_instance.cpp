@@ -3,6 +3,7 @@
 //
 
 #include <gba_instance.h>
+#include <io_enum.h>
 
 namespace gg_core {
 GbaInstance::GbaInstance(const char *romPath) :
@@ -13,7 +14,10 @@ GbaInstance::GbaInstance(const char *romPath) :
 		mmu.videoRAM.palette_data.data(),
 		mmu.videoRAM.vram_data.data(),
 		mmu.videoRAM.oam_data.data()
-	)
+	),
+	IF((uint16_t&)mmu.IOReg[gg_io::OFFSET_IF]),
+	IE((uint16_t&)mmu.IOReg[gg_io::OFFSET_IE]),
+	IME((uint16_t&)mmu.IOReg[gg_io::OFFSET_IME])
 //	timer(*this),
 //	dmaController(*this)
 {
@@ -26,7 +30,10 @@ GbaInstance::GbaInstance() :
 		mmu.videoRAM.palette_data.data(),
 		mmu.videoRAM.vram_data.data(),
 		mmu.videoRAM.oam_data.data()
-	)
+	),
+	IF((uint16_t&)mmu.IOReg[gg_io::OFFSET_IF]),
+	IE((uint16_t&)mmu.IOReg[gg_io::OFFSET_IE]),
+	IME((uint16_t&)mmu.IOReg[gg_io::OFFSET_IME])
 //	timer(*this),
 //	dmaController(*this)
 {

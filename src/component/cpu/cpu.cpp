@@ -40,8 +40,8 @@
 
 namespace gg_core::gg_cpu {
 CPU::CPU(GbaInstance &instance) :
+	CPU_Status(),
 	_instance(instance),
-	CPU_Status(instance.mmu.IOReg),
 	_mem(instance.mmu),
 	armAsm(ASMMODE::ARM),
 	thumbAsm(ASMMODE::THUMB) {
@@ -66,13 +66,13 @@ CPU::CPU(GbaInstance &instance) :
 } // CPU()
 
 void CPU::CPU_StateChange() {
-  const bool irqAck = (!!(IF & IE) & IME);
+  const bool irqAck = (!!(_instance.IF & _instance.IE) & _instance.IME);
   runState = (runState & ~(1 << IRQ_BIT)) | ((I() & irqAck) << IRQ_BIT);
   Tick = CPUTickTable[runState];
 } // CPU_StateChange()
 
 void CPU::RaiseInterrupt(IRQ_TYPE irqType) {
-  IF |= _BV(irqType);
+  _instance.IF |= _BV(irqType);
   CPU_StateChange();
 } // RaiseInterrupt()
 
@@ -143,11 +143,7 @@ void CPU::CPU_DebugTick() {
 
   auto checker = conditionChecker[condition];
 
-  uint16_t &IRQ_Enable(reinterpret_cast<uint16_t &>(_mem.IOReg[0x200]));
-  uint16_t &IRQ_Request(reinterpret_cast<uint16_t &>(_mem.IOReg[0x202]));
-  uint16_t &IRQ_Master(reinterpret_cast<uint16_t &>(_mem.IOReg[0x208]));
-
-  if (IRQ_Master && I() && (IRQ_Enable & IRQ_Request)) {
+  if (_instance.IME && I() && (_instance.IE & _instance.IF)) {
 	Interrupt_impl<E_OperationMode::IRQ>(*this);
   } // if
   else {
