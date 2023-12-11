@@ -24,7 +24,7 @@ extern void MovCmpAddSub(CPU &instance) {
   const unsigned targetRd = (curInst & 0x700) >> 8;
   const uint32_t RdValue = instance._regs[targetRd];
 
-  uint32_t result = ALU_Calculate<true, OP>(instance, RdValue, offset8, false);
+  uint32_t result = ALU_Calculate<true, OP>(instance, RdValue, offset8, instance.C());
 
   if constexpr (OP != E_DataProcess::CMP)
 	instance._regs[targetRd] = result;
