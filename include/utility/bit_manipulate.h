@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <bit>
+#include "gg_utility.h"
 
 #ifndef GGADV_BIT_MANIPULATE_H
 #define GGADV_BIT_MANIPULATE_H
@@ -50,11 +51,9 @@ constexpr T rotr(T x, uint32_t n) {
   static_assert(std::is_integral<T>::value, "T is not interral type");
   static_assert(!std::is_signed<T>::value, "T is not unsigned");
 
-  const unsigned int mask = 8*sizeof(n);
-  c %= mask;
-  return (n>>c) | ((n << (mask - c)));
+  return (x << (sizeof(x)*8 - n)) | (x >> n);
 #endif
 }
-}
+} // namespace gg_core
 
 #endif //GGADV_BIT_MANIPULATE_H
