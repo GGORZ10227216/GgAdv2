@@ -10,44 +10,24 @@ project(ggAdv)
 
 add_subdirectory(libppu)
 
-set(header_core
-        include/instruction_class.h
-        include/component/cpu/cpu_status.h
-        include/component/component_class.h
-        include/component/cpu/cpu_enum.h
-        include/framework/gba_instance.h
-        include/component/cpu/cpu.h
-        include/component/memory/mmu_status.h
-        include/component/memory/mmu.h
-        include/component/io/io.h
-        include/gba_bios.h
-        include/utility/file_access.h
-        include/component/memory/memory_region.h
-        include/component/memory/mem_enum.h
-        include/component/memory/general_memory.h
-        include/component/memory/display_memory.h
-        include/component/memory/gamepak_memory.h
-        include/utility/bit_manipulate.h include/utility/gg_utility.h include/component/cpu/core/arm/decoder/multiply.h include/component/cpu/core/arm/decoder/memory_access.h
-#        include/component/sub_module/timer.h
-#        include/component/sub_module/dma/dma_controller.h
-#        include/component/sub_module/dma/dma.h
-        )
-
 set(src_core
         src/framework/gba_instance.cpp
-#        src/component/sub_module/timers.cpp
+        src/framework/gg_texture.cpp
+        src/framework/glad.c
         src/component/cpu/cpu.cpp
         src/component/memory/mmu.cpp
-        src/component/memory/io_handler.cpp
-#        src/component/sub_module/dma/dma.cpp
-        )
+        src/component/sub_module/dma/transfer_channel.cpp
+        src/component/sub_module/dma/controller.cpp
+        src/component/sub_module/timer/timer.cpp
+        src/component/sub_module/apu/apu.cpp
+        src/component/sub_module/keypad/keypad.cpp
+)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
-# include/component/cpu/core/arm_encoder_v2.h include/component/cpu/core/thumb/decoder/type1.h
-add_executable(ggAdv main.cpp ${header_core} ${src_core})
-target_link_libraries(ggAdv -lfmt -lcapstone -lkeystone libppu)
-
+add_executable(ggAdv main.cpp ${src_core})
+target_link_libraries(ggAdv fmt keystone libppu)
+target_link_libraries(ggAdv ${CMAKE_CURRENT_SOURCE_DIR}/lib/libcapstone.a)
 target_include_directories(ggAdv PUBLIC
         include
         include/component
@@ -59,8 +39,11 @@ target_include_directories(ggAdv PUBLIC
         include/component/cpu/core/thumb/implements
         include/component/io
         include/component/memory
+        include/component/memory/handler
         include/component/sub_module
+        include/component/sub_module/apu
         include/framework
         include/utility
         libppu/include
+        tool/capstone/include
         )
