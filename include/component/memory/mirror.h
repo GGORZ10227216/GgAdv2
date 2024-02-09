@@ -7,15 +7,15 @@
 
 namespace gg_core::gg_mem {
 inline uint32_t NORMAL_MIRROR(uint32_t absAddr, uint32_t regionSize) {
-  return absAddr & (regionSize - 1);
+  return absAddr % regionSize;
 }
 
 inline uint32_t VRAM_MIRROR(uint32_t absAddr) {
-  return absAddr & ((absAddr & 0x10000) ? 0x17fff : 0x0'ffff);
-}
-
-inline uint32_t SRAM_MIRROR(MMU_Status &mmu, uint32_t absAddr) {
-  return absAddr & mmu.cartridge.GetSRAM_MirrorMask();
+  const uint32_t normalMirrorAddr = NORMAL_MIRROR(absAddr, 0x20000);
+  if (normalMirrorAddr < E_VRAM_SIZE)
+	return normalMirrorAddr;
+  else
+	return normalMirrorAddr - 0x8000;
 }
 }
 
