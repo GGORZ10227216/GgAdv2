@@ -5,10 +5,13 @@
 #include <span>
 #include <vector>
 
+#include <mem_enum.h>
 #include <file_access.h>
 #include <eeprom.h>
+#include <sram.h>
 
 #include <gg_utility.h>
+#include <iostream>
 
 #ifndef GGTEST_CARTRIDGE_H
 #define GGTEST_CARTRIDGE_H
@@ -57,8 +60,6 @@
 
 namespace gg_core::gg_mem {
 struct Header {
-  using RomByte = const uint8_t;
-
   Header(const uint8_t *romData) :
 	  _romData(romData),
 	  entryPoint(romData, romData + 0x4),
@@ -85,25 +86,25 @@ struct Header {
 	return logoCheck && fixedValue_0xb2;
   } // Verify()
 
-  std::span<RomByte, 0x4> entryPoint;
-  std::span<RomByte, 0x9c> logo;
-  std::span<RomByte, 0xc> gameTitle;
-  std::span<RomByte, 0x4> gameCode;
-  std::span<RomByte, 0x2> makerCode;
-  std::span<RomByte, 0x1> fixedValue;
-  std::span<RomByte, 0x1> mainUnitCode;
-  std::span<RomByte, 0x1> deviceType;
-  std::span<RomByte, 0x7> reservedArea;
-  std::span<RomByte, 0x1> softwareVersion;
-  std::span<RomByte, 0x1> checksum;
-  std::span<RomByte, 0x2> reservedArea2;
+  std::span<const BYTE, 0x4> entryPoint;
+  std::span<const BYTE, 0x9c> logo;
+  std::span<const BYTE, 0xc> gameTitle;
+  std::span<const BYTE, 0x4> gameCode;
+  std::span<const BYTE, 0x2> makerCode;
+  std::span<const BYTE, 0x1> fixedValue;
+  std::span<const BYTE, 0x1> mainUnitCode;
+  std::span<const BYTE, 0x1> deviceType;
+  std::span<const BYTE, 0x7> reservedArea;
+  std::span<const BYTE, 0x1> softwareVersion;
+  std::span<const BYTE, 0x1> checksum;
+  std::span<const BYTE, 0x2> reservedArea2;
 
   /*Multiboot*/
-  std::span<RomByte, 0x4> ramEntryPoint;
-  std::span<RomByte, 0x1> bootMode;
-  std::span<RomByte, 0x1> slaveID;
-  std::span<RomByte, 0x26> reservedArea3;
-  std::span<RomByte, 0x4> joybusEntryPoint;
+  std::span<const BYTE, 0x4> ramEntryPoint;
+  std::span<const BYTE, 0x1> bootMode;
+  std::span<const BYTE, 0x1> slaveID;
+  std::span<const BYTE, 0x26> reservedArea3;
+  std::span<const BYTE, 0x4> joybusEntryPoint;
 
 private :
   const uint8_t *_romData;
@@ -126,40 +127,66 @@ class Cartridge {
 public:
   // TODO: flash memory support
   using SaveType_t = std::pair<std::string, E_SaveType>;
-  enum { MAX_GBA_ROMSIZE = 0x2000000 };
-  std::array<uint8_t, 0x10000> SRAM;
   std::vector<uint8_t> romData;
-  unsigned SRAM_MirrorMask = 0x7fff;
-  EEPROM eeprom;
+
+  std::unique_ptr<SaveMemory> _saveMem;
+  E_SaveType _saveType = E_NONE;
+  unsigned &_mmuCycleCounterRef;
+
+  std::array<SaveType_t, 6> saveTypeID{
+	  SaveType_t("SRAM_V", E_SRAM32K),
+	  SaveType_t("SRAM_F_V", E_SRAM32K),
+	  SaveType_t("EEPROM_V", E_EEPROM),
+	  SaveType_t("FLASH_V", E_FLASH64K),
+	  SaveType_t("FLASH512_V", E_FLASH64K),
+	  SaveType_t("FLASH1M_V", E_FLASH128K)
+  };
 
   Cartridge(unsigned &mmuCycleCounter) :
-	  eeprom(mmuCycleCounter) {
-	SRAM.fill(0xff);
-//            romData.resize(MAX_GBA_ROMSIZE, 0) ;
+	  _mmuCycleCounterRef(mmuCycleCounter)
+  {
+	romData.resize(MAX_GBA_ROMSIZE, 0) ;
 
-//            uint16_t* seek = reinterpret_cast<uint16_t*>(romData.data()) ;
-//            for (int idx = 0 ; idx < MAX_GBA_ROMSIZE/2; idx++) {
-//                seek[idx] = ((0x8000000 + idx*2) >> 1) & 0xffff;
-//            } // for
+	uint16_t* seek = reinterpret_cast<uint16_t*>(romData.data()) ;
+	for (int idx = 0 ; idx < MAX_GBA_ROMSIZE/2; idx++) {
+	  seek[idx] = ((0x8000000 + idx*2) >> 1) & 0xffff;
+	} // for
   }
 
   void LoadRom(const std::filesystem::path &romPath) {
 	using namespace std::filesystem;
 
 	if (exists(romPath)) {
+      std::filesystem::path romFolder = romPath.parent_path();
+      std::filesystem::path romName = romPath.stem();
+      std::filesystem::path saveFolder = romFolder;
+
 	  LoadFileToBuffer(romPath, romData);
 	  Header header = GetHeader();
 
 	  if (header.Verify()) {
+		const std::filesystem::path savePath = std::filesystem::path{saveFolder / romName} += ".sav";
 		_saveType = CheckSaveType();
+		if (_saveType == E_SRAM32K) {
+		  _saveMem = std::make_unique<SRAM>(savePath, _mmuCycleCounterRef);
+		} // if
+		else if (_saveType == E_EEPROM) {
+		  _saveMem = std::make_unique<EEPROM>(savePath, _mmuCycleCounterRef);
+		} // else if
+		else {
+		  std::cerr << "Save type not supported!" << std::endl;
+		} // else
+
+		if (_saveMem)
+		  _saveMem->ReadSaveFromFile();
 	  } // if
 	  else {
-//		logger->error("Rom verify failed, probably not a valid GBA rom file.");
+		std::cerr << "Rom verify failed, probably not a valid GBA rom file." << std::endl;
 		std::exit(-1);
 	  } // else
 	} // if
 	else {
-//	  logger->error("File does not exist!!");
+	  std::cerr << "File does not exist!!" << std::endl;
 	  std::exit(-1);
 	} // else
   } // LoadRom()
@@ -181,10 +208,6 @@ public:
 	return (reinterpret_cast<const uint32_t &>(header.entryPoint[0]) & 0xffffff) + 8;
   } // Rom_EntrypointOffset()
 
-  unsigned GetSRAM_MirrorMask() {
-	return SRAM_MirrorMask;
-  } // GetSRAM_MirrorMask()
-
   bool IsEEPROM_Access(uint32_t absAddr) {
 	bool smallROM = romData.size() <= 0x1000000;
 	const uint32_t eepromStart = smallROM ? 0x0D00'0000 : 0x0DFF'FF00;
@@ -193,7 +216,7 @@ public:
   } // IsEEPROM_Access()
 
   template<E_GamePakRegion P>
-  uint32_t RelativeAddr(uint32_t absAddr) {
+  static uint32_t RelativeAddr(uint32_t absAddr) {
 	uint32_t result = absAddr;
 	if constexpr (P == E_WS0)
 	  result -= 0x0800'0000;
@@ -209,35 +232,22 @@ public:
 	return result;
   } // RelativeAddr()
 
-private :
-  E_SaveType _saveType = E_UNKNOWN;
-
   E_SaveType CheckSaveType() {
+	// TODO: Maybe I should query the save type from an external database?
 	const uint32_t entryPointOffset = EntrypointOffset();
 
 	for (size_t idx = entryPointOffset; idx < romData.size(); ++idx) {
 	  for (const auto &[idStr, idEnum] : saveTypeID) {
 		bool boundaryCheck = idx + idStr.size() < romData.size();
 		if (boundaryCheck && std::equal(idStr.begin(), idStr.end(), romData.begin() + idx)) {
-		  if (idEnum != E_SRAM32K)
-			SRAM_MirrorMask = 0xffff;
 		  return idEnum;
 		} // if
 	  } // for
 	} // for
 
-//	logger->warn("Save type id not found!");
-	return E_UNKNOWN;
+	std::cerr << "Save type id not found!" << std::endl;
+	return E_NONE;
   } // CheckSaveType()
-
-  std::array<SaveType_t, 6> saveTypeID{
-	  SaveType_t("SRAM_V", E_SRAM32K),
-	  SaveType_t("SRAM_F_V", E_SRAM32K),
-	  SaveType_t("EEPROM_V", E_EEPROM),
-	  SaveType_t("FLASH_V", E_FLASH64K),
-	  SaveType_t("FLASH512_V", E_FLASH64K),
-	  SaveType_t("FLASH1M_V", E_FLASH128K)
-  };
 };
 }
 
