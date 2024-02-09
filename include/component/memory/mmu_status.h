@@ -4,6 +4,7 @@
 
 #include <array>
 #include <cstdint>
+#include <optional>
 
 #include <cartridge.h>
 #include <gba_bios.h>
@@ -25,7 +26,10 @@ inline unsigned AlignAddr(uint32_t addr) {
 	gg_core::Unreachable();
 } // AddrAlign()
 
-
+inline uint32_t AlignAddr(uint32_t addr, const E_AccessWidth align) {
+  const unsigned alignMask = static_cast<unsigned>(align) - 1;
+  return addr & ~(alignMask - 1);
+} // AddrAlign()
 
 struct MMU_Status {
   MMU_Status(GbaInstance &instance, const std::optional<std::filesystem::path> &romPath);
@@ -40,8 +44,7 @@ struct MMU_Status {
   Cartridge cartridge;
   VideoRAM videoRAM;
 
-  union CycleSet {
-	uint8_t cycle[3];
+  struct CycleSet {
 	uint8_t byte, word, dword;
   };
 
@@ -84,8 +87,8 @@ struct MMU_Status {
 		  CycleSet{1, 1, 2}, // Palette
 		  CycleSet{1, 1, 2}, // VRAM
 		  CycleSet{1, 1, 1}, // OAM
-		  CycleSet{5, 5, 8}, // WS0_A
-		  CycleSet{5, 5, 8}, // WS0_B
+		  CycleSet{5, 5, 8}, // WS0_A, 1N + 1 + 1S + 1 -> 4 + 1 + 2 + 1
+		  CycleSet{5, 5, 8}, // WS0_B, 1N + 1 + 1S + 1 -> 4 + 1 + 2 + 1
 		  CycleSet{5, 5, 10}, // WS1_A, 1N + 1 + 1S + 1 -> 4 + 1 + 4 + 1
 		  CycleSet{5, 5, 10}, // WS1_B, 1N + 1 + 1S + 1 -> 4 + 1 + 4 + 1
 		  CycleSet{5, 5, 14}, // WS2_A, 1N + 1 + 1S + 1 -> 4 + 1 + 8 + 1
@@ -129,7 +132,7 @@ struct MMU_Status {
   gg_cpu::CPU_Status &_cpuStatus;
 
   E_AccessType requestAccessType = N_Cycle;
-  uint32_t lastAccessAddr;
+  uint32_t lastAccessAddr = 0;
 };
 }
 }

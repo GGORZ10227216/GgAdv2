@@ -2,23 +2,21 @@
 // Created by orzgg on 2021-12-02.
 //
 
-#include <gba_instance.h>
-#include <cpu_enum.h>
-
-#include <handler/bios_handler.h>
-#include <handler/ewram_handler.h>
-#include <handler/iwram_handler.h>
-#include <handler/io_handler.h>
-#include <handler/palette_handler.h>
-#include <handler/vram_handler.h>
-#include <handler/oam_handler.h>
-#include <handler/gamepak_handler.h>
-#include <handler/sram_handler.h>
+#include <gba_instance.h> // GbaInstance, MMU
 
 namespace gg_core::gg_mem {
+void IO_DirectWrite(GbaInstance &instance, uint32_t relativeAddr, uint8_t data) {
+  // TODO: I/O reg write log.
+//  std::cerr << "Illegal I/O reg write, offset: 0x" << std::hex << relativeAddr << std::endl;
+  if (relativeAddr == gg_io::OFFSET_DISPSTAT)
+	data &= 0x3f;
+  instance.mmu.IOReg[relativeAddr] = data;
+} // IO_IllegalWrite()
+
 MMU_Status::MMU_Status(GbaInstance &instance, const std::optional<std::filesystem::path> &romPath) :
 	cartridge(_elapsedCycle),
-	_cpuStatus(instance.cpu) {
+	_cpuStatus(instance.cpu)
+{
   if (romPath.has_value())
 	cartridge.LoadRom(romPath.value());
   else {
@@ -28,9 +26,26 @@ MMU_Status::MMU_Status(GbaInstance &instance, const std::optional<std::filesyste
 
 MMU::MMU(GbaInstance &instance, const std::optional<std::filesystem::path> &romPath) :
 	MMU_Status(instance, romPath),
-	_instance(instance) {
+	_instance(instance)
+{
   memcpy(bios_data.data(), biosData.data(), biosData.size());
+  ioWriteHandlerTable.fill(IO_DirectWrite);
+
+//  (uint16_t&)IOReg[gg_io::OFFSET_DISPCNT] = 0x80;
+  (uint16_t&)IOReg[gg_io::OFFSET_BG2PA] = 0x100;
+  (uint16_t&)IOReg[gg_io::OFFSET_BG3PA] = 0x100;
+  (uint16_t&)IOReg[gg_io::OFFSET_BG2PD] = 0x100;
+  (uint16_t&)IOReg[gg_io::OFFSET_BG2PD] = 0x100;
+  (uint16_t&)IOReg[gg_io::OFFSET_SOUNDBIAS] = 0x200;
+  (uint16_t&)IOReg[gg_io::OFFSET_KEYINPUT] = 0x3ff; // All key released by default.
 }
+
+void MMU::FifoWrite(const unsigned int channelIdx, const uint32_t data) {
+  // Normally, the FIFO length should be 4 * 32bit = 16byte.(according to fifo DMA's design)
+  // But GBATEK says that the FIFO buffer can buffer 8 * 32bit(32byte) data.
+  auto &apu = _instance.apu;
+  apu.PushFifo(channelIdx, data);
+} // FifoWrite()
 
 [[nodiscard]] uint32_t MMU_Status::IllegalReadValue() {
   using namespace gg_cpu;
@@ -75,7 +90,8 @@ void MMU_Status::UpdateWaitState() {
   // wc == wait_control
   const unsigned wc_sram = WAITCNT & 0b11;
 
-  memCycleTable[N][E_SRAM].byte = N_CYCLE_TABLE[wc_sram] + 1; // only use this
+  // SRAM allow byte access only
+  memCycleTable[N][E_SRAM].byte = N_CYCLE_TABLE[wc_sram] + 1;
 
   const unsigned wc_ws0_n = (WAITCNT & 0b1100) >> 2;
   const unsigned wc_ws0_s = TestBit(WAITCNT, 4);
@@ -114,73 +130,34 @@ void MMU_Status::UpdateWaitState() {
   memCycleTable[S][E_WS2_B] = memCycleTable[S][E_WS2];
 } // UpdateWaitState()
 
-std::array<ReadHandler, 16> MMU::ReadHandlers{
-	/*0x0 BIOS*/      ReadHandler(BIOS_Read<uint8_t>, BIOS_Read<uint16_t>, BIOS_Read<uint32_t>),
-	/*0x1 NO USED*/   ReadHandler(NoUsed_Read<uint8_t>, NoUsed_Read<uint16_t>, NoUsed_Read<uint32_t>),
-	/*0x2 EWRAM*/     ReadHandler(EWRAM_Read<uint8_t>, EWRAM_Read<uint16_t>, EWRAM_Read<uint32_t>),
-	/*0x3 IWRAM*/     ReadHandler(IWRAM_Read<uint8_t>, IWRAM_Read<uint16_t>, IWRAM_Read<uint32_t>),
-	/*0x4 IO*/        ReadHandler(IO_Read<uint8_t>, IO_Read<uint16_t>, IO_Read<uint32_t>),
-	/*0x5 Palette*/   ReadHandler(Palette_Read<uint8_t>, Palette_Read<uint16_t>, Palette_Read<uint32_t>),
-	/*0x6 VRAM*/      ReadHandler(VRAM_Read<uint8_t>, VRAM_Read<uint16_t>, VRAM_Read<uint32_t>),
-	/*0x7 OAM*/       ReadHandler(OAM_Read<uint8_t>, OAM_Read<uint16_t>, OAM_Read<uint32_t>),
-	/*0x8 GAMEPAK_0*/ReadHandler(GAMEPAK_Read<uint8_t, E_WS0>,
-								 GAMEPAK_Read<uint16_t, E_WS0>,
-								 GAMEPAK_Read<uint32_t, E_WS0>),
-	/*0x9 GAMEPAK_0*/ReadHandler(GAMEPAK_Read<uint8_t, E_WS0>,
-								 GAMEPAK_Read<uint16_t, E_WS0>,
-								 GAMEPAK_Read<uint32_t, E_WS0>),
-	/*0xA GAMEPAK_1*/ReadHandler(GAMEPAK_Read<uint8_t, E_WS1>,
-								 GAMEPAK_Read<uint16_t, E_WS1>,
-								 GAMEPAK_Read<uint32_t, E_WS1>),
-	/*0xB GAMEPAK_1*/ReadHandler(GAMEPAK_Read<uint8_t, E_WS1>,
-								 GAMEPAK_Read<uint16_t, E_WS1>,
-								 GAMEPAK_Read<uint32_t, E_WS1>),
-	/*0xC GAMEPAK_2*/ReadHandler(GAMEPAK_Read<uint8_t, E_WS2>,
-								 GAMEPAK_Read<uint16_t, E_WS2>,
-								 GAMEPAK_Read<uint32_t, E_WS2>),
-	/*0xD GAMEPAK_2*/ReadHandler(GAMEPAK_Read<uint8_t, E_WS2>,
-								 GAMEPAK_Read<uint16_t, E_WS2>,
-								 GAMEPAK_Read<uint32_t, E_WS2>),
-	/*0xE SRAM*/ReadHandler(GAMEPAK_Read<uint8_t, E_SRAM>,
-							GAMEPAK_Read<uint16_t, E_SRAM>,
-							GAMEPAK_Read<uint32_t, E_SRAM>),
-	/*0xF SRAM_MIRROR*/ReadHandler(GAMEPAK_Read<uint8_t, E_SRAM>,
-								   GAMEPAK_Read<uint16_t, E_SRAM>,
-								   GAMEPAK_Read<uint32_t, E_SRAM>)
-};
+void MMU::RegisterIOHandler(const std::vector<std::pair<gg_io::E_IO_OFFSET, IOWriteHandler>> &handlerList) {
+  using namespace gg_io;
 
-std::array<WriteHandler, 16> MMU::WriteHandlers{
-	/*0x0 BIOS*/      WriteHandler(BIOS_Write<uint8_t>, BIOS_Write<uint16_t>, BIOS_Write<uint32_t>),
-	/*0x1 NO USED*/   WriteHandler(NoUsed_Write<uint8_t>, NoUsed_Write<uint16_t>, NoUsed_Write<uint32_t>),
-	/*0x2 EWRAM*/     WriteHandler(EWRAM_Write<uint8_t>, EWRAM_Write<uint16_t>, EWRAM_Write<uint32_t>),
-	/*0x3 IWRAM*/     WriteHandler(IWRAM_Write<uint8_t>, IWRAM_Write<uint16_t>, IWRAM_Write<uint32_t>),
-	/*0x4 IO*/        WriteHandler(IO_Write<uint8_t>, IO_Write<uint16_t>, IO_Write<uint32_t>),
-	/*0x5 Palette*/   WriteHandler(Palette_Write<uint8_t>, Palette_Write<uint16_t>, Palette_Write<uint32_t>),
-	/*0x6 VRAM*/      WriteHandler(VRAM_Write<uint8_t>, VRAM_Write<uint16_t>, VRAM_Write<uint32_t>),
-	/*0x7 OAM*/       WriteHandler(OAM_Write<uint8_t>, OAM_Write<uint16_t>, OAM_Write<uint32_t>),
-	/*0x8 GAMEPAK_0*/WriteHandler(GAMEPAK_Write<uint8_t, E_WS0>,
-								  GAMEPAK_Write<uint16_t, E_WS0>,
-								  GAMEPAK_Write<uint32_t, E_WS0>),
-	/*0x9 GAMEPAK_0*/WriteHandler(GAMEPAK_Write<uint8_t, E_WS0>,
-								  GAMEPAK_Write<uint16_t, E_WS0>,
-								  GAMEPAK_Write<uint32_t, E_WS0>),
-	/*0xA GAMEPAK_1*/WriteHandler(GAMEPAK_Write<uint8_t, E_WS1>,
-								  GAMEPAK_Write<uint16_t, E_WS1>,
-								  GAMEPAK_Write<uint32_t, E_WS1>),
-	/*0xB GAMEPAK_1*/WriteHandler(GAMEPAK_Write<uint8_t, E_WS1>,
-								  GAMEPAK_Write<uint16_t, E_WS1>,
-								  GAMEPAK_Write<uint32_t, E_WS1>),
-	/*0xC GAMEPAK_2*/WriteHandler(GAMEPAK_Write<uint8_t, E_WS2>,
-								  GAMEPAK_Write<uint16_t, E_WS2>,
-								  GAMEPAK_Write<uint32_t, E_WS2>),
-	/*0xD GAMEPAK_2*/WriteHandler(GAMEPAK_Write<uint8_t, E_WS2>,
-								  GAMEPAK_Write<uint16_t, E_WS2>,
-								  GAMEPAK_Write<uint32_t, E_WS2>),
-	/*0xE SRAM*/WriteHandler(GAMEPAK_Write<uint8_t, E_SRAM>,
-							 GAMEPAK_Write<uint16_t, E_SRAM>,
-							 GAMEPAK_Write<uint32_t, E_SRAM>),
-	/*0xF SRAM_MIRROR*/WriteHandler(GAMEPAK_Write<uint8_t, E_SRAM>,
-									GAMEPAK_Write<uint16_t, E_SRAM>,
-									GAMEPAK_Write<uint32_t, E_SRAM>)
-};
+  for (const auto& [offset, handler] : handlerList) {
+	if ((uint32_t)offset < gg_mem::E_IO_SIZE) {
+	  const auto regAccessMode = (E_IO_AccessMode)policyTable[offset];
+	  if (regAccessMode == gg_io::E_IO_AccessMode::R || regAccessMode == gg_io::E_IO_AccessMode::U) {
+		std::cerr << "Try to register a I/O reg write handler to a non-writable address, offset: 0x"
+		          << std::hex << offset << std::endl;
+		exit(-1);
+	  } // if
+
+	  const unsigned regWidth = offset == OFFSET_POSTFLG || offset == OFFSET_HALTCNT ? 1 : 2;
+
+	  for (unsigned i = 0; i < regWidth ; ++i) {
+		ioWriteHandlerTable[offset + i] = handler;
+	  } // for
+	} // if
+	else {
+	  std::cerr << "Try to register a I/O write handler to an invalid address, offset: 0x"
+	            << std::hex << offset << std::endl;
+	  exit(-1);
+	} // else
+  } // for
+} // RegisterIOHandler()
+
+void MMU::AddCycle(const uint32_t absAddr, const E_AccessType accessType, const unsigned accessWide, const char* comment) {
+  const unsigned deltaClk = CalculateCycle(absAddr, accessWide, accessType);
+  _instance.Follow(deltaClk);
+} // AddCycle()
 }
