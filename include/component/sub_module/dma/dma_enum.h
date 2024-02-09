@@ -1,0 +1,46 @@
+//
+// Created by Administrator on 10/26/2023.
+//
+
+#ifndef GGADV_INCLUDE_COMPONENT_SUB_MODULE_DMA_ENUM_H_
+#define GGADV_INCLUDE_COMPONENT_SUB_MODULE_DMA_ENUM_H_
+
+namespace gg_core {
+enum E_DST_ADDR_CTRL {
+  DST_INCREMENT = 0,
+  DST_DECREMENT = 1,
+  DST_FIXED = 2,
+  DST_RELOAD = 3
+};
+
+enum E_SRC_ADDR_CTRL {
+  SRC_INCREMENT = 0,
+  SRC_DECREMENT = 1,
+  SRC_FIXED = 2,
+  SRC_PROHIBITED = 3
+};
+
+enum E_DMA_TIMING {
+  IMMEDIATE = 0,
+  V_BLANK = 1,
+  H_BLANK = 2,
+  SPECIAL = 3,
+  FIFO_A = 3,
+  FIFO_B = 4
+};
+
+enum E_DMA_CTLBIT {
+  ENABLE_BIT = 15,
+  IRQ_BIT = 14,
+  START_TIMING_BIT = 12,
+  DRQ_BIT = 11,
+  TRANSFER_TYPE_BIT = 10,
+  REPEAT_BIT = 9,
+  SRC_ADDR_CTRL_BIT = 7,
+  DST_ADDR_CTRL_BIT = 5
+};
+
+constexpr static int DMA_INACTIVE = INT32_MAX;
+}
+
+#endif //GGADV_INCLUDE_COMPONENT_SUB_MODULE_DMA_ENUM_H_
