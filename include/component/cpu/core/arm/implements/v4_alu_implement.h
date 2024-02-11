@@ -38,7 +38,7 @@ inline void CPSR_Arithmetic(CPU &instance, uint32_t Rn, uint32_t op2, uint64_t r
 }
 
 template<bool S, E_DataProcess opcode>
-static int ALU_Calculate(CPU &instance, uint32_t arg1, uint32_t arg2, bool shiftCarry) {
+static int ALU_Calculate(CPU &instance, uint32_t arg1, uint32_t arg2, const bool carryResult) {
   constexpr enum OP_TYPE OT = (opcode >= SUB && opcode <= RSC) || (opcode == CMP || opcode == CMN) ?
 							  OP_TYPE::ARITHMETIC : OP_TYPE::LOGICAL;
   uint64_t result = 0;
@@ -70,8 +70,8 @@ static int ALU_Calculate(CPU &instance, uint32_t arg1, uint32_t arg2, bool shift
 
   if constexpr (S) {
 	if constexpr (OT == OP_TYPE::LOGICAL) {
+	  carryResult ? instance.SetC() : instance.ClearC();
 	  TestBit(result, 31) ? instance.SetN() : instance.ClearN();
-	  shiftCarry ? instance.SetC() : instance.ClearC();
 	  result == 0 ? instance.SetZ() : instance.ClearZ();
 	} // if
 	else {
@@ -84,87 +84,118 @@ static int ALU_Calculate(CPU &instance, uint32_t arg1, uint32_t arg2, bool shift
   return result;
 }
 
-template<typename T, bool S, SHIFT_BY SHIFT_SRC, E_DataProcess opcode>
-static void ALU_OperationImpl(CPU &instance,
-							  const int dstReg,
-							  const int op1Reg,
-							  const uint32_t op2Val,
-							  const bool shiftCarry) {
+template<typename T, bool S, E_DataProcess opcode>
+static void ALU_Execute(CPU &instance,
+						const unsigned RdNumber,
+						const uint32_t op1Val,
+						const uint32_t op2Val,
+						const bool carryResult)
+{
+  constexpr bool TEST = opcode == TST || opcode == TEQ || opcode == CMP || opcode == CMN;
+  uint64_t result = ALU_Calculate<S, opcode>(instance, op1Val, op2Val, carryResult);
+
+  if constexpr (!TEST) {
+	instance._regs[RdNumber] = result;
+	if (RdNumber == pc) {
+	  if constexpr (S) {
+		instance.WriteCPSR(instance.ReadSPSR());
+	  } // if
+
+	  /*F*/ instance.RefillPipeline(&instance, gg_mem::N_Cycle, gg_mem::S_Cycle);
+	} // if
+  } // if
+} // ALU_Execute()
+
+//template <SHIFT_BY SHIFT_SRC>
+//void ALU_Fetch(CPU &instance, const unsigned RdNumber) {
+//  if constexpr (SHIFT_SRC == SHIFT_BY::REG) {
+//	// We are performing a memory read here, but discard the result.
+//	// This is because our purpose is to increase the cycle counter.
+//	// Check the ARM7TDMI manual(page 231, shift(Rs) part) for more information.
+//	instance.Fetch(&instance, gg_mem::I_Cycle); /*A*/
+//	if (RdNumber == pc) {
+//	  /*B*/ instance._mem.Read<uint32_t>(instance._regs[pc] + 4, gg_mem::N_Cycle);
+//	} // if
+//	else {
+//	  /*C*/ instance._mem.Read<uint32_t>(instance._regs[pc] + 4, gg_mem::S_Cycle);
+//	} // else
+//  } // if constexpr
+//  else {
+//	if (RdNumber == pc)
+//	  /*D*/ instance.Fetch(&instance, gg_mem::N_Cycle);
+//	else
+//	  /*E*/ instance.Fetch(&instance, gg_mem::S_Cycle);
+//  } // else
+//} // ALU_Fetch()
+
+template <SHIFT_BY SHIFT_SRC, E_ShiftType ST>
+void ALU_CalculateShiftOp2(CPU &instance, const unsigned shiftBaseRegNumber, const unsigned shiftAmount, uint32_t &op2, bool &carryResult) {
+  if constexpr (SHIFT_SRC == SHIFT_BY::REG) {
+	if (shiftBaseRegNumber == pc)
+	  instance._regs[shiftBaseRegNumber] += instance.instructionLength;
+	Op2ShiftReg<ST>(instance, instance._regs[shiftBaseRegNumber], shiftAmount, op2, carryResult);
+	instance.Idle();
+  } // if
+  else {
+	Op2ShiftImm<ST>(instance, instance._regs[shiftBaseRegNumber], shiftAmount, op2, carryResult);
+  } // else
+} // ALU_CalculateOp2()
+
+void ALU_CalculateImmOp2(CPU &instance, const unsigned imm, const unsigned rot, uint32_t &op2, bool &carryResult) {
+  op2 = rotr(imm, rot);
+  if (rot != 0)
+	carryResult = TestBit(op2, 31); // CPU seems to be reusing the barrel shifter for immediate rotate
+  else
+	carryResult = instance.C();
+} // ALU_CalculateImmOp2()
+
+template<bool I, bool S, SHIFT_BY SHIFT_SRC, E_ShiftType ST, E_DataProcess opcode>
+static void ALU_ARM_Operation(CPU &instance) {
   /*
    * There are 4 different code flow for this function. each of them will lead to different cycle count result:
    *   1. Normal Data Processing:
    *     flow: E, cycle: 1S
    *   2. Data Processing with register specified shift:
-   *     flow: RegShift -> C, cycle: 1I + 1S
+   *     flow: A -> C, cycle: 1I + 1S
    *   3. Data Processing with PC written:
    *     flow: D -> F, cycle: 1N + 2S
    *   4. Data Processing with PC written and register specified shift:
-   *     flow: RegShift -> B -> F, cycle: 1I + 1N + 2S
+   *     flow: A -> B -> F, cycle: 1I + 1N + 2S
    * */
-
-  constexpr bool TEST = opcode == TST || opcode == TEQ || opcode == CMP || opcode == CMN;
-  if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
-	// We are performing a memory read here, but discard the result.
-	// This is because our purpose is to increase the cycle counter.
-	// Check the ARM7TDMI manual(page 231, shift(Rs) part) for more information.
-	if (dstReg == pc) {
-	  /*B*/ instance._mem.Read<T>(instance._regs[pc] + 4, gg_mem::N_Cycle);
-	} // if
-	else {
-	  /*C*/ instance._mem.Read<T>(instance._regs[pc] + 4, gg_mem::S_Cycle);
-	} // else
-  } // if constexpr
-  else {
-	if (dstReg == pc)
-	  /*D*/ instance.Fetch(&instance, gg_mem::N_Cycle);
-	else
-	  /*E*/ instance.Fetch(&instance, gg_mem::S_Cycle);
-  } // else
-
-  uint32_t op1Val = instance._regs[op1Reg];
-
-  if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
-	// If we read PC now, we will get the PC + 3L value.
-	// But, strangely, the value inside the register seems to be PC + 8.
-	if (op1Reg == pc)
-	  op1Val = op1Val + instance.instructionLength;
-  } // if constexpr
-
-  uint64_t result = ALU_Calculate<S, opcode>(instance, op1Val, op2Val, shiftCarry);
-
-  if constexpr (!TEST) {
-	instance._regs[dstReg] = result;
-	if (dstReg == pc) {
-	  /*F*/ instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle); // cycle += 1S + 1S
-	  if constexpr (S) {
-		instance.WriteCPSR(instance.ReadSPSR());
-	  } // if
-	} // if
-  } // if
-}
-
-template<bool I, bool S, SHIFT_BY SHIFT_SRC, E_ShiftType ST, E_DataProcess opcode>
-static void ALU_ARM_Operation(CPU &instance) {
   const uint32_t curInst = CURRENT_INSTRUCTION;
 
   const uint8_t RnNumber = (curInst & 0xf0000) >> 16;
   const uint8_t RdNumber = (curInst & 0xf000) >> 12;
 
-  bool shiftCarry = false;
+  bool carryResult = false;
   uint32_t op2 = 0;
 
-  if constexpr (I) {
-	shiftCarry = ParseOp2_Imm(instance, op2);
+//  ALU_Fetch<SHIFT_SRC>(instance, RdNumber);
+
+  if constexpr (!I) {
+	unsigned shiftAmount;
+	const uint8_t RmNumber = curInst & 0b1111;
+
+	if constexpr (SHIFT_SRC == SHIFT_BY::REG) {
+	  const uint8_t RsNumber = (curInst & 0xf00) >> 8;
+	  shiftAmount = instance._regs[RsNumber];
+	} // if constexpr
+	else {
+	  shiftAmount = (curInst & 0xf80) >> 7;
+	} // else
+
+	ALU_CalculateShiftOp2<SHIFT_SRC, ST>(instance, RmNumber, shiftAmount, op2, carryResult);
   } // if
   else {
-	if constexpr (SHIFT_SRC == SHIFT_BY::RS) {
-	  shiftCarry = ParseOp2_Shift_RS<ST>(instance, op2);
-	} // if
-	else
-	  shiftCarry = ParseOp2_Shift_Imm<ST>(instance, op2);
-  } // else
+	const uint32_t imm = curInst & 0xff;
+	// (curInst >> 8) << 1, please refer to ARM7TDMI manual
+	// 4.5.3 Immediate operand rotates, "twice the value in the rotate field" part
+	const uint8_t rot = (curInst & 0xf00) >> 7;
 
-  ALU_OperationImpl<uint32_t, S, SHIFT_SRC, opcode>(instance, RdNumber, RnNumber, op2, shiftCarry);
+	ALU_CalculateImmOp2(instance, imm, rot, op2, carryResult);
+  } // if constexpr
+
+  ALU_Execute<uint32_t, S, opcode>(instance, RdNumber, instance._regs[RnNumber], op2, carryResult);
 }
 }
 

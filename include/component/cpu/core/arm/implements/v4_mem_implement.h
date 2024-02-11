@@ -23,12 +23,15 @@ static void MemLoad(CPU &instance, uint32_t targetAddr, unsigned targetRegNum) {
   uint32_t &dst = instance._regs[targetRegNum];
   uint32_t &cycleCounter = instance._mem._elapsedCycle;
 
-  // 2nd cycle
+  /* 2nd cycle */
   if constexpr (sizeof(T) == 1) {
-	if constexpr (SIGNED) // LDRSB
-	  dst = (static_cast<int32_t>(instance._mem.Read<uint8_t>(targetAddr, gg_mem::I_Cycle)) << 24) >> 24; // sign extend
+	if constexpr (SIGNED) {
+	  // LDRSB, sign extend
+	  int8_t byteResult = instance._mem.Read<uint8_t>(targetAddr, gg_mem::N_Cycle);
+	  dst = (unsigned)byteResult;
+	} // if
 	else // LDRB
-	  dst = instance._mem.Read<uint8_t>(targetAddr, gg_mem::I_Cycle);
+	  dst = instance._mem.Read<uint8_t>(targetAddr, gg_mem::N_Cycle);
   } // if
   else if constexpr (sizeof(T) == 2) {
 	/**
@@ -37,36 +40,26 @@ static void MemLoad(CPU &instance, uint32_t targetAddr, unsigned targetRegNum) {
 	 * LDRH Rd,[odd]   -->  LDRH Rd,[odd-1] ROR 8  ;read to bit0-7 and bit24-31
 	 * LDRSH Rd,[odd]  -->  LDRSB Rd,[odd]         ;sign-expand BYTE value
 	 **/
-	if constexpr (SIGNED) { // LDRSH
-	  const unsigned extShiftAmount = targetAddr & 1 ? 24 : 16;
-	  if (extShiftAmount == 24)
-		dst = (static_cast<int32_t>(instance._mem.Read<uint8_t>(targetAddr, gg_mem::I_Cycle)) << extShiftAmount)
-			>> extShiftAmount; // sign extend
-	  else
-		dst = (static_cast<int32_t>(instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle)) << extShiftAmount)
-			>> extShiftAmount; // sign extend
-	} // if
-	else { // LDRH
-	  dst = instance._mem.Read<uint16_t>(targetAddr, gg_mem::I_Cycle);
+	const bool misAligned = targetAddr & 1;
+	if constexpr (SIGNED) {
+	  // LDRSH
+	  int16_t wordResult = instance._mem.Read<uint16_t>(targetAddr, gg_mem::N_Cycle);
+	  dst = (unsigned)(wordResult);
+	} // if constexpr
+	else {
+	  // LDRH
+	  dst = instance._mem.Read<uint16_t>(targetAddr, gg_mem::N_Cycle);
 	} // else
   } // else if
-  else { // LDR
-	dst = instance._mem.Read<uint32_t>(targetAddr, gg_mem::I_Cycle);
+  else {
+	// LDR
+	dst = instance._mem.Read<uint32_t>(targetAddr, gg_mem::N_Cycle);
   } // else
 
-  // FIXME: should not call CalculateCycle() directly here
+  instance.Idle();
   if (targetRegNum == pc) {
-	// 3th cycle
-	cycleCounter += instance._mem.CalculateCycle(instance._regs[gg_cpu::pc] + instance.instructionLength,
-												 sizeof(uint32_t),
-												 gg_mem::N_Cycle);
-	// 4th&5th cycle, end.
-	instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+	instance.RefillPipeline(&instance, gg_mem::N_Cycle, gg_mem::S_Cycle);
   } // if
-  else
-	cycleCounter += instance._mem.CalculateCycle(instance._regs[gg_cpu::pc] + instance.instructionLength,
-												 sizeof(T),
-												 gg_mem::S_Cycle);
 } // LDR()
 
 template<typename T>
@@ -77,93 +70,89 @@ static void MemStore(CPU &instance, uint32_t targetAddr, unsigned targetRegNum) 
 	instance._mem.Write<T>(targetAddr, static_cast<T>(src + 4), gg_mem::N_Cycle);
   else
 	instance._mem.Write<T>(targetAddr, static_cast<T>(src), gg_mem::N_Cycle);
-}
+} // MemStore()
 
-template<bool L, bool P, bool U, bool W>
-static void LDSTM(CPU &instance, unsigned baseRegIdx, unsigned regList, unsigned offset) {
-  unsigned int registerCnt = PopCount32(regList);
-  const unsigned int registerCntBackup = registerCnt;
-
-  uint32_t &baseReg = instance._regs[baseRegIdx];
-  uint32_t base = baseReg & ~0x3;
-
+template <bool P, bool U>
+static uint32_t CalculatePushPopStart(const uint32_t baseAddr, const uint32_t offset) {
   if constexpr (U) {
 	if constexpr (P) {
 	  // pre-increment
-	  base = base + 4;
+	  return baseAddr + 4;
 	} // if
 	else {
 	  // post-increment
-	  base = base;
+	  return baseAddr;
 	} // else
   } // if
   else {
 	if constexpr (P) {
 	  // pre-decrement
-	  base = base - offset;
+	  return baseAddr - offset;
 	} // if
 	else {
 	  // post-decrement
-	  base = base - offset + 4;
+	  return baseAddr - offset + 4;
 	} // else
   } // else
+} // CalculatePushPopStart()
+
+template <bool U>
+static uint32_t CalculatePushPopEnd(const uint32_t startAddr, const uint32_t offset) {
+  if constexpr (U)
+	return startAddr + offset;
+  else
+	return startAddr - offset;
+} // CalculatePushPopEnd()
+
+
+template<bool L, bool P, bool U, bool W>
+static void PushPop(CPU &instance, const unsigned baseRegIdx, const unsigned regList, const uint32_t offset) {
+  unsigned registerCnt = PopCount32(regList);
+
+  uint32_t baseAddr = instance._regs[baseRegIdx] & ~0x3;
+  const unsigned instructionLength = instance.instructionLength;
+  const uint32_t accessStartAddr = CalculatePushPopStart<P, U>(baseAddr, offset);
+  auto &mem = instance._mem;
+  bool needRefillPipeline = false;
+
+  uint32_t readPtr = accessStartAddr;
+  uint32_t originalPC = instance._regs[pc];
 
   if constexpr (W) {
-	if constexpr (U)
-	  baseReg = (baseReg & ~0x3) + offset;
-	else
-	  baseReg = (baseReg & ~0x3) - offset;
+	instance._regs[baseRegIdx] = CalculatePushPopEnd<U>(baseAddr, offset);
   } // if
 
-  for (size_t idx = 0; idx < 16; ++idx) {
-	if (TestBit(regList, idx)) {
+  gg_mem::E_AccessType cycleType = gg_mem::N_Cycle;
+  for (int i = 0 ; i < 16 ; ++i) {
+	const bool regInList = TestBit(regList, i);
+	if (regInList) {
 	  if constexpr (L) {
-		const auto cycleType = --registerCnt == 0 ? gg_mem::I_Cycle : gg_mem::S_Cycle;
-		uint32_t originalPC = 0x0;
-
-		if (idx == pc)
-		  originalPC = CPU_REG[idx];
-
-		CPU_REG[idx] = instance._mem.Read<uint32_t>(base, cycleType);
-
-		if (idx == pc) {
-		  CPU_REG[pc] &= ~(instance.instructionLength - 1);
-		  instance._mem.CalculateCycle(originalPC + instance.instructionLength,
-									   instance.instructionLength,
-									   gg_mem::N_Cycle);
-		  instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
-		} // if
-		else {
-		  instance._mem.CalculateCycle(instance._regs[pc] + instance.instructionLength,
-									   instance.instructionLength,
-									   gg_mem::S_Cycle);
-		} // else
-	  } // if
+		instance._regs[i] = mem.Read<uint32_t>(readPtr, cycleType);
+	  } // if constexpr
 	  else {
-		const auto cycleType = --registerCnt == 0 ? gg_mem::N_Cycle : gg_mem::S_Cycle;
-		uint32_t regVal = CPU_REG[idx];
-
-		if (idx == 15)
-		  regVal = (regVal + instance.instructionLength) & ~(instance.instructionLength - 1);
-
-		if (idx == baseRegIdx) {
-		  registerCntBackup == registerCnt + 1 ?
-		  instance._mem.Write<uint32_t>(base, base, cycleType) :
-		  instance._mem.Write<uint32_t>(base, baseReg, cycleType);
-		} // if
-		else
-		  instance._mem.Write<uint32_t>(base, regVal, cycleType);
+		uint32_t regValue = instance._regs[i];
+		if (i == pc)
+		  regValue += instructionLength;
+		mem.Write<uint32_t>(readPtr, regValue, cycleType);
 	  } // else
 
-	  base += 4;
+	  readPtr += 4;
+	  --registerCnt;
+	  cycleType = gg_mem::S_Cycle;
 	} // if
   } // for
-}
 
-template<bool I, bool P, bool U, bool B, bool W, bool L, E_ShiftType ST>
+  if constexpr (L) {
+	instance.Idle();
+	if (instance._regs[pc] != originalPC) {
+	  // pc is modified, need to refill pipeline
+	  instance.RefillPipeline(&instance, gg_mem::N_Cycle, gg_mem::S_Cycle);
+	} // if
+  } // if constexpr
+} // PushPop()
+
+template<bool I, bool P, bool U, bool B, bool W, bool L, SHIFT_BY SHIFT_SRC, E_ShiftType ST>
 static void SingleDataTransfer_impl(CPU &instance) {
-  instance.Fetch(&instance, gg_mem::N_Cycle);
-
   constexpr bool translation = !P && W;
 
   uint8_t RnNumber = (CURRENT_INSTRUCTION & 0xf'0000) >> 16;
@@ -175,7 +164,19 @@ static void SingleDataTransfer_impl(CPU &instance) {
 	uint32_t offset = 0, targetAddr = Rn;
 
 	if constexpr (I) {
-	  ParseOp2_Shift_Imm<ST>(instance, offset);
+	  const unsigned RmNumber = CURRENT_INSTRUCTION & 0xf;
+	  unsigned shiftAmount;
+	  bool shiftCarry = instance.C();
+
+	  if constexpr (SHIFT_SRC == SHIFT_BY::IMM) {
+		shiftAmount = gg_core::BitFieldValue<7, 5>(CURRENT_INSTRUCTION);
+	  } // if constexpr
+	  else {
+		const unsigned RsNumber = gg_core::BitFieldValue<8, 4>(CURRENT_INSTRUCTION);
+		shiftAmount = instance._regs[RsNumber];
+	  } // else
+
+	  ALU_CalculateShiftOp2<SHIFT_SRC, ST>(instance, RmNumber, shiftAmount, offset, shiftCarry);
 	} // constexpr()
 	else {
 	  offset = CURRENT_INSTRUCTION & 0xfff;
@@ -229,8 +230,6 @@ static void SingleDataTransfer_impl(CPU &instance) {
 
 template<bool P, bool U, bool W, bool L, bool S, bool H, OFFSET_TYPE OT>
 void HalfMemAccess_impl(CPU &instance) {
-  instance.Fetch(&instance, gg_mem::N_Cycle);
-
   unsigned int RnNumber = (CURRENT_INSTRUCTION & 0xf'0000) >> 16;
   unsigned int RdNumber = (CURRENT_INSTRUCTION & 0x0'f000) >> 12;
   uint32_t &Rn = instance._regs[RnNumber];
@@ -282,8 +281,6 @@ void HalfMemAccess_impl(CPU &instance) {
 
 template<bool P, bool U, bool S, bool W, bool L>
 void BlockMemAccess_impl(CPU &instance) {
-  instance.Fetch(&instance, gg_mem::N_Cycle);
-
   // todo: undocumented behavior of ldm/stm implement
   uint32_t regList = BitFieldValue<0, 16>(CURRENT_INSTRUCTION);
   uint32_t offset = 0;
@@ -316,7 +313,7 @@ void BlockMemAccess_impl(CPU &instance) {
   else
 	offset = PopCount32(regList) << 2;
 
-  LDSTM<L, P, U, W>(instance, RnNumber, regList, offset);
+  PushPop<L, P, U, W>(instance, RnNumber, regList, offset);
 
   if constexpr (S) {
 	if constexpr (L) {
@@ -336,22 +333,20 @@ void BlockMemAccess_impl(CPU &instance) {
 
 template<bool B>
 void Swap_impl(CPU &instance) {
-  instance.Fetch(&instance, gg_mem::N_Cycle);
-
   uint32_t Rn = instance._regs[(CURRENT_INSTRUCTION & 0xf'0000) >> 16];
   uint32_t &Rd = instance._regs[(CURRENT_INSTRUCTION & 0x0'f000) >> 12];
   uint32_t Rm = instance._regs[CURRENT_INSTRUCTION & 0xf];
 
   if constexpr (B) {
 	Rd = instance._mem.Read<uint8_t>(Rn, gg_mem::N_Cycle);
-	instance._mem.Write<uint8_t>(Rn, static_cast<uint8_t>(Rm), gg_mem::I_Cycle);
+	instance._mem.Write<uint8_t>(Rn, (uint8_t)Rm, gg_mem::N_Cycle);
   } // if
   else {
 	Rd = instance._mem.Read<uint32_t>(Rn, gg_mem::N_Cycle);
-	instance._mem.Write<uint32_t>(Rn, Rm, gg_mem::I_Cycle);
+	instance._mem.Write<uint32_t>(Rn, Rm, gg_mem::N_Cycle);
   } // if
 
-  instance._mem.CalculateCycle(instance._regs[pc] + 4, sizeof(uint32_t), gg_mem::N_Cycle);
+  instance.Idle();
 } // Swap_impl()
 }
 

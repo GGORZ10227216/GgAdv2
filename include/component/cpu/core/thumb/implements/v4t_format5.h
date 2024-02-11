@@ -9,25 +9,27 @@ namespace gg_core::gg_cpu {
 template<auto OP, bool H1, bool H2>
 extern void HiRegOperation_BX(CPU &instance) {
   const uint16_t curInst = CURRENT_INSTRUCTION;
-  unsigned targetRs = (curInst & 0b111000) >> 3;
-  unsigned targetRd = curInst & 0b111;
+  unsigned RsNumber = (curInst & 0b111000) >> 3;
+  unsigned RdNumber = curInst & 0b111;
 
-  if constexpr (H1)
-	targetRd += 8;
-  if constexpr (H2)
-	targetRs += 8;
+  if constexpr (H1) {
+	RdNumber += 8;
+  }
+  if constexpr (H2) {
+	RsNumber += 8;
+  }
 
-  const uint32_t RsValue = instance._regs[targetRs];
-  const uint32_t RdValue = instance._regs[targetRd];
-
-  uint32_t result = 0;
   if constexpr (std::is_same_v<decltype(OP), E_DataProcess>) {
-//            instance._regs[ targetRd ] = ALU_Calculate<false, OP>(instance, RdValue, RsValue, false)  ;
-	ALU_OperationImpl<uint16_t, OP == CMP, SHIFT_BY::NONE, OP>(instance, targetRd, targetRd, RsValue, false);
+//	ALU_Fetch<SHIFT_BY::NONE>(instance, RdNumber);
+
+	const uint32_t RsValue = instance._regs[RsNumber];
+	const uint32_t RdValue = instance._regs[RdNumber];
+	const bool S = OP == CMP;
+
+	ALU_Execute<uint32_t, S, OP>(instance, RdNumber, RdValue, RsValue, instance.C());
   } // if
   else {
-	instance.Fetch(&instance, N_Cycle);
-	BX(instance, targetRs);
+	BX(instance, RsNumber);
   } // else
 } // MovCmpAddSub()
 }

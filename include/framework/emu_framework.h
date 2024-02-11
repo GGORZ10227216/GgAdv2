@@ -2,8 +2,6 @@
 // Created by orzgg on 2020-09-03.
 //
 
-#include <thread>
-
 #include <gba_instance.h>
 
 #ifndef GGADV_FRAMEWORK_H

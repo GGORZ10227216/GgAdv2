@@ -13,15 +13,11 @@ extern void ConditionalBranch(CPU &instance) {
   auto checker = instance.conditionChecker[condition];
 
   if ((instance.*checker)()) {
-	instance.Fetch(&instance, N_Cycle);
-
 	int32_t sOffset = (static_cast<int32_t>(curInst & 0xff) << 24) >> 23;
 
 	instance._regs[pc] += sOffset;
-	instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+	instance.RefillPipeline(&instance, gg_mem::N_Cycle, gg_mem::S_Cycle);
   } // if
-  else
-	instance.Fetch(&instance, S_Cycle);
 } // ConditionalBranch()
 }
 

@@ -11,7 +11,7 @@
 
 namespace gg_core::gg_cpu {
 template<bool A, bool S>
-static void Multiply_impl(CPU &instance);
+static void Multiply_ARM(CPU &instance);
 
 template<bool U, bool A, bool S>
 static void MultiplyLong_impl(CPU &instance);
@@ -20,7 +20,7 @@ template<uint32_t HashCode32>
 static constexpr auto Multiply() {
   constexpr bool A = TestBit(HashCode32, 21);
   constexpr bool S = TestBit(HashCode32, 20);
-  return &Multiply_impl<A, S>;
+  return &Multiply_ARM<A, S>;
 }
 
 template<uint32_t HashCode32>

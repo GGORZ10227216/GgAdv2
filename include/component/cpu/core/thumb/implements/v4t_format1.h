@@ -10,24 +10,23 @@ using namespace gg_core::gg_mem;
 
 template<E_ShiftType ST>
 extern void MoveShift(CPU &instance) {
-  instance.Fetch(&instance, S_Cycle);
-
-  const uint16_t curInst = CURRENT_INSTRUCTION;
-
-  const unsigned targetRs = (curInst & 0b111000) >> 3;
-  const unsigned targetRd = (curInst & 0b111);
-
-  const uint32_t RsValue = instance._regs[targetRs];
-  const unsigned shiftAmount = (curInst & (0b11111 << 6)) >> 6;
-
-  uint32_t result = 0;
   if constexpr (ST == ROR)
 	gg_core::Unreachable();
-  bool shiftCarry = Op2ShiftImm<ST>(instance, result, RsValue, shiftAmount);
 
-  // ALU_Calculate here is only for CPSR modification, no need to assign to result again.
-  ALU_Calculate<true, E_DataProcess::MOV>(instance, RsValue, result, shiftCarry);
-  instance._regs[targetRd] = result;
+  const uint16_t curInst = CURRENT_INSTRUCTION;
+  const unsigned RsNumber = (curInst & 0b111000) >> 3;
+  const unsigned RdNumber = (curInst & 0b111);
+
+  const unsigned shiftAmount = (curInst & (0b11111 << 6)) >> 6;
+  bool carryResult = false;
+  uint32_t op2 = 0;
+  uint32_t result = 0;
+
+//  ALU_Fetch<SHIFT_BY::IMM>(instance, RdNumber);
+  ALU_CalculateShiftOp2<SHIFT_BY::IMM, ST>(instance, RsNumber, shiftAmount, op2, carryResult);
+
+  // We don't care about Op1, so just pass 0.
+  ALU_Execute<uint32_t, true, E_DataProcess::MOV>(instance, RdNumber, 0, op2, carryResult);
 } // MoveShift()
 }
 

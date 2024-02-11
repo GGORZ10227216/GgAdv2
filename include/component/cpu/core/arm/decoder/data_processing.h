@@ -19,11 +19,13 @@ static void ALU_ARM_Operation(CPU &instance);
 template<uint32_t HashCode32>
 static constexpr auto DataProcessing() {
   constexpr auto opcode = static_cast<const E_DataProcess>(BitFieldValue<21, 4>(HashCode32));
-  constexpr auto SHIFT_SRC = TestBit(HashCode32, 4) ? SHIFT_BY::RS : SHIFT_BY::IMM;
+  constexpr auto I = TestBit(HashCode32, 25);
+  constexpr auto SHIFT_SRC = I ? SHIFT_BY::NONE :
+							 TestBit(HashCode32, 4) ? SHIFT_BY::REG : SHIFT_BY::IMM;
   constexpr auto ST = static_cast<E_ShiftType>(BitFieldValue<5, 2>(HashCode32));
   return &ALU_ARM_Operation<
-	  TestBit(HashCode32, 25),
-	  TestBit(HashCode32, 20),
+	  TestBit(HashCode32, 25), // I bit
+	  TestBit(HashCode32, 20), // S bit
 	  SHIFT_SRC,
 	  ST,
 	  opcode

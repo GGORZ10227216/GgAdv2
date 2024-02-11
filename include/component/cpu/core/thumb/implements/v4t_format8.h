@@ -8,8 +8,6 @@
 namespace gg_core::gg_cpu {
 template<bool H, bool S>
 extern void LoadStoreRegOffsetSignEx(CPU &instance) {
-  instance.Fetch(&instance, N_Cycle);
-
   const uint16_t curInst = CURRENT_INSTRUCTION;
   const unsigned targetRd = curInst & 0b111;
   const unsigned baseReg = (curInst & (0b111 << 3)) >> 3;

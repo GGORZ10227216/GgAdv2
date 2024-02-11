@@ -8,19 +8,17 @@ static void BX(CPU &instance, unsigned targetReg) {
 	instance.ChangeCpuMode(ARM);
 
   instance._regs[pc] = Rn;
-  instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+  instance.RefillPipeline(&instance, gg_mem::N_Cycle, gg_mem::S_Cycle);
 } // BX
 
 static void BranchExchange_impl(CPU &instance) {
-  instance.Fetch(&instance, gg_mem::N_Cycle);
-  const uint32_t RnNumber = instance.CurrentInstruction() & 0xf;
+  const uint32_t RnNumber = instance.currentInstruction & 0xf;
   BX(instance, RnNumber);
 }
 
 template<bool L>
 static void Branch_impl(CPU &instance) {
-  instance.Fetch(&instance, gg_mem::S_Cycle);
-  int32_t offset = (instance.CurrentInstruction() & 0x00ffffff) << 2;
+  int32_t offset = (instance.currentInstruction & 0x00ffffff) << 2;
 
   if (gg_core::TestBit(offset, 25))
 	offset |= 0xfc000000; // sign extend

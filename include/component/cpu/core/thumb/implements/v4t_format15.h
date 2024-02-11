@@ -8,8 +8,6 @@
 namespace gg_core::gg_cpu {
 template<bool L>
 extern void MultiLoadStore(CPU &instance) {
-  instance.Fetch(&instance, N_Cycle);
-
   const uint16_t curInst = CURRENT_INSTRUCTION;
   unsigned baseRegNum = (curInst & (0b111 << 8)) >> 8;
   unsigned regList = curInst & 0xff;
@@ -20,7 +18,7 @@ extern void MultiLoadStore(CPU &instance) {
 	offset = 0x40;
   } // if
 
-  LDSTM<L, false, true, true>(instance, baseRegNum, regList, offset);
+  PushPop<L, false, true, true>(instance, baseRegNum, regList, offset);
 } // SP_Offset()
 }
 

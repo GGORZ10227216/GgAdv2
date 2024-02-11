@@ -38,7 +38,24 @@
 
 #include <cpu_tick.h>
 
+const bool verbose = false;
+
 namespace gg_core::gg_cpu {
+const char* OpMode2Str(unsigned mCode) {
+
+  switch (mCode) {
+	case USR:return "USR";
+	case IRQ:return "IRQ";
+	case ABT:return "ABT";
+	case UND:return "UND";
+	case FIQ:return "FIQ";
+	case SVC:return "SVC";
+	case SYS:return "SYS";
+  } // switch
+
+  return "ERROR";
+}
+
 CPU::CPU(GbaInstance &instance) :
 	CPU_Status(),
 	_instance(instance),
@@ -58,18 +75,25 @@ CPU::CPU(GbaInstance &instance) :
 
   fetchedBuffer[0] = _mem.Read<uint32_t>(0, gg_mem::N_Cycle);
   fetchedBuffer[1] = _mem.Read<uint32_t>(4, gg_mem::S_Cycle);
-
-  _regs[r0] = 0xca5;
-
-  _regs[pc] = 4;
+//  _mem.GetElapsedCycle(); // clear MMU's elapsed cycle for test purpose
   fetchIdx = 1;
+//  currentInstruction = fetchedBuffer[0];
+//  _registers_svc[0] = 0x03007fe0;
+//  _registers_irq[0] = 0x03007fa0;
+//  _registers_usrsys[0] = 0x03007f00;
+
+  _cpsr = 0xd3; // Start CPU as System mode
+//  _regs[sp] = 0x03007f00;
+  _regs[pc] = 4;
 } // CPU()
 
 void CPU::CPU_StateChange() {
-  const bool irqAck = (!!(_instance.IF & _instance.IE) & _instance.IME);
-  runState = (runState & ~(1 << IRQ_BIT)) | ((I() & irqAck) << IRQ_BIT);
-  Tick = CPUTickTable[runState];
+	ChangeCpuMode(GetCpuMode());
 } // CPU_StateChange()
+
+bool CPU::Interruptable(gg_io::E_FIELD_IRQ irqBit) const {
+  return I() && _instance.IME && TestBit((_instance.IF & _instance.IE), irqBit);
+}
 
 void CPU::RaiseInterrupt(IRQ_TYPE irqType) {
   _instance.IF |= _BV(irqType);
@@ -77,80 +101,196 @@ void CPU::RaiseInterrupt(IRQ_TYPE irqType) {
 } // RaiseInterrupt()
 
 void CPU::AddCycle(const unsigned int deltaClk, const char *reason) {
-  std::cerr << "[CPU] elapsed cycle: " << _instance.cycleCounter << " (" << reason << ")" << std::endl;
+//  std::cerr << "[CPU] elapsed cycle: " << deltaClk << " (" << reason << ")" << std::endl;
   _elapsedClk += deltaClk;
 }
 
-void CPU::CPU_DebugTick() {
-  currentInstruction = fetchedBuffer[!fetchIdx];
+void CPU::DumpStatusDASM() {
   std::string mode, instr, psr, info;
 
-  auto OpMode2Str = [](unsigned mCode) {
-	switch (mCode) {
-	  case USR:return "USR";
-	  case IRQ:return "IRQ";
-	  case ABT:return "ABT";
-	  case UND:return "UND";
-	  case FIQ:return "FIQ";
-	  case SVC:return "SVC";
-	  case SYS:return "SYS";
-	} // switch
-
-	return "ERROR";
-  };
-
-  psr = fmt::format("\tcpsr: {:>#010x} spsr: ",
-					ReadCPSR()
+  psr = fmt::format("cpsr: {:0>8X} [{}{}{}{}{}{}{}]",
+					ReadCPSR(),
+					N() ? 'N' : '-',
+					Z() ? 'Z' : '-',
+					C() ? 'C' : '-',
+					V() ? 'V' : '-',
+					I() ? 'I' : '-',
+					F() ? 'F' : '-',
+					GetCpuMode() == THUMB ? 'T' : '-'
   );
 
-  if (GetOperationMode() == USR || GetOperationMode() == SYS)
-	psr += "No Value";
-  else
-	psr += fmt::format("{:>#010x}", ReadSPSR());
+//  if (GetOperationMode() == USR || GetOperationMode() == SYS)
+//	psr += "No Value";
+//  else
+//	psr += fmt::format("0x{:0>8x}", ReadSPSR());
 
   info = fmt::format(reg4InfoStr,
 					 _regs[r0], _regs[r1], _regs[r2], _regs[r3],
 					 _regs[r4], _regs[r5], _regs[r6], _regs[r7],
 					 _regs[r8], _regs[r9], _regs[r10], _regs[r11],
-					 _regs[r12], _regs[sp], _regs[lr], _regs[pc] + instructionLength
+					 _regs[r12], _regs[sp], _regs[lr], _regs[pc]
   );
 
   if (GetCpuMode() == E_CpuMode::ARM) {
 	mode = fmt::format("\tCPUMode: ARM, OpMode: {}", OpMode2Str(GetOperationMode()));
-	instr = fmt::format("[{:#x}] {}", lastPC, armAsm.DASM(currentInstruction));
+//	instr = fmt::format("{:0>8X}:  {:0>8X}",
+//						lastPC,
+//						currentInstruction);
+	instr = fmt::format("{:0>8X}:  {:0>8X}\t{}",
+	  lastPC,
+	  currentInstruction,
+	  armAsm.DASM(currentInstruction));
   } // if
   else {
-	mode = fmt::format("\tCPUMode: THUMB, OpMode: {}", OpMode2Str(GetOperationMode()));
-	instr = fmt::format("[{:#x}] {}", lastPC, thumbAsm.DASM(currentInstruction));
+//	mode = fmt::format("\tCPUMode: THUMB, OpMode: {}", OpMode2Str(GetOperationMode()));
+	const bool isFormat19PartA = (currentInstruction & 0xf000) == 0xf000;
+	if (isFormat19PartA) {
+	  if (TestBit(currentInstruction, 11)) {
+		instr = fmt::format("{:0>8X}:  ignored", lastPC);
+	  } // if
+	  else {
+		std::string disasmResult = thumbAsm.DASM(currentInstruction | (fetchedBuffer[fetchIdx] << 16));
+		instr = fmt::format("{:0>8X}:  {:0>4X} {:0>4X}\t{}",
+							lastPC,
+							currentInstruction,
+							fetchedBuffer[fetchIdx],
+							disasmResult);
+//		instr = fmt::format("{:0>8X}:  {:0>4X} {:0>4X}",
+//							lastPC,
+//							currentInstruction,
+//							fetchedBuffer[fetchIdx]);
+	  } // else
+	} // if
+	else {
+	  instr = fmt::format("{:0>8X}:  {:0>4X}\t{}", lastPC, currentInstruction, thumbAsm.DASM(currentInstruction));
+//	  instr = fmt::format("{:0>8X}:  {:0>4X}", lastPC, currentInstruction);
+	} // else
   } // else
 
-  std::cerr << "CPU elapsed cycle: " << _elapsedClk << std::endl;
-  std::cerr << "MMU elapsed cycle: " << _mem._elapsedCycle << std::endl;
-  std::cerr << instr << std::endl;
-  std::cerr << mode << std::endl;
-  std::cerr << psr << std::endl;
-  std::cerr << info << std::endl;
+//  std::cerr << "CPU elapsed cycle: " << _elapsedClk << std::endl;
+//  std::cerr << "MMU elapsed cycle: " << _mem._elapsedCycle << std::endl;
+//  std::cerr << mode << std::endl;
+} // CPU::DumpStatus()
 
-  _elapsedClk = 0;
-  _mem._elapsedCycle = 0;
+void CPU::DumpStatus() {
+  std::string mode, instr, psr, info, io;
 
-  const unsigned condition = [&]() {
-	if (GetCpuMode() == E_CpuMode::ARM)
-	  return (currentInstruction & 0xf0000000) >> 28;
-	else
-	  return static_cast<unsigned> (E_CondName::AL);
-  }();
+  io = fmt::format("VCOUNT: {:0>4}", _instance.VCOUNT);
 
-  auto checker = conditionChecker[condition];
+  psr = fmt::format("cpsr: {:0>8X} [{}{}{}{}{}{}{}]",
+	ReadCPSR(),
+	N() ? 'N' : '-',
+	Z() ? 'Z' : '-',
+	C() ? 'C' : '-',
+	V() ? 'V' : '-',
+	I() ? 'I' : '-',
+	F() ? 'F' : '-',
+	GetCpuMode() == THUMB ? 'T' : '-'
+  );
 
-  if (_instance.IME && I() && (_instance.IE & _instance.IF)) {
-	Interrupt_impl<E_OperationMode::IRQ>(*this);
+//  if (GetOperationMode() == USR || GetOperationMode() == SYS)
+//	psr += "No Value";
+//  else
+//	psr += fmt::format("0x{:0>8x}", ReadSPSR());
+
+  info = fmt::format(reg4InfoStr,
+					 _regs[r0], _regs[r1], _regs[r2], _regs[r3],
+					 _regs[r4], _regs[r5], _regs[r6], _regs[r7],
+					 _regs[r8], _regs[r9], _regs[r10], _regs[r11],
+					 _regs[r12], _regs[sp], _regs[lr], _regs[pc]
+  );
+
+  if (GetCpuMode() == E_CpuMode::ARM) {
+	mode = fmt::format("\tCPUMode: ARM, OpMode: {}", OpMode2Str(GetOperationMode()));
+	instr = fmt::format("{:0>8X}:  {:0>8X}",
+	  lastPC,
+	  currentInstruction);
+//	instr = fmt::format("{:0>8X}:  {:0>8X}\t{}",
+//	  lastPC,
+//	  currentInstruction,
+//	  armAsm.DASM(currentInstruction));
   } // if
   else {
-	if ((this->*checker)())
-	  instructionTable[iHash(currentInstruction)](*this);
-	else
-	  Fetch(this, gg_mem::S_Cycle);
+//	mode = fmt::format("\tCPUMode: THUMB, OpMode: {}", OpMode2Str(GetOperationMode()));
+	const bool isFormat19PartA = (currentInstruction & 0xf000) == 0xf000;
+	if (isFormat19PartA) {
+	  if (TestBit(currentInstruction, 11)) {
+		instr = fmt::format("{:0>8X}:  ignored", lastPC);
+	  } // if
+	  else {
+		std::string disasmResult = thumbAsm.DASM(currentInstruction | (fetchedBuffer[fetchIdx] << 16));
+//		instr = fmt::format("{:0>8X}:  {:0>4X} {:0>4X}\t{}",
+//							lastPC,
+//							currentInstruction,
+//							fetchedBuffer[fetchIdx],
+//							disasmResult);
+		instr = fmt::format("{:0>8X}:  {:0>4X} {:0>4X}",
+							lastPC,
+							currentInstruction,
+							fetchedBuffer[fetchIdx]);
+	  } // else
+	} // if
+	else {
+//	  instr = fmt::format("{:0>8X}:  {:0>4X}\t{}", lastPC, currentInstruction, thumbAsm.DASM(currentInstruction));
+	  instr = fmt::format("{:0>8X}:  {:0>4X}", lastPC, currentInstruction);
+	} // else
+  } // else
+
+//  std::cerr << "CPU elapsed cycle: " << _elapsedClk << std::endl;
+//  std::cerr << "MMU elapsed cycle: " << _mem._elapsedCycle << std::endl;
+//  std::cerr << mode << std::endl;
+} // CPU::DumpStatus()
+
+unsigned CPU::GetElapsedCycle() {
+  // CPU's elapsed cycle is the cycles that finish a instruction need.
+  // In other words, it's the sum of CPU's elapsed cycle and MMU's elapsed cycle.
+  unsigned result = _elapsedClk + _mem.GetElapsedCycle();
+  _elapsedClk = 0;
+  return result;
+} // GetElapsedCycle()
+
+void CPU::Step() {
+//  DumpStatus();
+  if (halt) {
+	_instance.Follow(1);
+	if (_instance.IF & _instance.IE) {
+	  halt = false;
+	} // if
+  } // if
+  else {
+	if (_instance.IME && !I() && (_instance.IE & _instance.IF)) {
+	  Interrupt_impl<E_OperationMode::IRQ>(*this);
+	} // if
+	else {
+	  // Most of the time, fetchAccessType is S_Cycle, but when the instruction is
+	  // STR*, the fetch access type will change to N_Cycle.
+	  currentInstruction = fetchedBuffer[!fetchIdx];
+
+	  const unsigned condition = [&]() {
+		if (GetCpuMode() == E_CpuMode::ARM)
+		  return (currentInstruction & 0xf0000000) >> 28;
+		else
+		  return static_cast<unsigned> (E_CondName::AL);
+	  }();
+
+	  auto checker = conditionChecker[condition];
+
+//	if (_instance.totalCycle >= 7239611)
+	  if (!verbose) {
+//		if (_instance.totalCycle >= 79975267) {
+//		  std::cout << std::endl;
+//		} // if
+	  } // if
+	  else {
+		DumpStatus();
+	  } // else
+
+	  Fetch(this, fetchAccessType);
+	  fetchAccessType = gg_mem::S_Cycle;
+
+	  if ((this->*checker)())
+		instructionTable[iHash(currentInstruction)](*this);
+	} // else
   } // else
 } // Tick()
 
@@ -248,15 +388,17 @@ void CPU::WriteCPSR(uint32_t newCPSR) {
 	unsigned *targetBank = GetBankRegDataPtr(newMode);
 
 	// Store back current content to reg bank
-	*reinterpret_cast<uint64_t *>(currentBank) = *reinterpret_cast<uint64_t *>(_regs.data() + sp);
-	// Load banked register from new mode's reg bank
-	*reinterpret_cast<uint64_t *>(_regs.data() + sp) = *reinterpret_cast<uint64_t *>(targetBank);
+	const int srcIdx = newMode == FIQ ? r8 : sp;
+	const int bankSize = newMode == FIQ ? 7 : 2;
+
+	for (int i = 0 ; i < bankSize ; ++i) {
+	  currentBank[i] = _regs[srcIdx + i]; // store reg value to current bank
+	  _regs[srcIdx + i] = targetBank[i]; // load reg value from target bank
+	} // for
   } // if
 
-  if (TestBit(_cpsr, 7) != TestBit(newCPSR, 7))
-	CPU_StateChange();
-
   _cpsr = newCPSR;
+  CPU_StateChange();
 } // CPU::WriteCPSR()
 
 void CPU::WriteSPSR(uint32_t value) {
@@ -265,13 +407,17 @@ void CPU::WriteSPSR(uint32_t value) {
 	  break;
 	case IRQ:_spsr_irq = value;
 	  break;
+
 	case SVC:_spsr_svc = value;
 	  break;
 	case ABT:_spsr_abt = value;
 	  break;
 	case UND:_spsr_und = value;
 	  break;
-	default:exit(-2);
   } // switch()
 } // WriteSPSR()
+
+void CPU::Idle(const unsigned cycles) {
+  _instance.Follow(cycles);
+} // Idle()
 }

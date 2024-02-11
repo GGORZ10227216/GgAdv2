@@ -8,16 +8,18 @@
 namespace gg_core::gg_cpu {
 template<bool SP>
 extern void LoadAddress(CPU &instance) {
-  instance.Fetch(&instance, S_Cycle);
-
   const uint16_t curInst = CURRENT_INSTRUCTION;
   const unsigned targetRd = (curInst & (0b111 << 8)) >> 8;
   const unsigned offsetImm = (curInst & 0xff) << 2; // 10 bit offset
 
   if constexpr (SP)
 	instance._regs[targetRd] = instance._regs[sp] + offsetImm;
-  else
-	instance._regs[targetRd] = instance._regs[pc] + offsetImm;
+  else {
+	// ARM7TDMI manual 5.12.1, the Note says:
+	//     Where the PC is used as the source register (SP = 0), bit 1 of the PC is always read
+	//     as 0.
+	instance._regs[targetRd] = (instance._regs[pc] & ~0b10) + offsetImm;
+  } // else
 } // SP_RelativeLoadStore()
 }
 

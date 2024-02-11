@@ -29,10 +29,6 @@ struct CPU_Status {
 	_regs.fill(0);
   }
 
-  uint32_t CurrentInstruction() {
-	return currentInstruction;
-  } // CurrentInstruction()
-
   uint32_t CurrentPC_OnExec() {
 	const uint32_t correction = instructionLength * 2;
 	return _regs[pc] - correction;
@@ -72,30 +68,30 @@ struct CPU_Status {
 	return _cpsr & 0x20u ? THUMB : ARM;
   } // GetCpuMode()
 
-  bool F() { return _cpsr & 0x40u; } // F()
-  bool I() { return _cpsr & 0x80u; } // I()
-  bool V() { return _cpsr & 0x10000000u; } // V()
-  bool C() { return _cpsr & 0x20000000u; } // C()
-  bool Z() { return _cpsr & 0x40000000u; } // Z()
-  bool N() { return _cpsr & 0x80000000u; } // N()
+  bool F() const { return _cpsr & 0x40u; } // F()
+  bool I() const { return _cpsr & 0x80u; } // I()
+  bool V() const { return _cpsr & 0x10000000u; } // V()
+  bool C() const { return _cpsr & 0x20000000u; } // C()
+  bool Z() const { return _cpsr & 0x40000000u; } // Z()
+  bool N() const { return _cpsr & 0x80000000u; } // N()
 
-  bool EQ() { return Z(); }
-  bool NE() { return !Z(); }
-  bool CS() { return C(); }
-  bool CC() { return !C(); }
-  bool MI() { return N(); }
-  bool PL() { return !N(); }
-  bool VS() { return V(); }
-  bool VC() { return !V(); }
-  bool HI() { return C() && !Z(); }
-  bool LS() { return !C() || Z(); }
-  bool GE() { return N() == V(); }
-  bool LT() { return N() != V(); }
-  bool GT() { return !Z() && (N() == V()); }
-  bool LE() { return Z() || (N() != V()); }
-  bool AL() { return true; }
+  bool EQ() const { return Z(); }
+  bool NE() const { return !Z(); }
+  bool CS() const { return C(); }
+  bool CC() const { return !C(); }
+  bool MI() const { return N(); }
+  bool PL() const { return !N(); }
+  bool VS() const { return V(); }
+  bool VC() const { return !V(); }
+  bool HI() const { return C() && !Z(); }
+  bool LS() const { return !C() || Z(); }
+  bool GE() const { return N() == V(); }
+  bool LT() const { return N() != V(); }
+  bool GT() const { return !Z() && (N() == V()); }
+  bool LE() const { return Z() || (N() != V()); }
+  bool AL() const { return true; }
 
-  std::array<bool (CPU_Status::*)(), 16> conditionChecker{
+  std::array<bool (CPU_Status::*)()const, 16> conditionChecker{
 	  &CPU_Status::EQ, // 0b0000
 	  &CPU_Status::NE, // 0b0001
 	  &CPU_Status::CS, // 0b0010
@@ -113,6 +109,8 @@ struct CPU_Status {
 	  &CPU_Status::AL, // 0b1110
   };
 
+  bool halt = false;
+
   std::array<uint32_t, 2> fetchedBuffer;
   uint8_t fetchIdx = 0;
   uint32_t currentInstruction = 0x00;
@@ -129,11 +127,11 @@ struct CPU_Status {
   std::array<unsigned, 2> _registers_irq{};
   std::array<unsigned, 2> _registers_und{};
 
-  unsigned _spsr_fiq = 0,
-	  _spsr_svc = 0,
-	  _spsr_abt = 0,
-	  _spsr_irq = 0,
-	  _spsr_und = 0;
+  unsigned _spsr_fiq = 0b10001,
+	  _spsr_svc = 0b10011,
+	  _spsr_abt = 0b10111,
+	  _spsr_irq = 0b10010,
+	  _spsr_und = 0b11011;
 
   unsigned *GetBankRegDataPtr(E_OperationMode mode) {
 	switch (mode) {
@@ -150,13 +148,15 @@ struct CPU_Status {
 	return nullptr;
   } // GetBankRegDataPtr()
 
+  gg_mem::E_AccessType fetchAccessType = gg_mem::S_Cycle;
+
   uint32_t (*iHash)(uint32_t) = nullptr;
   void (*Fetch)(CPU *, gg_mem::E_AccessType) = nullptr;
   void (*Tick)(CPU *) = nullptr;
   void (*RefillPipeline)(CPU *, gg_mem::CycleType, gg_mem::CycleType) = nullptr;
   HandlerType const *instructionTable = nullptr;
 protected:
-  uint32_t _cpsr = 0xd3;
+  uint32_t _cpsr = 0x0;
   uint32_t _elapsedClk = 0;
 };
 }

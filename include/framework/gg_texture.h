@@ -5,8 +5,8 @@
 #include <cstdint>
 #include <memory>
 
-#include "../../libppu/include/gg_type.h"
-#include "framework/glad/glad.h"
+#include <gg_type.h>
+#include <glad.h>
 
 #ifndef LIBGAFX_GG_TEXTURE_H
 #define LIBGAFX_GG_TEXTURE_H

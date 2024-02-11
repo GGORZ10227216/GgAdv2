@@ -8,38 +8,31 @@
 #define ARM_ANALYZER_V4_MULTIPLY_API_H
 
 namespace gg_core::gg_cpu {
+static int SignedBoothCheck(const unsigned op) {
+  const int boothNum = (__builtin_clrsb(op) + 1) >> 3; // Number of leading 0 or 1 in arg2
+  int m = boothNum == 4 ? 1 : 4 - boothNum;
+  return m;
+} // BoothCheck()
+
+static int UnsignedBoothCheck(const unsigned op) {
+  const int boothNum = __builtin_clz(op) >> 3; // Number of leading 0 or 1 in arg2
+  int m = boothNum == 4 ? 1 : 4 - boothNum;
+  return m;
+} // BoothCheck()
+
 template<bool S>
-static uint32_t ALU_Multiply(CPU &instance, uint32_t arg1, uint32_t arg2) {
-  unsigned boothValue = 4;
-  for (int i = 1; i < 4; ++i) {
-	unsigned boothCheck = arg2 >> (8 * i);
-	const uint32_t allOneMask = 0xffffffff;
-	if (boothCheck == 0 || boothCheck == allOneMask >> (8 * i)) {
-	  boothValue = i;
-	  break;
-	} // if
-  } // for
+static uint32_t DoMultiply(CPU &instance, uint32_t arg1, uint32_t arg2) {
+  int m = SignedBoothCheck(arg2);
 
   uint32_t result = arg1 * arg2;
 
-  instance.AddCycle(boothValue, "MUL I cycle");
-//  instance._elapsedClk += boothValue; // The I_Cycle cycle
-
-  instance._mem.CalculateCycle(instance._regs[pc] + 4, sizeof(uint32_t), gg_mem::S_Cycle);
-
-  if constexpr (S) {
-	// Result of C is meaningless, V is unaffected.
-	result == 0 ? instance.SetZ() : instance.ClearZ();
-	TestBit(result, 31) ? instance.SetN() : instance.ClearN();
-  } // if
-
+//  instance.AddCycle(m, "Multiply I cycle");
+  instance.Idle(m);
   return result;
-} // ALU_Multiply()
+} // DoMultiply()
 
 template<bool A, bool S>
-static void Multiply_impl(CPU &instance) {
-  instance.Fetch(&instance, gg_mem::I_Cycle);
-
+static void Multiply_ARM(CPU &instance) {
   uint8_t RsNumber = BitFieldValue<8, 4>(CURRENT_INSTRUCTION);
   uint8_t RdNumber = BitFieldValue<16, 4>(CURRENT_INSTRUCTION);
   uint8_t RmNumber = BitFieldValue<0, 4>(CURRENT_INSTRUCTION);
@@ -47,24 +40,26 @@ static void Multiply_impl(CPU &instance) {
   unsigned RsValue = instance._regs[RsNumber];
   unsigned RmValue = instance._regs[RmNumber];
 
-  uint32_t result = ALU_Multiply<S>(instance, RmValue, RsValue);
+  uint32_t result = DoMultiply<S>(instance, RmValue, RsValue);
 
   if constexpr (A) {
+	instance.Idle();
 	uint8_t RnNumber = BitFieldValue<12, 4>(CURRENT_INSTRUCTION);
 	unsigned RnValue = instance._regs[RnNumber];
 	result += RnValue;
-	instance.AddCycle(1, "MULA additional 1 I cycle");
-//	instance._elapsedClk += 1; // The I_Cycle cycle
-  } // if
+  } // if constexpr
+
+  if constexpr (S) {
+	// Result of C is meaningless, V is unaffected.
+	result == 0 ? instance.SetZ() : instance.ClearZ();
+	TestBit(result, 31) ? instance.SetN() : instance.ClearN();
+  } // if constexpr
 
   instance._regs[RdNumber] = result;
-//        instance._mem.Read<uint32_t>(CPU_REG[ pc ] + 4,gg_mem::S_Cycle) ; // move to ALU_Multiply()
 } // Multiply()
 
 template<bool U, bool A, bool S>
 static void MultiplyLong_impl(CPU &instance) {
-  instance.Fetch(&instance, gg_mem::I_Cycle);
-
   uint32_t RsVal = instance._regs[BitFieldValue<8, 4>(CURRENT_INSTRUCTION)];
   uint32_t RmVal = instance._regs[BitFieldValue<0, 4>(CURRENT_INSTRUCTION)];
 
@@ -78,39 +73,24 @@ static void MultiplyLong_impl(CPU &instance) {
   };
 
   Mull_t result = 0;
-  if constexpr (U) {
+  unsigned m;
+  if constexpr (!U) {
+	m = UnsignedBoothCheck(RsVal);
+	result = static_cast<uint64_t>(RsVal) * RmVal;
+  } // if
+  else {
+	m = SignedBoothCheck(RsVal);
 	const int64_t signedRs = (static_cast<int64_t>(RsVal) << 32) >> 32;
 	const int64_t signedRm = (static_cast<int64_t>(RmVal) << 32) >> 32;
 	result = signedRm * signedRs;
-  } // if
-  else
-	result = static_cast<uint64_t>(RsVal) * RmVal;
+  } // else
 
-  unsigned boothValue = 4;
-  for (int i = 1; i < 4; ++i) {
-	unsigned boothCheck = RsVal >> (8 * i);
-	if constexpr (U) {
-	  const unsigned allOneMask = 0xffffffff;
-	  if (boothCheck == 0 || boothCheck == allOneMask >> (8 * i)) {
-		boothValue = i;
-		break;
-	  } // if
-	} // if constexpr
-	else {
-	  if (boothCheck == 0) {
-		boothValue = i;
-		break;
-	  } // if
-	} // else
-  } // for
-
-  instance.AddCycle(boothValue + 1, "MULL I cycle");
-//  instance._elapsedClk += boothValue + 1;
+  instance.Idle(m + 1);
 
   if constexpr (A) {
 	uint64_t RdValue = (static_cast<uint64_t>(CPU_REG[RdHiNumber]) << 32) | CPU_REG[RdLoNumber];
 	result.qword += RdValue;
-	instance.AddCycle(1, "MLAL additional 1 I cycle");
+	instance.Idle();
 //	instance._elapsedClk += 1;
 	// EMU_CLK += CLK_CONT.I_Cycle() ;
   } // if constexpr
@@ -123,7 +103,7 @@ static void MultiplyLong_impl(CPU &instance) {
   CPU_REG[RdLoNumber] = result.dword[0];
   CPU_REG[RdHiNumber] = result.dword[1];
 
-  instance._mem.CalculateCycle(instance._regs[pc] + 4, sizeof(uint32_t), gg_mem::S_Cycle);
+//  instance._mem.CalculateCycle(instance._regs[pc] + 4, sizeof(uint32_t), gg_mem::S_Cycle);
 }
 }
 

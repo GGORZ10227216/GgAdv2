@@ -10,24 +10,13 @@ using namespace gg_core::gg_mem;
 
 template<E_DataProcess OP>
 extern void MovCmpAddSub(CPU &instance) {
-  /**
-   * Remove Rd in template argument,
-   *
-   * Even if we can get targetRd In instruction hash, we should not use it as a template
-   * to access CPU's registers.
-   * Because it will create a lot of jmp instruction, and this is cache unfriendly.
-   **/
-  instance.Fetch(&instance, S_Cycle);
-
   const uint16_t curInst = CURRENT_INSTRUCTION;
   const unsigned offset8 = curInst & 0xff;
-  const unsigned targetRd = (curInst & 0x700) >> 8;
-  const uint32_t RdValue = instance._regs[targetRd];
+  const unsigned RdNumber = (curInst & 0x700) >> 8;
+  const unsigned op1 = instance._regs[RdNumber];
 
-  uint32_t result = ALU_Calculate<true, OP>(instance, RdValue, offset8, instance.C());
-
-  if constexpr (OP != E_DataProcess::CMP)
-	instance._regs[targetRd] = result;
+//  ALU_Fetch<SHIFT_BY::NONE>(instance, RdNumber);
+  ALU_Execute<uint32_t, true, OP>(instance, RdNumber, op1, offset8, instance.C());
 } // MovCmpAddSub()
 }
 

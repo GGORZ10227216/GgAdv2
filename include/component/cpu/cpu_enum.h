@@ -66,7 +66,7 @@ enum E_PipelineStage {
 enum class OP_TYPE { LOGICAL, ARITHMETIC, TEST };
 
 enum class SHIFT_BY {
-  RS, IMM, NONE
+  REG, IMM, NONE
 };
 
 enum class OFFSET_TYPE { RM, IMM };
@@ -79,10 +79,10 @@ enum IRQ_TYPE {
 };
 
 constexpr char reg4InfoStr[] =
-	"\tr0:  {:>#010x} r1:  {:>#010x}  r2:  {:>#010x} r3:  {:>#010x}\n"
-	"\tr4:  {:>#010x} r5:  {:>#010x}  r6:  {:>#010x} r7:  {:>#010x}\n"
-	"\tr8:  {:>#010x} r9:  {:>#010x}  r10: {:>#010x} r11: {:>#010x}\n"
-	"\tr12: {:>#010x} sp:  {:>#010x}  lr:  {:>#010x} pc:  {:>#010x}";
+	" r0: {:0>8X}   r1: {:0>8X}   r2: {:0>8X}   r3: {:0>8X}\n"
+	" r4: {:0>8X}   r5: {:0>8X}   r6: {:0>8X}   r7: {:0>8X}\n"
+	" r8: {:0>8X}   r9: {:0>8X}  r10: {:0>8X}  r11: {:0>8X}\n"
+	"r12: {:0>8X}  r13: {:0>8X}  r14: {:0>8X}  r15: {:0>8X}";
 }
 
 #endif //GGADV_CPU_ENUM_H

@@ -2,6 +2,9 @@
 // Created by orzgg on 2020-09-04.
 //
 
+#include <array>
+#include <cstdint>
+
 #ifndef GGADV_MEM_ENUM_H
 #define GGADV_MEM_ENUM_H
 
@@ -10,9 +13,9 @@ using BYTE = uint8_t;
 using WORD = uint16_t;
 using DWORD = uint32_t;
 
-const unsigned DWORD_SIZE = 4;
-const unsigned WORD_SIZE = 2;
-const unsigned BYTE_SIZE = 1;
+enum class E_AccessWidth {
+  BYTE = 1, WORD = 2, DWORD = 4
+};
 
 enum E_AccessType { N_Cycle, S_Cycle, I_Cycle };
 using CycleType = E_AccessType;
@@ -22,11 +25,6 @@ enum E_GamePakRegion {
   E_WS1 = 0xa, E_WS1_B = 0xb,
   E_WS2 = 0xc, E_WS2_B = 0xd,
   E_SRAM = 0xe
-};
-
-enum E_BackupMediaType {
-  SRAM,
-  FLASH
 };
 
 enum E_ErrorType {
@@ -66,7 +64,7 @@ enum E_RamSize {
 };
 
 enum E_SaveType {
-  E_SRAM32K, E_EEPROM, E_FLASH64K, E_FLASH128K, E_UNKNOWN
+  E_SRAM32K, E_EEPROM, E_FLASH64K, E_FLASH128K, E_NONE
 };
 
 static constexpr std::array<const char *, 2> accessModeName{
@@ -89,6 +87,23 @@ constexpr static std::array<unsigned, 4> N_CYCLE_TABLE{
 constexpr static std::array<unsigned, 6> S_CYCLE_TABLE{
 	2, 1, 4, 1, 8, 1
 };
+
+union io_reg32_t {
+  uint32_t dword;
+  uint16_t loWord, hiWord;
+  uint8_t bytes[4];
+
+  io_reg32_t(uint32_t value) : dword(value) {}
+};
+
+union io_reg16_t {
+  uint16_t word;
+  uint8_t bytes[2];
+
+  io_reg16_t(uint16_t value) : word(value) {}
+};
+
+enum {MAX_GBA_ROMSIZE = 0x2000000};
 }
 
 #endif //GGADV_MEM_ENUM_H

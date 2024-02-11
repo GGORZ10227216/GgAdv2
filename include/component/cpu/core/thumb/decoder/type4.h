@@ -6,38 +6,33 @@
 #define GGTEST_TYPE4_H
 
 namespace gg_core::gg_cpu {
-template<auto OP>
+template<E_DataProcess OP, SHIFT_BY SHIFT_SRC, E_ShiftType ST>
 extern void ALU_Operations(CPU &instance);
 
-using HandlerType = void (*)(CPU &);
+static void Multiply_Thumb(CPU &instance);
 
 template<uint32_t HashCode10>
-static constexpr HandlerType ThumbType4() {
+static constexpr auto ThumbType4() {
   constexpr unsigned op = HashCode10 & 0b1111;
 
   switch (op) {
-	case 0:return &ALU_Operations<AND>;
-	case 1:return &ALU_Operations<EOR>;
-	case 2:
-	case 3:
-	case 4:
-	case 7: {
-	  const auto shType = static_cast<E_ShiftType>(op == 7 ? ROR : op - 2);
-	  return &ALU_Operations<shType>;
-	}
-	case 5 :return &ALU_Operations<ADC>;
-	case 6 :return &ALU_Operations<SBC>;
-	case 8 :return &ALU_Operations<TST>;
-	case 9 :return &ALU_Operations<RSB>;
-	case 10 :return &ALU_Operations<CMP>;
-	case 11 :return &ALU_Operations<CMN>;
-	case 12 :return &ALU_Operations<ORR>;
-	case 13 :return &ALU_Operations<0>; // MUL
-	case 14 :return &ALU_Operations<BIC>;
-	case 15 :return &ALU_Operations<MVN>;
+	case 0:return &ALU_Operations<AND, SHIFT_BY::NONE, E_ShiftType::LSL>;
+	case 1:return &ALU_Operations<EOR, SHIFT_BY::NONE, E_ShiftType::LSL>;
+	case 2:return &ALU_Operations<MOV, SHIFT_BY::REG, E_ShiftType::LSL>;
+	case 3:return &ALU_Operations<MOV, SHIFT_BY::REG, E_ShiftType::LSR>;
+	case 4:return &ALU_Operations<MOV, SHIFT_BY::REG, E_ShiftType::ASR>;
+	case 7:return &ALU_Operations<MOV, SHIFT_BY::REG, E_ShiftType::ROR>;
+	case 5 :return &ALU_Operations<ADC, SHIFT_BY::NONE, E_ShiftType::LSL>;
+	case 6 :return &ALU_Operations<SBC, SHIFT_BY::NONE, E_ShiftType::LSL>;
+	case 8 :return &ALU_Operations<TST, SHIFT_BY::NONE, E_ShiftType::LSL>;
+	case 9 :return &ALU_Operations<RSB, SHIFT_BY::NONE, E_ShiftType::LSL>;
+	case 10 :return &ALU_Operations<CMP, SHIFT_BY::NONE, E_ShiftType::LSL>;
+	case 11 :return &ALU_Operations<CMN, SHIFT_BY::NONE, E_ShiftType::LSL>;
+	case 12 :return &ALU_Operations<ORR, SHIFT_BY::NONE, E_ShiftType::LSL>;
+	case 13 :return &Multiply_Thumb; // MUL
+	case 14 :return &ALU_Operations<BIC, SHIFT_BY::NONE, E_ShiftType::LSL>;
+	case 15 :return &ALU_Operations<MVN, SHIFT_BY::NONE, E_ShiftType::LSL>;
   }
-
-  return nullptr;
 }
 }
 

@@ -9,6 +9,11 @@
 #include <cpu.h>
 #include <mmu.h>
 #include <ppu.h>
+#include <apu.h>
+#include <keypad/keypad.h>
+#include "component/sub_module/dma/dma2.h"
+#include "component/sub_module/timer/timer2.h"
+#include <system_enum.h>
 //#include <timers.h>
 //#include <dma/dma_controller.h>
 
@@ -18,22 +23,47 @@
 
 namespace gg_core {
 struct GbaInstance {
-  GbaInstance(const char *romPath);
-  GbaInstance();
-  unsigned cycleCounter;
+ private:
+  bool _running = false;
+  void NormalState();
+
+  void HBlankState();
+  void VBlankState();
+  void CheckVCountSetting();
+
+ public:
+  GbaInstance(const std::filesystem::path& romPath);
+
+  bool systemHalt = false;
+  bool systemStop = false;
+
+  uint64_t totalCycle = 0;
+  unsigned _cycleCounter = 0;
 
   gg_mem::MMU mmu;
-  gg_cpu::CPU cpu;
-  gg_gfx::PPU ppu;
-
   uint16_t &IF;
   uint16_t &IE;
   uint16_t &IME;
-//  gg_io::Timers timer;
-//  gg_io::dma_controller dmaController;
 
-  // Cycle accuracy is not the main goal of this project.
-//  TaskRunner<64> runner;
+  uint16_t &VCOUNT;
+  uint16_t &DISPCNT;
+  uint16_t &DISPSTAT;
+
+  TimerController timerController;
+  DMA dmaController;
+  Keypad keypad;
+  gg_gfx::PPU ppu;
+  APU apu;
+
+  gg_cpu::CPU cpu;
+
+  unsigned _remainingScanlineForFrame = 0;
+
+  E_SYSTEM_STATE systemState = E_SYSTEM_STATE::NORMAL;
+  void StartMainLoop();
+  void NextFrame();
+
+  void Follow(const uint32_t deltaCycles);
 };
 }
 

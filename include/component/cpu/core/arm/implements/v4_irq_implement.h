@@ -10,12 +10,9 @@
 namespace gg_core::gg_cpu {
 template<E_OperationMode opMode>
 static void Interrupt_impl(CPU &instance) {
-  instance.Fetch(&instance, gg_mem::N_Cycle);
-
   const uint32_t preCPSR = instance.ReadCPSR();
 
   instance.WriteCPSR((preCPSR & ~0b11111u) | static_cast<uint8_t>(opMode));
-  instance.WriteSPSR(preCPSR);
 
   if constexpr (opMode == SVC) {
 	instance._regs[lr] = instance._regs[pc] - instance.instructionLength;
@@ -27,15 +24,18 @@ static void Interrupt_impl(CPU &instance) {
 	//   IRQ took priority ...
 	//   ... Return instruction is "SUBS PC, R14_irq, #4"
 	// According to that, I guess the correct lr value should be PC - 2*instructionLength + 4
-	instance._regs[lr] = instance._regs[pc] - instance.instructionLength * 2 + 4;
+	instance._regs[lr] = instance._regs[pc] - instance.instructionLength + 4;
 	instance._regs[pc] = HW_IRQ;
   } // else if
-  else
+  else {
 	gg_core::Unreachable();
+  }
+
+  instance.WriteSPSR(preCPSR);
 
   instance.ChangeCpuMode(ARM);
 
-  instance.RefillPipeline(&instance, gg_mem::S_Cycle, gg_mem::S_Cycle);
+  instance.RefillPipeline(&instance, gg_mem::N_Cycle, gg_mem::S_Cycle);
   instance.SetI(); // TODO: not sure setting the I bit is emulator's responsibility or programmer's
   //       Need to check what nintendo's BIOS do in interrupt routine.
 } // Interrupt_impl()

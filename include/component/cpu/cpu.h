@@ -4,6 +4,7 @@
 
 #include <arm_asm.h>
 
+#include <io_enum.h>
 #include <cpu_status.h>
 
 #ifndef GGADV_CPU_H
@@ -18,6 +19,7 @@ class MMU;
 namespace gg_cpu {
 class CPU final : public CPU_Status {
 public :
+  friend class GbaInstance;
   GbaInstance &_instance;
   gg_mem::MMU &_mem;
 
@@ -45,13 +47,16 @@ public :
   void SetN() { _cpsr |= (1 << 31); } // SetN()
   void ClearN() { _cpsr &= ~(1 << 31); } // ClearN()
 
-  void CPU_DebugTick();
+  void DumpStatus();
+  void DumpStatusDASM();
+  void Step();
   void AddCycle(const unsigned deltaClk, const char* reason);
   void CPU_Test(uint32_t inst);
   void ChangeCpuMode(E_CpuMode mode);
   void ChangeOperationMode(E_OperationMode newMode);
 
   void CPU_StateChange();
+  bool Interruptable(gg_io::E_FIELD_IRQ irqBit) const;
   void RaiseInterrupt(IRQ_TYPE irqType);
 
   template<typename T>
@@ -83,11 +88,18 @@ public :
 	// todo: thumb hash function
 	return (inst & 0xffff) >> 6;
   };
+
+  void Idle(unsigned cycles = 1);
+
+
+ private:
+  unsigned GetElapsedCycle();
+
 };
 }
 }
 
-#define CURRENT_INSTRUCTION instance.CurrentInstruction()
+#define CURRENT_INSTRUCTION instance.currentInstruction
 #define CPU_REG instance._regs
 
 #endif //GGADV_CPU_H
