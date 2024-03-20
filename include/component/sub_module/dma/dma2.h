@@ -1,5 +1,5 @@
 //
-// Created by Administrator on 10/25/2023.
+// Created by Orzgg on 10/25/2023.
 //
 
 #ifndef GGADV_INCLUDE_COMPONENT_SUB_MODULE_DMA2_H_

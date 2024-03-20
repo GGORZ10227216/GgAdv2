@@ -1,5 +1,5 @@
 //
-// Created by Administrator on 12/27/2023.
+// Created by Orzgg on 12/27/2023.
 //
 
 #ifndef GGADV_INCLUDE_COMPONENT_SUB_MODULE_TIMER2_H_

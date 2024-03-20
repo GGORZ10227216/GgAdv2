@@ -1,5 +1,5 @@
 //
-// Created by Administrator on 1/1/2024.
+// Created by Orzgg on 1/1/2024.
 //
 #include <apu.h>
 #include <gba_instance.h>
